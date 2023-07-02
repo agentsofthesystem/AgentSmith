@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+
+  main_app:
+    restart: always
+    image: f2d2:latest
+    build: ./
+    volumes:
+      - "./application:/var/application"
+    ports:
+      - "5000:5000"
+    environment:
+      - DEBUG=True
+      - ENV=development
+    env_file:
+      - ./env

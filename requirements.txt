@@ -1,0 +1,4 @@
+black
+flask
+pydocstyle
+python-dotenv
