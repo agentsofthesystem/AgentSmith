@@ -1,0 +1,5 @@
+# Hidden folder types.
+.coverage
+venv/*
+
+*__pycache__*
