@@ -90,3 +90,7 @@ and your code will magically be styled.
 ## Software Testing
 
 TODO - TBD - Eventually pytest/tox and github actions will be written to handle this.
+
+# References
+
+1. For packaging up and making an installer in the future - https://pyinstaller.org/en/stable/index.html
