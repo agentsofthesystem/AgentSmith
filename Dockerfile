@@ -7,7 +7,7 @@ COPY ./application /var/application
 
 # Run installer commands
 RUN pip install -U pip
-RUN pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org -r /tmp/requirements-frozen.txt
+RUN pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org -r /tmp/requirements.txt
 
 WORKDIR /var
 

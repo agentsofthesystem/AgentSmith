@@ -1,5 +1,6 @@
 black
 flask
+gunicorn
 pydocstyle
 python-dotenv
 validators==0.20.0

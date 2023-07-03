@@ -4,14 +4,14 @@ services:
 
   main_app:
     restart: always
-    image: f2d2:latest
+    image: pgsma
     build: ./
     volumes:
       - "./application:/var/application"
     ports:
-      - "5000:5000"
+      - "3000:3000"
     environment:
       - DEBUG=True
       - ENV=development
     env_file:
-      - ./env
+      - ./.env
