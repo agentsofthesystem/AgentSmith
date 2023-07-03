@@ -37,10 +37,6 @@ class MainArgParse(object):
 
         self._add_subparser(self.psr)
 
-        # if len(_sys.argv) == 1:
-        #    psr.print_help()
-        #    _sys.exit()
-
         self.psr.parse_args(args=self._sort_args(), namespace=self)
 
     def apply(self):
@@ -57,11 +53,11 @@ class MainArgParse(object):
             dest="_subparser_name", metavar="sub_commands", help="this is help"
         )
 
-        restart = sub.add_parser("restart")
-        index = sub.add_parser("index")
-        symbols = sub.add_parser("symbols")
+        # Example
+        # sub_command = sub.add_parser("sub_command")
 
-        self._sub_list = [restart, index, symbols]
+        # Add sub commands to list
+        self._sub_list = []
 
         for item in self._sub_list:
             self._add_generic_args(item)

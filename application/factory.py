@@ -8,7 +8,7 @@ from flask import Flask
 
 from application.common import logger
 from application.debugger import init_debugger
-from application.views import application
+from application.v1.views import application
 
 
 def create_app(config=None):

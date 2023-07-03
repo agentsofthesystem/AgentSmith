@@ -2,3 +2,4 @@ black
 flask
 pydocstyle
 python-dotenv
+validators==0.20.0
