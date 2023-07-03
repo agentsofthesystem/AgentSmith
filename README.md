@@ -1,16 +1,26 @@
 # Private Game Server Manager - Agent
 
-This application is agent software for the Private Game Server Manager
+## About
 
-# Pre-requisites
+This application is agent software for the Private Game Server Manager.  The agent runs on a standalone windows-based
+server and interacts with both 1) the software application it is controlling and 2) may be tied to a manager via an
+access key/token method.  If tied to manager software, then the user has full user interface and web control over the
+agent.  Otherwise, this agent can stand alone and be operated via a client.  See the "./client" and "./scripts" folder
+for examples of client-only usage.   
+
+## Pre-requisites
 
 This software was developed on Windows 10 using WSL2 & Docker Desktop for Windows.  WSL2 ran an Ubuntu 18.04 
 distribution, however, feel free to use any distribution.  The chosen software language is Python 3, which can be installed
-on any flavor of linux.  WSL2 is not strictly required, but python & docker desktop for windows are.  
+on any flavor of linux.  WSL2 is not strictly required because one can install python in either a linux or windows
+environment.  Docker is also optional because the application can run on its own or inside of a docker container.  
+However, a python environment is a hard requirement. The author used VSCode to develop software, although any IDE may be
+used which is the preference of the developer.
 
 1. WSL2 Setup - https://learn.microsoft.com/en-us/windows/wsl/install
-2. Docker Desktop for Windows - https://www.docker.com/products/docker-desktop/
-3. Python3 
+2. Docker Desktop for Windows - https://www.docker.com/products/docker-desktop/  (Optional)
+3. Python 3 - (See section about python setup.)
+4. VSCode + Python Extension (or other preferred IDE)
 
 ## Python Setup
 
@@ -18,6 +28,12 @@ on any flavor of linux.  WSL2 is not strictly required, but python & docker desk
 
 1. sudo apt update
 2. sudo apt install python3 python3-venv python3-pip
+
+## Windows without WSL2
+
+1. Download python from here: https://www.python.org/downloads/ - Python 3.10+ will do.
+2. install to windows.
+3. Open a powershell and test that one can run the "python" command.
 
 # Usage & Setup
 
@@ -35,12 +51,18 @@ This section details how to build and deploy a docker image that contains this s
 One must create a python virtual environment.  Therefore python3 must be present and configured on your machine.
 
 1. python3 -m venv venv/
-2. source venv/bin/activate
+2. Activate the Python environment:
+   - linux: source venv/bin/activate
+   - windows:  .\venv\bin\Activate.ps1
 3. pip install -U pip
 4. pip install -r requirements.txt 
 5. ./main.py or python3 main.py
 6. cd scripts
 7. python (your-script.py)
+
+**Warning**: If one is using a windows only environment, the second step where the python virtual environment is activated 
+may require a windows policy to be enabled which allows powershell scripts to be run.  This is a windows security 
+mechanism.  One need only enable the policy and repeat the step.  [Here is more information](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.security/set-executionpolicy?view=powershell-7.3) to set this up properly.
 
 ## Testing
 
@@ -67,4 +89,4 @@ and your code will magically be styled.
 
 ## Software Testing
 
-TBD - Eventually pytest/tox and github actions will be written to handle this.
+TODO - TBD - Eventually pytest/tox and github actions will be written to handle this.
