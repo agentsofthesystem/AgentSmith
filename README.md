@@ -27,7 +27,8 @@ This section details how to build and deploy a docker image that contains this s
 
 ### To build
 
-1. docker compose
+1. docker compose build
+2. docker compose up
 
 ## Stand Alone & Development
 
@@ -38,6 +39,8 @@ One must create a python virtual environment.  Therefore python3 must be present
 3. pip install -U pip
 4. pip install -r requirements.txt 
 5. ./main.py or python3 main.py
+6. cd scripts
+7. python (your-script.py)
 
 ## Testing
 
@@ -59,7 +62,7 @@ to pydocs and use pydocstyle to maintain that standard.
 
 ## Software Code Quality
 
-For a dispassionate method to keep the software looking spiffy, use the pythong "black" package.  Simply run "black ."
+For a dispassionate method to keep the software looking spiffy, use the python "black" package.  Simply run "black ."
 and your code will magically be styled.  
 
 ## Software Testing
