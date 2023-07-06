@@ -14,10 +14,10 @@ class AppUrls:
 
     def get_remove_url(self) -> str:
         return f"{self.base_url}/app/remove"
-    
+
     def get_update_url(self) -> str:
         return f"{self.base_url}/app/update"
-        
+
     def get_start_url(self) -> str:
         return f"{self.base_url}/app/start"
 

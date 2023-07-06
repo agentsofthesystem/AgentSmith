@@ -5,20 +5,20 @@ from application.v1.source import manager
 
 application = Blueprint("application", __name__, url_prefix="/v1")
 
+
 ## Application Endpoints
 @application.route("/app/install", methods=["POST"])
 def install():
-
     logger.info("Installing Application")
 
     payload = request.json
 
     required_data = [
-        'steam_install_path',
-        'steam_id',
-        'install_dir',
-        'user',
-        'password'
+        "steam_install_path",
+        "steam_id",
+        "install_dir",
+        "user",
+        "password",
     ]
 
     if required_data != list(payload.keys()):
@@ -27,28 +27,31 @@ def install():
         raise InvalidUsage(message, status_code=400)
 
     try:
-        steam_mgr = manager.SteamManager(payload['steam_install_path'])
+        steam_mgr = manager.SteamManager(payload["steam_install_path"])
         steam_mgr.install_steam_app(
-            payload['steam_id'],
-            payload['install_dir'],
-            payload['user'],
-            payload['password']
+            payload["steam_id"],
+            payload["install_dir"],
+            payload["user"],
+            payload["password"],
         )
     except Exception:
         raise InvalidUsage("Unable to install steam app", status_code=500)
-    
+
     logger.info("Application has been installed")
     return "Success"
+
 
 @application.route("/app/remove", methods=["POST"])
 def remove():
     logger.info("Application has been removed")
     return "Success"
 
+
 @application.route("/app/update", methods=["POST"])
 def update():
     logger.info("Application has been updated")
     return "Success"
+
 
 @application.route("/app/start", methods=["POST"])
 def start():

@@ -23,17 +23,17 @@ def main():
     install_path = r"C:\Users\Shadow\Desktop\STEAM\vrising"
 
     client.app.install_app(steam_install_path, steam_id, install_path)
-    
-    #client.app.remove_app()
-    #client.app.update_app()
 
-    #client.app.start_app()
-    #client.app.stop_app()
-    #client.app.restart_app()
-    #client.app.get_status()
+    # client.app.remove_app()
+    # client.app.update_app()
 
-    #client.access.generate_access_key()
-    #client.access.verify_access_key()
+    # client.app.start_app()
+    # client.app.stop_app()
+    # client.app.restart_app()
+    # client.app.get_status()
+
+    # client.access.generate_access_key()
+    # client.access.verify_access_key()
 
 
 if __name__ == "__main__":
