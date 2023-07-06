@@ -9,6 +9,15 @@ class AppUrls:
     def base_url(self) -> str:
         return self.BASE_URL.format(host_name=self._host, api_version=self._api_version)
 
+    def get_install_url(self) -> str:
+        return f"{self.base_url}/app/install"
+
+    def get_remove_url(self) -> str:
+        return f"{self.base_url}/app/remove"
+    
+    def get_update_url(self) -> str:
+        return f"{self.base_url}/app/update"
+        
     def get_start_url(self) -> str:
         return f"{self.base_url}/app/start"
 
