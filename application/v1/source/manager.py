@@ -1,5 +1,7 @@
+import os
 import subprocess
 
+from application.common import logger
 from pysteamcmd.steamcmd import Steamcmd
 
 
@@ -49,3 +51,22 @@ class SteamManager:
         )
 
         return subprocess.run(steamcmd_params)
+
+
+class GameManager:
+    def __init__(self, game_name: str, game_path: str) -> None:
+        self._game_name = game_name
+        self._game_path = game_path
+        self._game_exe = self._game_path + os.sep + self._game_name
+
+    def start_game(self, input_args=None) -> None:
+        game_command = (self._game_exe, input_args)
+
+        logger.info("*******************************************")
+        logger.info(game_command)
+        logger.info("*******************************************")
+
+        return subprocess.run(game_command)
+
+    def stop_game(self) -> None:
+        pass

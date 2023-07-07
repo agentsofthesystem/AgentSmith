@@ -58,6 +58,34 @@ def update():
 
 @application.route("/app/start", methods=["POST"])
 def start():
+    logger.info("Starting Application")
+
+    input_args = None
+    payload = request.json
+
+    required_data = [
+        "app_name",
+        "app_path",
+    ]
+
+    if not set(required_data).issubset(set(payload.keys())):
+        message = "Error: Missing Required Data"
+        logger.error(message)
+        raise InvalidUsage(message, status_code=400)
+
+    if "input_args" in payload.keys():
+        input_args = payload["input_args"]
+
+    game_manager = manager.GameManager(payload["app_name"], payload["app_path"])
+
+    result = game_manager.start_game(input_args)
+
+    if result.returncode > 0:
+        logger.warning(
+            f"Warning: Installation returned non-zero exit code: {result.returncode}"
+        )
+        logger.warning(result.stderr)
+
     logger.info("Application has Started")
     return "Success"
 
