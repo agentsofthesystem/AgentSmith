@@ -1,3 +1,5 @@
+import os
+
 from flask import Blueprint, jsonify, request
 from application.common import logger
 from application.common.exceptions import InvalidUsage
@@ -27,6 +29,7 @@ def install():
         raise InvalidUsage(message, status_code=400)
 
     steam_mgr = manager.SteamManager(payload["steam_install_path"])
+
     result = steam_mgr.install_steam_app(
         payload["steam_id"],
         payload["install_dir"],
@@ -35,10 +38,10 @@ def install():
     )
 
     if result.returncode > 0:
-        logger.warning(
+        message = (
             f"Warning: Installation returned non-zero exit code: {result.returncode}"
         )
-        logger.warning(result.stderr)
+        logger.error(message)
 
     logger.info("Application has been installed")
     return "Success"
@@ -79,7 +82,8 @@ def start():
     game_manager = manager.GameManager(payload["app_name"], payload["app_path"])
 
     try:
-        game_manager.start_game(input_args)
+        process = game_manager.start_game(input_args)
+        process.wait()
     except Exception:
         message = "Unable to start application."
         logger.error(message)

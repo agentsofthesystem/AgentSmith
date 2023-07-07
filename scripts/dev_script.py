@@ -1,4 +1,5 @@
 import os
+import platform
 import sys
 
 current_file_path = os.path.abspath(__file__)
@@ -20,20 +21,29 @@ def main():
 
     # This comes directly from the game's own example batch file.
     app_name = "VRisingServer.exe"
-    app_path = r"C:\Users\Shadow\Desktop\STEAM\vrising"
+
+    if platform.system() == "Windows":
+        app_path = r"C:\Users\Shadow\Desktop\STEAM\vrising"
+    else:
+        app_path = "/c/Users/joshu/OneDrive/Desktop/STEAM/vrising/"
+
+    persistent_data_path = os.path.join(app_path, "save-data")
+    log_file_path = os.path.join(app_path, "logs", "VRisingServer.log")
+
     input_args = (
-        f'-persistentDataPath "{app_path}\save-data"'
+        f'-persistentDataPath "{persistent_data_path}"'
         ' -serverName "My V Rising Server" '
         ' -saveName "world1" '
-        f' -logFile "{app_path}\logs\VRisingServer.log"'
+        f" -logFile {log_file_path}"
     )
 
     input_args = {
-        "-persistentDataPath": f"{app_path}\save-data",
+        "-persistentDataPath": f"{persistent_data_path}",
         "-serverName": "My Server",
         "-saveName": "world1",
-        "-logFile": f"{app_path}\logs\VRisingServer.log",
+        "-logFile": f"{log_file_path}",
     }
+
     # client.app.remove_app()
     # client.app.update_app()
 

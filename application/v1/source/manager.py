@@ -1,22 +1,35 @@
 import os
+import platform
 import psutil
 import subprocess
 
 from application.common import logger
+from application.common import toolbox
 from pysteamcmd.steamcmd import Steamcmd
 
 
 class SteamManager:
     def __init__(self, steam_install_dir) -> None:
+        if not os.path.exists(steam_install_dir):
+            os.makedirs(steam_install_dir, mode=0o777, exist_ok=True)
+
+        toolbox.recursive_chmod(steam_install_dir)
+
         self._steam = Steamcmd(steam_install_dir)
 
         self._steam.install(force=True)
 
+        toolbox.recursive_chmod(steam_install_dir)
+
         self._steamcmd_exe = self._steam.steamcmd_exe
+        self._steam_install_dir = steam_install_dir
 
     def install_steam_app(
         self, steam_id, installation_dir, user="anonymous", password=None
     ):
+        if not os.path.exists(installation_dir):
+            os.makedirs(installation_dir, mode=0o777, exist_ok=True)
+
         return self._install_gamefiles(
             gameid=steam_id,
             game_install_dir=installation_dir,
@@ -51,7 +64,15 @@ class SteamManager:
             "+quit",
         )
 
-        return subprocess.run(steamcmd_params)
+        # Need to add steamservice.so to the system path
+        if self._steam.platform == "Linux":
+            library_path = os.path.join(self._steam_install_dir, "linux64")
+            update_environ = os.environ
+            update_environ["LD_LIBRARY_PATH"] = library_path
+            return subprocess.run(steamcmd_params, env=update_environ)
+        else:
+            # Otherwise, on windows, it's expected that steam is installed.
+            return subprocess.run(steamcmd_params)
 
 
 class GameManager:
@@ -61,6 +82,7 @@ class GameManager:
         self._game_name = game_name
         self._game_path = game_path
         self._game_exe = self._game_path + os.sep + self._game_name
+        self._platform = platform.system()
 
     def check_game(self, game_name: str) -> bool:
         is_running = False
@@ -80,9 +102,18 @@ class GameManager:
                 # TODO - This might not work for every game.
                 game_command.append(f'{arg} "{input_args[arg]}"')
 
-        return subprocess.Popen(
-            game_command, creationflags=self.WIN_DETACHED_PROCESS, close_fds=True
-        )
+        if self._platform == "Windows":
+            return subprocess.Popen(
+                game_command,
+                creationflags=self.WIN_DETACHED_PROCESS,
+                close_fds=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+        else:  # Linux
+            return subprocess.Popen(
+                game_command, stderr=subprocess.PIPE, stdout=subprocess.PIPE
+            )
 
     def stop_game(self) -> None:
         pass

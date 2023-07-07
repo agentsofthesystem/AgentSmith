@@ -8,6 +8,8 @@ services:
     build: ./
     volumes:
       - "./application:/var/application"
+      #- "/c/Program Files (x86)/Steam:/c/Program Files (x86)/Steam"
+      - "./data:/var/data"
     ports:
       - "3000:3000"
     environment:

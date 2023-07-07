@@ -1,4 +1,5 @@
 import os
+import platform
 import sys
 
 current_file_path = os.path.abspath(__file__)
@@ -16,10 +17,15 @@ def main():
 
     client = Client(hostname, port=port, verbose=True)
 
-    # Example to install Vrising Game Server
-    steam_install_path = r"C:\Program Files (x86)\Steam"
     steam_id = "1829350"
-    install_path = "C:\\Users\\Shadow\\Desktop\\STEAM\\vrising"
+
+    # Example to install Vrising Game Server
+    if platform.system() == "Windows":
+        steam_install_path = r"C:\Program Files (x86)\Steam"
+        install_path = r"C:\Users\joshu\OneDrive\Desktop\STEAM\vrising"
+    else:
+        steam_install_path = "/c/Users/joshu/OneDrive/Desktop/STEAM/steam"
+        install_path = "/c/Users/joshu/OneDrive/Desktop/STEAM/vrising/"
 
     client.app.install_app(steam_install_path, steam_id, install_path)
 
