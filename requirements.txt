@@ -1,6 +1,7 @@
 black
 flask
 gunicorn
+psutil
 pydocstyle
 pysteamcmd
 python-dotenv

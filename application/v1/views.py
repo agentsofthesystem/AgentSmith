@@ -78,13 +78,12 @@ def start():
 
     game_manager = manager.GameManager(payload["app_name"], payload["app_path"])
 
-    result = game_manager.start_game(input_args)
-
-    if result.returncode > 0:
-        logger.warning(
-            f"Warning: Installation returned non-zero exit code: {result.returncode}"
-        )
-        logger.warning(result.stderr)
+    try:
+        game_manager.start_game(input_args)
+    except Exception:
+        message = "Unable to start application."
+        logger.error(message)
+        raise InvalidUsage(message, status_code=500)
 
     logger.info("Application has Started")
     return "Success"
@@ -104,9 +103,21 @@ def restart():
 
 @application.route("/app/status", methods=["GET"])
 def application_status():
-    logger.info("Application has Started")
+    logger.info("Checking on application.")
+    app_name = request.args.get("app_name", None, str)
 
-    status = {"status": "SWEET!"}
+    if app_name is None:
+        raise InvalidUsage(
+            "Error: Missing Input Argument, 'app_name'.", status_code=400
+        )
+
+    game_manager = manager.GameManager(app_name, "")
+
+    is_running = game_manager.check_game(app_name)
+
+    status = "ALIVE" if is_running else "NOT_RUNNING"
+
+    status = {"status": status}
 
     return jsonify(status)
 

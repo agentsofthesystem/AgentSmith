@@ -1,4 +1,5 @@
 import os
+import psutil
 import subprocess
 
 from application.common import logger
@@ -54,19 +55,34 @@ class SteamManager:
 
 
 class GameManager:
+    WIN_DETACHED_PROCESS = 8
+
     def __init__(self, game_name: str, game_path: str) -> None:
         self._game_name = game_name
         self._game_path = game_path
         self._game_exe = self._game_path + os.sep + self._game_name
 
-    def start_game(self, input_args=None) -> None:
-        game_command = (self._game_exe, input_args)
+    def check_game(self, game_name: str) -> bool:
+        is_running = False
 
-        logger.info("*******************************************")
-        logger.info(game_command)
-        logger.info("*******************************************")
+        if game_name in (p.name() for p in psutil.process_iter()):
+            is_running = True
 
-        return subprocess.run(game_command)
+        return is_running
+
+    def start_game(self, input_args={}) -> None:
+        game_command = [self._game_exe]
+
+        # TODO - Put a check that the game is not already running!
+
+        if len(input_args.keys()) > 0:
+            for arg in input_args:
+                # TODO - This might not work for every game.
+                game_command.append(f'{arg} "{input_args[arg]}"')
+
+        return subprocess.Popen(
+            game_command, creationflags=self.WIN_DETACHED_PROCESS, close_fds=True
+        )
 
     def stop_game(self) -> None:
         pass

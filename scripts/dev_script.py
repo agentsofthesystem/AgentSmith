@@ -20,21 +20,28 @@ def main():
 
     # This comes directly from the game's own example batch file.
     app_name = "VRisingServer.exe"
-    app_path = "C:\\Users\\Shadow\\Desktop\\STEAM\\vrising"
+    app_path = r"C:\Users\Shadow\Desktop\STEAM\vrising"
     input_args = (
-        f" -persistentDataPath {app_path}\save-data "
+        f'-persistentDataPath "{app_path}\save-data"'
         ' -serverName "My V Rising Server" '
         ' -saveName "world1" '
         f' -logFile "{app_path}\logs\VRisingServer.log"'
     )
 
+    input_args = {
+        "-persistentDataPath": f"{app_path}\save-data",
+        "-serverName": "My Server",
+        "-saveName": "world1",
+        "-logFile": f"{app_path}\logs\VRisingServer.log",
+    }
     # client.app.remove_app()
     # client.app.update_app()
 
-    client.app.start_app(app_name, app_path, input_args=input_args)
+    # client.app.start_app(app_name, app_path, input_args=input_args)
     # client.app.stop_app()
     # client.app.restart_app()
-    # client.app.get_status()
+
+    client.app.get_status(app_name)
 
     # client.access.generate_access_key()
     # client.access.verify_access_key()

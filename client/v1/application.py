@@ -46,7 +46,7 @@ class ApplicationClient(BaseClient):
         response = self.make_request(RequestTypes.POST, post_url)
         self.handle_response(response)
 
-    def start_app(self, app_name, app_path, input_args=None):
+    def start_app(self, app_name, app_path, input_args={}):
         post_url = self._urls.get_start_url()
 
         payload = {
@@ -54,8 +54,12 @@ class ApplicationClient(BaseClient):
             "app_path": app_path,
         }
 
-        if input_args:
-            payload.update({"input_args": input_args})
+        if len(input_args.keys()) > 0:
+            arg_dict = {}
+            for arg in input_args.keys():
+                arg_dict[arg] = input_args[arg]
+
+            payload.update({"input_args": arg_dict})
 
         if self._verbose:
             print("Starting Application:")
@@ -84,12 +88,14 @@ class ApplicationClient(BaseClient):
         response = self.make_request(RequestTypes.POST, post_url)
         self.handle_response(response)
 
-    def get_status(self):
+    def get_status(self, app_name: str):
         get_url = self._urls.get_status_url()
 
         if self._verbose:
             print("Obtaining Application Status:")
             print(f"Get Url: {get_url}")
 
-        response = self.make_request(RequestTypes.GET, get_url)
+        response = self.make_request(
+            RequestTypes.GET, get_url, parameter_list=[f"app_name={app_name}"]
+        )
         self.handle_response(response)
