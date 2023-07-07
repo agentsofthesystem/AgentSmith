@@ -26,16 +26,19 @@ def install():
         logger.error(message)
         raise InvalidUsage(message, status_code=400)
 
-    try:
-        steam_mgr = manager.SteamManager(payload["steam_install_path"])
-        steam_mgr.install_steam_app(
-            payload["steam_id"],
-            payload["install_dir"],
-            payload["user"],
-            payload["password"],
+    steam_mgr = manager.SteamManager(payload["steam_install_path"])
+    result = steam_mgr.install_steam_app(
+        payload["steam_id"],
+        payload["install_dir"],
+        payload["user"],
+        payload["password"],
+    )
+
+    if result.returncode > 0:
+        logger.warning(
+            f"Warning: Installation returned non-zero exit code: {result.returncode}"
         )
-    except Exception:
-        raise InvalidUsage("Unable to install steam app", status_code=500)
+        logger.warning(result.stderr)
 
     logger.info("Application has been installed")
     return "Success"

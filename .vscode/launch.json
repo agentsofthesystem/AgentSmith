@@ -5,62 +5,30 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Script: Run XBRL",
+            "name": "Python: Flask",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/scripts/run_xbrl.py",
-            "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/scripts"
-        },
-        {
-            "name": "Script: Run Indexer",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/scripts/run_indexer.py",
-            "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/scripts",
-            "subProcess": true,
-            "justMyCode": false
-        },
-        {
-            "name": "Script: Run Downloader",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/scripts/run_single_download.py",
-            "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/scripts",
-            "subProcess": true,
-            "justMyCode": false
-        },
-        {
-            "name": "Script: Run YFinance",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/scripts/run_yfinance.py",
-            "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/scripts"
-        },
-        {
-            "name": "Script: Run Visualizer",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/scripts/run_visualization.py",
-            "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/scripts"
-        },
-        {
-            "name": "Python: Celery",
-            "type": "python",
-            "module": "celery",
-            "request": "launch",
-            "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}",
+            "module": "flask",
+            "env": {
+                "FLASK_APP": "main.py",
+                "FLASK_DEBUG": "1"
+            },
             "args": [
-                "worker",
-                "-A",
-                "application.wsgi_worker:WORKER",
-                "--loglevel=INFO",
+                "run",
+                "--no-debugger",
+                "--no-reload",
+                "--port=3000"
             ],
-        }
+            "jinja": true,
+            "justMyCode": false
+        },
+        {
+            "name": "Script: Run Tester",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/scripts/test_script.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/scripts"
+        },
     ]
 }

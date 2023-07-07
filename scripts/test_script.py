@@ -20,7 +20,8 @@ def main():
 
     steam_install_path = r"C:\Program Files (x86)\Steam"
     steam_id = "1829350"
-    install_path = r"C:\Users\Shadow\Desktop\STEAM\vrising"
+    install_path = "C:\\Users\\Shadow\\Desktop\\STEAM\\vrising"
+    # install_path = f"C:\Program Files (x86)\Steam"
 
     client.app.install_app(steam_install_path, steam_id, install_path)
 

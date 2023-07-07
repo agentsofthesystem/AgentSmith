@@ -7,6 +7,7 @@ from flask import Flask
 # from flask_cors import CORS
 
 from application.common import logger
+from application.config.config import DefaultConfig
 from application.debugger import init_debugger
 from application.v1.views import application
 
@@ -15,8 +16,8 @@ def create_app(config=None):
     logger.info(f"Begin initialization.")
 
     if config is None:
-        logger.critical("Error. Cannot initialize without a config object, exiting...")
-        sys.exit(1)
+        config = DefaultConfig("python")
+        logger.critical("WARNING. Missing Configuration. Initializing with default...")
 
     CURRENT_FOLDER = os.path.dirname(__file__)
     STATIC_FOLDER = os.path.join(f"{CURRENT_FOLDER}", "static")
