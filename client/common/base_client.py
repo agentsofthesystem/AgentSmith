@@ -38,7 +38,6 @@ class BaseClient:
         if len(parameter_list) > 0:
             for i in range(0, len(parameter_list)):
                 if i == 0:
-                    print("boo")
                     request_url += f"?{parameter_list[i]}"
                 else:
                     request_url += f"&{parameter_list[i]}"

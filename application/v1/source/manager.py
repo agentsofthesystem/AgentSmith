@@ -70,10 +70,10 @@ class SteamManager:
             library_path = os.path.join(self._steam_install_dir, "linux64")
             update_environ = os.environ
             update_environ["LD_LIBRARY_PATH"] = library_path
-            return subprocess.run(steamcmd_params, env=update_environ)
+            return subprocess.Popen(steamcmd_params, env=update_environ)
         else:
             # Otherwise, on windows, it's expected that steam is installed.
-            return subprocess.run(steamcmd_params)
+            return subprocess.Popen(steamcmd_params)
 
 
 class GameManager:
@@ -102,9 +102,6 @@ class GameManager:
 
         for proc in current_procs:
             if proc == game_name:
-                is_running = True
-                break
-            elif proc in game_name:
                 is_running = True
                 break
 

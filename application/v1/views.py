@@ -30,18 +30,12 @@ def install():
 
     steam_mgr = manager.SteamManager(payload["steam_install_path"])
 
-    result = steam_mgr.install_steam_app(
+    steam_mgr.install_steam_app(
         payload["steam_id"],
         payload["install_dir"],
         payload["user"],
         payload["password"],
     )
-
-    if result.returncode > 0:
-        message = (
-            f"Warning: Installation returned non-zero exit code: {result.returncode}"
-        )
-        logger.error(message)
 
     logger.info("Application has been installed")
     return "Success"

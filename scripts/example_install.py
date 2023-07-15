@@ -21,7 +21,7 @@ def main():
 
     # Example to install Vrising Game Server
     if platform.system() == "Windows":
-        steam_install_path = r"C:\Program Files (x86)\Steam"
+        steam_install_path = r"C:\Users\joshu\OneDrive\Desktop\STEAM\steam"
         install_path = r"C:\Users\joshu\OneDrive\Desktop\STEAM\vrising"
     else:
         steam_install_path = "/c/Users/joshu/OneDrive/Desktop/STEAM/steam"

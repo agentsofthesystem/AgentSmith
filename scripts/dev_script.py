@@ -28,7 +28,7 @@ def main():
     )
 
     if platform.system() == "Windows":
-        app_path = r"C:\Users\Shadow\Desktop\STEAM\vrising"
+        app_path = r"C:\Users\joshu\OneDrive\Desktop\STEAM\vrising"
     else:
         app_path = "/c/Users/joshu/OneDrive/Desktop/STEAM/vrising"
 
@@ -42,7 +42,7 @@ def main():
     # client.app.remove_app()
     # client.app.update_app()
 
-    client.app.start_app(app_name, app_path, input_args=input_args)
+    # client.app.start_app(app_name, app_path, input_args=input_args)
     # client.app.stop_app()
     # client.app.restart_app()
 
