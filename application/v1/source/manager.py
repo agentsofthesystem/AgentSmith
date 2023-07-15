@@ -5,6 +5,7 @@ import subprocess
 
 from application.common import logger
 from application.common import toolbox
+from application.common.exceptions import GameManagerException
 from pysteamcmd.steamcmd import Steamcmd
 
 
@@ -82,37 +83,75 @@ class GameManager:
         self._game_name = game_name
         self._game_path = game_path
         self._game_exe = self._game_path + os.sep + self._game_name
+
+        self._game_exe = os.path.join(self._game_path, self._game_name)
+
         self._platform = platform.system()
+
+    @staticmethod
+    def _print_command(list_list: list):
+        output = ""
+        for item in list_list:
+            output += item + " "
+        logger.info(output)
 
     def check_game(self, game_name: str) -> bool:
         is_running = False
 
-        if game_name in (p.name() for p in psutil.process_iter()):
-            is_running = True
+        current_procs = list((p.name() for p in psutil.process_iter()))
+
+        for proc in current_procs:
+            if proc == game_name:
+                is_running = True
+                break
+            elif proc in game_name:
+                is_running = True
+                break
 
         return is_running
 
     def start_game(self, input_args={}) -> None:
+        """
+        Start a game server with the input arguments provided, if any.
+
+        Args:
+            input_args (dict): Dictionary of key value pairs to use
+            as inputs arguments.
+        """
+        if not os.path.exists(self._game_exe):
+            raise GameManagerException(
+                f"The game file does not exist: {self._game_exe}"
+            )
+
         game_command = [self._game_exe]
 
         # TODO - Put a check that the game is not already running!
 
         if len(input_args.keys()) > 0:
             for arg in input_args:
-                # TODO - This might not work for every game.
+                # TODO - This string format might not work for every game.
                 game_command.append(f'{arg} "{input_args[arg]}"')
+
+        # Get folder
+        parent_folder = os.path.dirname(self._game_exe)
 
         if self._platform == "Windows":
             return subprocess.Popen(
                 game_command,
-                creationflags=self.WIN_DETACHED_PROCESS,
+                creationflags=self.WIN_DETACHED_PROCESS,  # Use this on windows-specifically.
                 close_fds=True,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
+                cwd=parent_folder,
             )
         else:  # Linux
+            game_command.append("&")
+            self._print_command(game_command)
             return subprocess.Popen(
-                game_command, stderr=subprocess.PIPE, stdout=subprocess.PIPE
+                game_command,
+                stderr=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                cwd=parent_folder,
             )
 
     def stop_game(self) -> None:

@@ -82,14 +82,14 @@ def start():
     game_manager = manager.GameManager(payload["app_name"], payload["app_path"])
 
     try:
-        process = game_manager.start_game(input_args)
-        process.wait()
+        game_manager.start_game(input_args)
     except Exception:
         message = "Unable to start application."
         logger.error(message)
         raise InvalidUsage(message, status_code=500)
 
-    logger.info("Application has Started")
+    logger.info(f"Application Started, {payload['app_name']}")
+
     return "Success"
 
 

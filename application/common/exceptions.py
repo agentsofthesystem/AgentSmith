@@ -12,3 +12,9 @@ class InvalidUsage(Exception):
         rv = dict(self.payload or ())
         rv["message"] = self.message
         return rv
+
+
+class GameManagerException(Exception):
+    def __init__(self, message: str) -> None:
+        Exception.__init__(self)
+        self.message = message
