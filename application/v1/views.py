@@ -89,8 +89,33 @@ def start():
 
 @application.route("/app/stop", methods=["POST"])
 def stop():
-    logger.info("Application has Stopped")
-    return "Success"
+    logger.info("Stopping Application...")
+
+    payload = request.json
+
+    required_data = [
+        "app_name",
+    ]
+
+    if not set(required_data).issubset(set(payload.keys())):
+        message = "Error: Missing Required Data"
+        logger.error(message)
+        raise InvalidUsage(message, status_code=400)
+
+    game_manager = manager.GameManager(payload["app_name"], "")
+
+    try:
+        is_stopped = game_manager.stop_game(payload["app_name"])
+    except Exception:
+        message = "Unable to start application."
+        logger.error(message)
+        raise InvalidUsage(message, status_code=500)
+
+    logger.info(f"Application Stopped, {payload['app_name']}")
+
+    output = {"IS_STOPPED": "TRUE" if is_stopped else "FALSE"}
+
+    return jsonify(output)
 
 
 @application.route("/app/restart", methods=["POST"])
@@ -99,9 +124,9 @@ def restart():
     return "Success"
 
 
-@application.route("/app/status", methods=["GET"])
-def application_status():
-    logger.info("Checking on application.")
+@application.route("/app/alive", methods=["GET"])
+def is_application_alive():
+    logger.info("Checking on application heartbeat.")
     app_name = request.args.get("app_name", None, str)
 
     if app_name is None:
@@ -111,13 +136,31 @@ def application_status():
 
     game_manager = manager.GameManager(app_name, "")
 
-    is_running = game_manager.check_game(app_name)
+    alive = "ALIVE" if game_manager.game_is_found(app_name) else "NOT_FOUND"
 
-    status = "ALIVE" if is_running else "NOT_RUNNING"
+    alive = {"HEART_BEAT": alive}
 
-    status = {"status": status}
+    return jsonify(alive)
 
-    return jsonify(status)
+
+@application.route("/app/status", methods=["GET"])
+def application_status():
+    logger.info("Checking on application status information.")
+    app_name = request.args.get("app_name", None, str)
+
+    if app_name is None:
+        raise InvalidUsage(
+            "Error: Missing Input Argument, 'app_name'.", status_code=400
+        )
+
+    game_manager = manager.GameManager(app_name, "")
+
+    process_info = game_manager.game_status(app_name)
+
+    if process_info:
+        return jsonify(process_info)
+    else:
+        return jsonify("NOT_RUNNING")
 
 
 ## Key/Access Related Endpoints

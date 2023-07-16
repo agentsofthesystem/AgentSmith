@@ -95,17 +95,35 @@ class GameManager:
             output += item + " "
         logger.info(output)
 
-    def check_game(self, game_name: str) -> bool:
-        is_running = False
+    def _get_proc_by_name(self, process_name: str):
+        process = None
 
-        current_procs = list((p.name() for p in psutil.process_iter()))
+        current_procs = list((p for p in psutil.process_iter()))
 
         for proc in current_procs:
-            if proc == game_name:
-                is_running = True
+            proc_name = proc.name()
+
+            if proc_name == "" or proc_name == " ":
+                continue
+
+            if proc_name == process_name:
+                process = proc
                 break
 
-        return is_running
+        return process
+
+    def game_is_found(self, game_name: str) -> bool:
+        return True if self._get_proc_by_name(game_name) else False
+
+    def game_status(self, game_name: str):
+        process_info = None
+        process = self._get_proc_by_name(game_name)
+
+        if process:
+            process_info = process.as_dict()
+            pass
+
+        return process_info
 
     def start_game(self, input_args={}) -> None:
         """
@@ -151,5 +169,19 @@ class GameManager:
                 cwd=parent_folder,
             )
 
-    def stop_game(self) -> None:
-        pass
+    def stop_game(self, game_name: str) -> bool:
+        is_process_stopped = False
+
+        process = self._get_proc_by_name(game_name)
+
+        if process:
+            # is_process_stopped = True
+            process.terminate()
+            process.wait()
+            is_process_stopped = True
+
+        else:
+            # process is None b/c it's not there... true in this case.
+            is_process_stopped = True
+
+        return is_process_stopped

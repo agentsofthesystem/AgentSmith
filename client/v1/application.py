@@ -68,14 +68,18 @@ class ApplicationClient(BaseClient):
         response = self.make_request(RequestTypes.POST, post_url, payload=payload)
         self.handle_response(response)
 
-    def stop_app(self):
+    def stop_app(self, app_name):
         post_url = self._urls.get_stop_url()
+
+        payload = {
+            "app_name": app_name,
+        }
 
         if self._verbose:
             print("Stopping Application:")
             print(f"Post Url: {post_url}")
 
-        response = self.make_request(RequestTypes.POST, post_url)
+        response = self.make_request(RequestTypes.POST, post_url, payload=payload)
         self.handle_response(response)
 
     def restart_app(self):
@@ -93,6 +97,18 @@ class ApplicationClient(BaseClient):
 
         if self._verbose:
             print("Obtaining Application Status:")
+            print(f"Get Url: {get_url}")
+
+        response = self.make_request(
+            RequestTypes.GET, get_url, parameter_list=[f"app_name={app_name}"]
+        )
+        self.handle_response(response)
+
+    def is_app_alive(self, app_name: str):
+        get_url = self._urls.get_alive_url()
+
+        if self._verbose:
+            print("Obtaining Application Alive Status:")
             print(f"Get Url: {get_url}")
 
         response = self.make_request(

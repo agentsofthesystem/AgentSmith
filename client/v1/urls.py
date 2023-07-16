@@ -30,6 +30,9 @@ class AppUrls:
     def get_status_url(self) -> str:
         return f"{self.base_url}/app/status"
 
+    def get_alive_url(self) -> str:
+        return f"{self.base_url}/app/alive"
+
     def get_key_generation_url(self) -> str:
         return f"{self.base_url}/key/generate"
 

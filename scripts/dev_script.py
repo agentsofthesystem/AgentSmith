@@ -1,6 +1,7 @@
 import os
 import platform
 import sys
+import time
 
 current_file_path = os.path.abspath(__file__)
 parent_folder = os.path.dirname(current_file_path)
@@ -12,8 +13,6 @@ from client import Client
 
 
 def main():
-    print("Hello World!")
-
     hostname = "http://localhost"
     port = "3000"
 
@@ -43,10 +42,13 @@ def main():
     # client.app.update_app()
 
     # client.app.start_app(app_name, app_path, input_args=input_args)
-    # client.app.stop_app()
+    client.app.stop_app(app_name)
     # client.app.restart_app()
 
-    client.app.get_status(app_name)
+    # time.sleep(2)
+
+    # client.app.is_app_alive(app_name)
+    # client.app.get_status(app_name)
 
     # client.access.generate_access_key()
     # client.access.verify_access_key()
