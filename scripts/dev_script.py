@@ -19,17 +19,19 @@ def main():
     client = Client(hostname, port=port, verbose=True)
 
     # This comes directly from the game's own example batch file.
-    app_name = "VRisingServer.exe"
+    exe_name = "VRisingServer.exe"
 
-    persistent_data_path = r"C:\Users\joshu\OneDrive\Desktop\STEAM\vrising\save-data"
+    persistent_data_path = (
+        "C:\\Users\\joshu\\OneDrive\\Desktop\\STEAM\\vrising\\save_data"
+    )
     log_file_path = (
-        r"C:\Users\joshu\OneDrive\Desktop\STEAM\vrising\logs\VRisingServer.log"
+        "C:\\Users\\joshu\\OneDrive\\Desktop\\STEAM\\vrising\\logs\\VRisingServer.log"
     )
 
     if platform.system() == "Windows":
-        app_path = r"C:\Users\joshu\OneDrive\Desktop\STEAM\vrising"
+        exe_path = r"C:\Users\joshu\OneDrive\Desktop\STEAM\vrising"
     else:
-        app_path = "/c/Users/joshu/OneDrive/Desktop/STEAM/vrising"
+        exe_path = "/c/Users/joshu/OneDrive/Desktop/STEAM/vrising"
 
     input_args = {
         "-persistentDataPath": f"{persistent_data_path}",
@@ -38,17 +40,17 @@ def main():
         "-logFile": f"{log_file_path}",
     }
 
-    # client.app.remove_app()
-    # client.app.update_app()
+    # client.steam.remove_steam_app()
+    # client.steam.update_steam_app()
 
-    # client.app.start_app(app_name, app_path, input_args=input_args)
-    client.app.stop_app(app_name)
-    # client.app.restart_app()
+    client.exe.launch_executable(exe_name, exe_path, input_args=input_args)
+    # client.exe.kill_executable(exe_name)
+    # client.exe.restart_exe()
 
     # time.sleep(2)
 
-    # client.app.is_app_alive(app_name)
-    # client.app.get_status(app_name)
+    # client.exe.is_exe_alive(exe_name)
+    # client.exe.get_status(exe_name)
 
     # client.access.generate_access_key()
     # client.access.verify_access_key()

@@ -9,29 +9,53 @@ class AppUrls:
     def base_url(self) -> str:
         return self.BASE_URL.format(host_name=self._host, api_version=self._api_version)
 
+    ###############################################################################
+    ###############################################################################
+    ## Steam App Urls
+    ###############################################################################
+    ###############################################################################
+
     def get_install_url(self) -> str:
-        return f"{self.base_url}/app/install"
+        return f"{self.base_url}/steam/app/install"
 
     def get_remove_url(self) -> str:
-        return f"{self.base_url}/app/remove"
+        return f"{self.base_url}/steam/app/remove"
 
     def get_update_url(self) -> str:
-        return f"{self.base_url}/app/update"
+        return f"{self.base_url}/steam/app/update"
 
-    def get_start_url(self) -> str:
-        return f"{self.base_url}/app/start"
+    ###############################################################################
+    ###############################################################################
+    ### Generic Executable Urls
+    ###############################################################################
+    ###############################################################################
 
-    def get_stop_url(self) -> str:
-        return f"{self.base_url}/app/stop"
+    def get_exe_launch_url(self) -> str:
+        return f"{self.base_url}/exe/launch"
 
-    def get_restart_url(self) -> str:
-        return f"{self.base_url}/app/restart"
+    def get_exe_kill_url(self) -> str:
+        return f"{self.base_url}/exe/kill"
 
-    def get_status_url(self) -> str:
-        return f"{self.base_url}/app/status"
+    def get_exe_restart_url(self) -> str:
+        return f"{self.base_url}/exe/restart"
 
-    def get_alive_url(self) -> str:
-        return f"{self.base_url}/app/alive"
+    def get_exe_status_url(self) -> str:
+        return f"{self.base_url}/exe/status"
+
+    def get_exe_alive_url(self) -> str:
+        return f"{self.base_url}/exe/alive"
+
+    ###############################################################################
+    ###############################################################################
+    ## Supported Game Related Urls
+    ###############################################################################
+    ###############################################################################
+
+    ###############################################################################
+    ###############################################################################
+    ## Key/Access Related Urls
+    ###############################################################################
+    ###############################################################################
 
     def get_key_generation_url(self) -> str:
         return f"{self.base_url}/key/generate"

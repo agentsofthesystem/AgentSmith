@@ -17,7 +17,7 @@ def main():
 
     client = Client(hostname, port=port, verbose=True)
 
-    steam_id = "1829350"
+    steam_id = "1829350"  # Steam id for vrising private server
 
     # Example to install Vrising Game Server
     if platform.system() == "Windows":
@@ -27,7 +27,7 @@ def main():
         steam_install_path = "/c/Users/joshu/OneDrive/Desktop/STEAM/steam"
         install_path = "/c/Users/joshu/OneDrive/Desktop/STEAM/vrising/"
 
-    client.app.install_app(steam_install_path, steam_id, install_path)
+    client.steam.install_steam_app(steam_install_path, steam_id, install_path)
 
 
 if __name__ == "__main__":

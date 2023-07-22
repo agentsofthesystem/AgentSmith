@@ -14,7 +14,7 @@ class InvalidUsage(Exception):
         return rv
 
 
-class GameManagerException(Exception):
+class GenericExeException(Exception):
     def __init__(self, message: str) -> None:
         Exception.__init__(self)
         self.message = message
