@@ -21,11 +21,11 @@ def main():
 
     # Example to install Vrising Game Server
     if platform.system() == "Windows":
-        steam_install_path = r"C:\Users\joshu\OneDrive\Desktop\STEAM\steam"
-        install_path = r"C:\Users\joshu\OneDrive\Desktop\STEAM\vrising"
+        steam_install_path = r"C:\STEAM\steam"
+        install_path = r"C:\STEAM\vrising"
     else:
-        steam_install_path = "/c/Users/joshu/OneDrive/Desktop/STEAM/steam"
-        install_path = "/c/Users/joshu/OneDrive/Desktop/STEAM/vrising/"
+        steam_install_path = "/c/STEAM_TEST/steam"
+        install_path = "/c/STEAM_TEST/vrising"
 
     client.steam.install_steam_app(steam_install_path, steam_id, install_path)
 

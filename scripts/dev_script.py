@@ -22,16 +22,16 @@ def main():
     exe_name = "VRisingServer.exe"
 
     persistent_data_path = (
-        "C:\\Users\\joshu\\OneDrive\\Desktop\\STEAM\\vrising\\save_data"
+        "C:\\STEAM_TEST\\vrising\\save_data"
     )
     log_file_path = (
-        "C:\\Users\\joshu\\OneDrive\\Desktop\\STEAM\\vrising\\logs\\VRisingServer.log"
+        "C:\\STEAM_TEST\\vrising\\logs\\VRisingServer.log"
     )
 
     if platform.system() == "Windows":
-        exe_path = r"C:\Users\joshu\OneDrive\Desktop\STEAM\vrising"
+        exe_path = r"C:\STEAM_TEST\vrising"
     else:
-        exe_path = "/c/Users/joshu/OneDrive/Desktop/STEAM/vrising"
+        exe_path = "/c/STEAM_TEST/vrising"
 
     input_args = {
         "-persistentDataPath": f"{persistent_data_path}",
