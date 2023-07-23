@@ -1,63 +1,9 @@
-import os
-
 from flask import Blueprint, jsonify, request
 from application.common import logger
 from application.common.exceptions import InvalidUsage
 from application.v1.source.executable_manager import GenericExecutableManager
-from application.v1.source.steam_manager import SteamManager
 
-application = Blueprint("application", __name__, url_prefix="/v1")
-
-
-###############################################################################
-###############################################################################
-## Steam Manager Endpoints
-###############################################################################
-###############################################################################
-
-
-@application.route("/steam/app/install", methods=["POST"])
-def steam_app_install():
-    logger.info("Installing Steam Application")
-
-    payload = request.json
-
-    required_data = [
-        "steam_install_path",
-        "steam_id",
-        "install_dir",
-        "user",
-        "password",
-    ]
-
-    if required_data != list(payload.keys()):
-        message = "Error: Missing Required Data"
-        logger.error(message)
-        raise InvalidUsage(message, status_code=400)
-
-    steam_mgr = SteamManager(payload["steam_install_path"])
-
-    steam_mgr.install_steam_app(
-        payload["steam_id"],
-        payload["install_dir"],
-        payload["user"],
-        payload["password"],
-    )
-
-    logger.info("Steam Application has been installed")
-    return "Success"
-
-
-@application.route("/steam/app/remove", methods=["POST"])
-def steam_app_remove():
-    logger.info("Steam Application has been removed")
-    return "Success"
-
-
-@application.route("/steam/app/update", methods=["POST"])
-def steam_app_update():
-    logger.info("Steam Application has been updated")
-    return "Success"
+executable = Blueprint("executable", __name__, url_prefix="/v1")
 
 
 ###############################################################################
@@ -67,7 +13,7 @@ def steam_app_update():
 ###############################################################################
 
 
-@application.route("/exe/launch", methods=["POST"])
+@executable.route("/exe/launch", methods=["POST"])
 def launch_executable():
     logger.info("Starting Generic Executable")
 
@@ -101,7 +47,7 @@ def launch_executable():
     return "Success"
 
 
-@application.route("/exe/kill", methods=["POST"])
+@executable.route("/exe/kill", methods=["POST"])
 def kill_executable():
     logger.info("Killing Executable...")
 
@@ -121,7 +67,7 @@ def kill_executable():
     try:
         is_stopped = exe_manager.kill_executable(payload["exe_name"])
     except Exception:
-        message = "Unable to start application."
+        message = "Unable to start executable."
         logger.error(message)
         raise InvalidUsage(message, status_code=500)
 
@@ -132,15 +78,15 @@ def kill_executable():
     return jsonify(output)
 
 
-@application.route("/exe/restart", methods=["POST"])
+@executable.route("/exe/restart", methods=["POST"])
 def restart():
     logger.info("Executable has Restarted")
     return "Success"
 
 
-@application.route("/exe/status", methods=["GET"])
-def application_status():
-    logger.info("Checking on application status information.")
+@executable.route("/exe/status", methods=["GET"])
+def executable_status():
+    logger.info("Checking on executable status information.")
     exe_name = request.args.get("exe_name", None, str)
 
     if exe_name is None:
@@ -158,9 +104,9 @@ def application_status():
         return jsonify("NOT_RUNNING")
 
 
-@application.route("/exe/alive", methods=["GET"])
-def is_application_alive():
-    logger.info("Checking on application heartbeat.")
+@executable.route("/exe/alive", methods=["GET"])
+def is_executable_alive():
+    logger.info("Checking on executable heartbeat.")
     exe_name = request.args.get("exe_name", None, str)
 
     if exe_name is None:
@@ -175,29 +121,3 @@ def is_application_alive():
     alive = {"HEART_BEAT": alive}
 
     return jsonify(alive)
-
-
-###############################################################################
-###############################################################################
-## Supported Game Related Endpoints
-###############################################################################
-###############################################################################
-
-
-###############################################################################
-###############################################################################
-## Key/Access Related Endpoints
-###############################################################################
-###############################################################################
-
-
-@application.route("/key/generate", methods=["POST"])
-def key_generate():
-    logger.info("Host Generating Control Key")
-    return "Success"
-
-
-@application.route("/key/verify", methods=["POST"])
-def key_verify():
-    logger.info("Host Key Verification - Checking....")
-    return "Success"

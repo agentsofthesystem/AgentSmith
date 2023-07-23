@@ -1,15 +1,14 @@
 import os
-import sys
-import time
 
 from flask import Flask
-
-# from flask_cors import CORS
 
 from application.common import logger
 from application.config.config import DefaultConfig
 from application.debugger import init_debugger
-from application.v1.views import application
+from application.v1.blueprints.access import access
+from application.v1.blueprints.executable import executable
+from application.v1.blueprints.game import game
+from application.v1.blueprints.steam import steam
 
 
 def create_app(config=None):
@@ -40,7 +39,10 @@ def create_app(config=None):
     # CORS(app)
 
     # Register all blueprints
-    app.register_blueprint(application)
+    app.register_blueprint(access)
+    app.register_blueprint(executable)
+    app.register_blueprint(game)
+    app.register_blueprint(steam)
 
     @app.before_request
     def before_request_func():

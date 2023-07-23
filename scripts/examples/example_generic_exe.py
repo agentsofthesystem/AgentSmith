@@ -36,20 +36,17 @@ def main():
         "-logFile": f"{log_file_path}",
     }
 
-    # client.steam.remove_steam_app()
-    # client.steam.update_steam_app()
-
     client.exe.launch_executable(exe_name, exe_path, input_args=input_args)
-    # client.exe.kill_executable(exe_name)
+
+    time.sleep(5)
+    client.exe.is_exe_alive(exe_name)
+    time.sleep(5)
+    client.exe.get_status(exe_name)
+    time.sleep(5)
+    client.exe.kill_executable(exe_name)
+
+    # Not implemented
     # client.exe.restart_exe()
-
-    # time.sleep(2)
-
-    # client.exe.is_exe_alive(exe_name)
-    # client.exe.get_status(exe_name)
-
-    # client.access.generate_access_key()
-    # client.access.verify_access_key()
 
 
 if __name__ == "__main__":
