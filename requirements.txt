@@ -3,6 +3,7 @@ flask
 gunicorn
 psutil
 pydocstyle
+pyqt5
 pysteamcmd
 python-dotenv
 requests
