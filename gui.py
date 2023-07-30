@@ -102,6 +102,5 @@ if __name__ == '__main__':
     _arg.apply()
     
     if _arg._run_gui:
-        app = QApplication(sys.argv)
-        ex = GuiApp(_globals._VERSION)
-        sys.exit(app.exec_())
+        gui = GuiApp()
+        gui.initialize()

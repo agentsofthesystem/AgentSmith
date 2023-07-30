@@ -1,42 +1,35 @@
-from PyQt5.QtWidgets import QMainWindow, QHBoxLayout, QAction, QLayout, QWidget
+import os 
+
+from PyQt5.QtWidgets import QMainWindow, QHBoxLayout, QAction, QLayout, QWidget, QSystemTrayIcon, QMenu, QApplication
 from PyQt5.QtGui import QIcon
 
 
-class GuiApp(QMainWindow):
+class GuiApp():
 
-    def __init__(self, ver):
-        super().__init__()
+    def initialize(self):
         
-        self.title = 'Game Keeper App v%s' % ver
+        app = QApplication([])
+        app.setQuitOnLastWindowClosed(False)
         
-        self.left = 50
-        self.top = 50
-        self.width = 1280
-        self.height = 960
+        # Adding an icon
+        icon = QIcon(r"C:\projects\pgsm_agent\application\gui\resources\keeper.png")
         
-        self.initialize_ui()
+        # Adding item on the menu bar
+        tray = QSystemTrayIcon()
+        tray.setIcon(icon)
+        tray.setVisible(True)
         
-    def initialize_ui(self):
+        # Creating the options
+        menu = QMenu()
+        option1 = QAction("Games")
+        menu.addAction(option1)
         
-        self.setWindowTitle(self.title)
+        # To quit the app
+        quit = QAction("Quit")
+        quit.triggered.connect(app.quit)
+        menu.addAction(quit)
         
-        self.setGeometry(self.left, self.top, self.width, self.height)
+        # Adding options to the System Tray
+        tray.setContextMenu(menu)
 
-        self.addWidgetItems()
-
-        mainMenu = self.menuBar()
-        fileMenu = mainMenu.addMenu(' &File')
-
-        exitButton = QAction(QIcon('exit24.png'), ' &Exit', self)
-        exitButton.setShortcut('Ctrl+Q')
-        exitButton.setStatusTip('Exit application')
-        exitButton.triggered.connect(self.close)
-        fileMenu.addAction(exitButton)
-
-        
-        self.show()
-        
-        
-    def addWidgetItems(self):
-              
-        self._main_widget = QWidget(self)
+        app.exec_()
