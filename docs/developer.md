@@ -23,7 +23,9 @@ used which is the preference of the developer.
 ### WSL2 with Ubuntu
 
 1. sudo apt update
-2. sudo apt install python3 python3-venv python3-pip lib32gcc-s1
+2. sudo apt install python3 python3-venv python3-pip lib32gcc-s1 
+3. sudo apt install libgl1 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 \
+   libxcb-shape0 libxcb-xinerama0 libxcb-xkb1 libxkbcommon-x11-dev
 
 ## Windows without WSL2
 
