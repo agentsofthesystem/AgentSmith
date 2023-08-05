@@ -5,10 +5,10 @@ from flask import Flask
 from application.common import logger
 from application.config.config import DefaultConfig
 from application.debugger import init_debugger
-from application.v1.blueprints.access import access
-from application.v1.blueprints.executable import executable
-from application.v1.blueprints.game import game
-from application.v1.blueprints.steam import steam
+from application.api.v1.blueprints.access import access
+from application.api.v1.blueprints.executable import executable
+from application.api.v1.blueprints.game import game
+from application.api.v1.blueprints.steam import steam
 
 
 def create_app(config=None):
@@ -34,9 +34,6 @@ def create_app(config=None):
 
     # Set up debugging if the user asked for it.
     init_debugger(app)
-
-    # Set up CORS
-    # CORS(app)
 
     # Register all blueprints
     app.register_blueprint(access)

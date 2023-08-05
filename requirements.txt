@@ -5,6 +5,7 @@ psutil
 pydocstyle
 pyqt5
 pysteamcmd
+pytest
 python-dotenv
 requests
 validators==0.20.0

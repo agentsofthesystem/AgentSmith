@@ -1,4 +1,4 @@
-from application.v1.source.games.base import BaseGame
+from application.api.v1.source.games.game_base import BaseGame
 
 
 class VrisingGame(BaseGame):

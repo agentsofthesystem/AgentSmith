@@ -6,7 +6,7 @@ class BaseGame:
     DEFAULT_WAIT_PERIOD = 5
 
     def __init__(self) -> None:
-        pass
+        self._game_args = []
 
     @abc.abstractmethod
     def startup(self) -> None:
