@@ -4,10 +4,12 @@ import sys
 import time
 
 current_file_path = os.path.abspath(__file__)
-parent_folder = os.path.dirname(current_file_path)
-app_folder = os.path.dirname(parent_folder)
+examples_folder = os.path.dirname(current_file_path)
+scripts_folder = os.path.dirname(examples_folder)
+app_folder = os.path.dirname(scripts_folder)
 
 sys.path.append(app_folder)
+
 
 from client import Client
 

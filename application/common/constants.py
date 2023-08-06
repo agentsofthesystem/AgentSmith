@@ -7,4 +7,6 @@ class DeployTypes(Enum):
     PYTHON = "python"
 
 
+STARTUP_BATCH_FILE_NAME = "startup.bat"
+
 _DeployTypes = DeployTypes

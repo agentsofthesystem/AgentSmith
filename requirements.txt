@@ -1,5 +1,6 @@
 black
 flask
+Flask-SQLAlchemy
 gunicorn
 psutil
 pydocstyle

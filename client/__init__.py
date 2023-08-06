@@ -4,6 +4,7 @@ import validators
 from client.v1.urls import AppUrls
 from client.v1.access import AccessClient
 from client.v1.executable import GenericExecutableClient
+from client.v1.game import SupportedGameClient
 from client.v1.steam import SteamGameClient
 
 
@@ -21,4 +22,4 @@ class Client:
         self.access = AccessClient(urls, verbose)
         self.steam = SteamGameClient(urls, verbose)
         self.exe = GenericExecutableClient(urls, verbose)
-        # self.game = SupportedGameClient(urls, verbose)  # TODO - Uncomment when this is up.
+        self.game = SupportedGameClient(urls, verbose)

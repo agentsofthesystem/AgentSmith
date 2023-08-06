@@ -2,9 +2,12 @@
 .coverage
 venv/*
 .env
-
 *__pycache__*
 
+# Database
+instance/*
+
+# Steam Cmd Downloads
 steamcmd.zip
 steamcmd.tar.gz
 

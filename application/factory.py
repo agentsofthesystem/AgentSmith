@@ -5,6 +5,7 @@ from flask import Flask
 from application.common import logger
 from application.config.config import DefaultConfig
 from application.debugger import init_debugger
+from application.extensions import DATABASE
 from application.api.v1.blueprints.access import access
 from application.api.v1.blueprints.executable import executable
 from application.api.v1.blueprints.game import game
@@ -41,9 +42,16 @@ def create_app(config=None):
     app.register_blueprint(game)
     app.register_blueprint(steam)
 
-    @app.before_request
-    def before_request_func():
-        print("Executing Before Request Funcion!")
+    # @app.before_request
+    # def before_request_func():
+    #     print("Executing Before Request Funcion!")
+
+    DATABASE.init_app(app)
+
+    with app.app_context():
+        from application.api.v1.source.models.games import Games
+
+        DATABASE.create_all()
 
     logger.info(f"{app.config['APP_NAME']} has successfully initialized.")
 

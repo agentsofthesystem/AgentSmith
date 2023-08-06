@@ -5,3 +5,22 @@ from client.v1.urls import AppUrls
 class SupportedGameClient(BaseClient):
     def __init__(self, urls: AppUrls, verbose: bool) -> None:
         super(SupportedGameClient, self).__init__(urls, verbose)
+
+    def game_startup(self, game_name, input_args={}):
+        post_url = self._urls.get_game_startup_url(game_name)
+
+        payload = {}
+
+        if len(input_args.keys()) > 0:
+            arg_dict = {}
+            for arg in input_args.keys():
+                arg_dict[arg] = input_args[arg]
+
+            payload.update({"input_args": arg_dict})
+
+        if self._verbose:
+            print(f"Starting Game: {game_name}")
+            print(f"Post Url: {post_url}")
+
+        response = self.make_request(RequestTypes.POST, post_url, payload=payload)
+        self.handle_response(response)

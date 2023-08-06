@@ -1,11 +1,17 @@
 from application.common import toolbox
 
 
-from pysteamcmd.steamcmd import Steamcmd
-
-
 import os
 import subprocess
+
+from datetime import datetime
+from pysteamcmd.steamcmd import Steamcmd
+from sqlalchemy import exc
+
+from application.api.v1.source.models.games import Games
+from application.common import logger
+from application.common.exceptions import InvalidUsage
+from application.extensions import DATABASE
 
 
 class SteamManager:
@@ -29,6 +35,31 @@ class SteamManager:
     ):
         if not os.path.exists(installation_dir):
             os.makedirs(installation_dir, mode=0o777, exist_ok=True)
+
+        # If exists in DB this is the record
+        game_qry = Games.query.filter_by(game_steam_id=steam_id)
+
+        # If the object exists, then the user has already attempted installation once. Do not make a new
+        # databse record again.
+        if not game_qry.first():
+            new_game = Games()
+            new_game.game_steam_id = int(steam_id)
+            new_game.game_install_dir = installation_dir
+            DATABASE.session.add(new_game)
+        else:
+            # If it exists, just update the timestamp so the user knows the last time this game was installed/updated.
+            time_now = datetime.now()
+            update_dict = {"game_last_update": time_now}
+            game_qry.update(update_dict)
+
+        try:
+            DATABASE.session.commit()
+        except exc.SQLAlchemyError:
+            message = (
+                "SteamManager: install_steam_app -> Error: Failed to update database."
+            )
+            logger.critical(message)
+            raise InvalidUsage(message, status_code=500)
 
         return self._install_gamefiles(
             gameid=steam_id,

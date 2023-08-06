@@ -6,8 +6,8 @@ from application.common.constants import _DeployTypes
 
 class DefaultConfig:
     # App name and secret
-    APP_NAME = "PGSM_AGENT"
-    APP_PRETTY_NAME = "Private Game Server Manager - Agent"
+    APP_NAME = "GAME_KEEPER"
+    APP_PRETTY_NAME = "Game Keeper Agent"
     SECRET_KEY = "abc123"
     DEPLOYMENT_TYPE = "docker_compose"  # also supports kubernetes
 
@@ -16,6 +16,8 @@ class DefaultConfig:
     ENV = "development"
     FLASK_RUN_HOST = "0.0.0.0"
     FLASK_RUN_PORT = "3000"
+
+    SQLALCHEMY_DATABASE_URI = f"sqlite:///{APP_NAME}.db"
 
     def __init__(self, deploy_type):
         configuration_options = [el.value for el in _DeployTypes]

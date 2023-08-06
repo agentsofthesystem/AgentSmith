@@ -1,23 +1,45 @@
 class GameArgument:
     FORMAT_STR = "{arg} {val}"
+    FORMAT_STR_NO_EQUAL_WITH_QUOTES = '{arg} "{val}"'
     FORMAT_STR_WITH_EQUALS = "{arg}={val}"
+    FORMAT_STR_WITH_EQUALS_AND_QUOTES = '{arg}="{val}"'
 
-    def __init__(self, argument, value, required=True, use_equals=False) -> None:
+    def __init__(
+        self, argument, value=None, required=False, use_equals=False, use_quotes=True
+    ) -> None:
         self._arg = argument
         self._value = value
         self._required = required
         self._use_equals = use_equals
+        self._use_quotes = use_quotes
 
         self._formatted_arg = ""
 
+    def is_requried(self) -> bool:
+        return self._required
+
     def _format_string(self) -> str:
-        if self._use_equals:
+        """
+        Four possibilities / combos
+            # use_equals = True, use_quotes = True    # FORMAT_STR_WITH_EQUALS_AND_QUOTES
+            # use_equals = True, use_quotes = False   # FORMAT_STR_WITH_EQUALS
+            # use_equals = False, use_quotes = True   # FORMAT_STR_NO_EQUAL_WITH_QUOTES
+            # use_equals = False, use_quotes = False  # FORMAT_STR
+        """
+        if self._use_equals and self._use_quotes:
+            self._formatted_arg = self.FORMAT_STR_WITH_EQUALS_AND_QUOTES.format(
+                arg=self._arg, val=self._value
+            )
+        elif self._use_equals and not self._use_quotes:
             self._formatted_arg = self.FORMAT_STR_WITH_EQUALS.format(
+                arg=self._arg, val=self._value
+            )
+        elif not self._use_equals and self._use_quotes:
+            self._formatted_arg = self.FORMAT_STR_NO_EQUAL_WITH_QUOTES.format(
                 arg=self._arg, val=self._value
             )
         else:
             self._formatted_arg = self.FORMAT_STR.format(arg=self._arg, val=self._value)
-
         return self._formatted_arg
 
     def __str__(self) -> str:
