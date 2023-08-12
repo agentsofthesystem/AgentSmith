@@ -24,3 +24,13 @@ class SupportedGameClient(BaseClient):
 
         response = self.make_request(RequestTypes.POST, post_url, payload=payload)
         self.handle_response(response)
+
+    def game_shutdown(self, game_name):
+        post_url = self._urls.get_game_shutdown_url(game_name)
+
+        if self._verbose:
+            print(f"Shutting down Game: {game_name}")
+            print(f"Post Url: {post_url}")
+
+        response = self.make_request(RequestTypes.POST, post_url)
+        self.handle_response(response)

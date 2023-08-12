@@ -1,14 +1,16 @@
 import os
 import subprocess
+import time
 
 from jinja2 import Environment, FileSystemLoader
-from multiprocessing import Process
 
 from application.api.v1.source.models.games import Games
 from application.api.v1.source.games.game_argument import GameArgument
 from application.api.v1.source.games.game_base import BaseGame
 from application.api.v1.source.games import utils
 from application.common import logger, constants
+from application.common.toolbox import _get_proc_by_name
+from application.extensions import DATABASE
 
 
 class VrisingGame(BaseGame):
@@ -33,13 +35,13 @@ class VrisingGame(BaseGame):
             GameArgument("-logFile", value=None, required=True, use_quotes=True)
         )
 
-    def run_game(self, command, working_dir) -> None:
-        subprocess.call(
+    def _run_game(self, command, working_dir) -> None:
+        return subprocess.call(
             command,
             cwd=working_dir,
             creationflags=subprocess.DETACHED_PROCESS,  # Use this on windows-specifically.
             close_fds=True,
-            # shell=True,
+            shell=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
@@ -64,7 +66,8 @@ class VrisingGame(BaseGame):
         logger.debug(output_from_parsed_template)
 
         # In theory, the software has already check that the game is installed, so no check/guard needed.
-        game_obj = Games.query.filter_by(game_steam_id=self._game_steam_id).first()
+        game_qry = Games.query.filter_by(game_steam_id=self._game_steam_id)
+        game_obj = game_qry.first()
         game_install_dir = game_obj.game_install_dir
 
         # Need game install locatoin to write batch file.
@@ -81,18 +84,36 @@ class VrisingGame(BaseGame):
             myfile.write(output_from_parsed_template)
 
         # Call the batch file on another process as to not block this one.
-        p = Process(
-            target=self.run_game,
-            args=(
-                full_path_startup_script,
-                game_install_dir,
-            ),
-            name=self._game_name,
-        )
-        p.start()
+        command = f'START /MIN CMD.EXE /C "{full_path_startup_script}"'
+        result = self._run_game(command, game_install_dir)
 
-        # p.pid
-        # TODO - Store PID in database, so when a shutdown or or the app closes then it can be shutoff cleanly too.
+        time.sleep(1)
+
+        process = _get_proc_by_name(self._game_executable)
+
+        logger.info(result)
+        logger.info("Process:")
+        logger.info(process)
+
+        update_dict = {"game_pid": int(process.pid)}
+
+        game_qry.update(update_dict)
+        DATABASE.session.commit()
 
     def shutdown(self) -> None:
-        super().shutdown()
+        game_qry = Games.query.filter_by(game_steam_id=self._game_steam_id)
+        game_obj = game_qry.first()
+        game_pid = game_obj.game_pid
+
+        process = _get_proc_by_name(self._game_executable)
+
+        if process:
+            logger.info(process)
+            logger.info(game_pid)
+
+            process.terminate()
+            process.wait()
+
+            update_dict = {"game_pid": 0}
+            game_qry.update(update_dict)
+            DATABASE.session.commit()

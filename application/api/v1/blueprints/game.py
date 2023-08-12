@@ -61,3 +61,28 @@ def game_startup(game_name):
     game.startup()
 
     return jsonify("Success")
+
+
+@game.route("/game/shutdown/<string:game_name>", methods=["POST"])
+def game_shutdown(game_name):
+    game_name_upper = game_name.upper()
+
+    if not _is_supported_game(game_name_upper):
+        message = f"/game/startup - {game_name} - is not a suppported game."
+        logger.error(message)
+        raise InvalidUsage(message, status_code=400)
+
+    if game_name_upper == SupportedGameTypes.VRISING.value:
+        game = VrisingGame()
+
+    logger.info("Shutting down game server")
+
+    # Cannot shutdown a game that does not exist!
+    if not game._is_game_installed():
+        message = f"/game/startup - Error: {game_name} is not installed. The user must install first!"
+        logger.error(message)
+        raise InvalidUsage(message, status_code=400)
+
+    game.shutdown()
+
+    return jsonify("Success")

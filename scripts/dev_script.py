@@ -37,6 +37,10 @@ def main():
 
     client.game.game_startup(game_name, input_args=input_args)
 
+    time.sleep(30)
+
+    client.game.game_shutdown(game_name)
+
 
 if __name__ == "__main__":
     main()

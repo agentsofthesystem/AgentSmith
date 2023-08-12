@@ -1,9 +1,9 @@
 import os
 import platform
-import psutil
 import subprocess
 
 from application.common import logger
+from application.common.toolbox import _get_proc_by_name
 from application.common.exceptions import GenericExeException
 
 
@@ -24,29 +24,12 @@ class GenericExecutableManager:
             output += item + " "
         logger.info(output)
 
-    def _get_proc_by_name(self, process_name: str):
-        process = None
-
-        current_procs = list((p for p in psutil.process_iter()))
-
-        for proc in current_procs:
-            proc_name = proc.name()
-
-            if proc_name == "" or proc_name == " ":
-                continue
-
-            if proc_name == process_name:
-                process = proc
-                break
-
-        return process
-
     def executable_is_found(self, exe_name: str) -> bool:
-        return True if self._get_proc_by_name(exe_name) else False
+        return True if _get_proc_by_name(exe_name) else False
 
     def executable_status(self, exe_name: str):
         process_info = None
-        process = self._get_proc_by_name(exe_name)
+        process = _get_proc_by_name(exe_name)
 
         if process:
             process_info = process.as_dict()
@@ -105,7 +88,7 @@ class GenericExecutableManager:
     def kill_executable(self, exe_name: str) -> bool:
         is_process_stopped = False
 
-        process = self._get_proc_by_name(exe_name)
+        process = _get_proc_by_name(exe_name)
 
         if process:
             # is_process_stopped = True
