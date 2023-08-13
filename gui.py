@@ -91,6 +91,6 @@ if __name__ == "__main__":
     _arg = MainArgParse()
     _arg.apply()
 
-    if _arg._run_gui:
-        gui = GuiApp()
-        gui.initialize()
+    gui_globals = GuiGlobals()
+    gui = GuiApp(gui_globals)
+    gui.initialize(with_server=False)

@@ -10,3 +10,4 @@ class GuiGlobals:
         """
 
         self._VERSION = "_alpha"
+        self._FLASK_APP = None

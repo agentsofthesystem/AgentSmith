@@ -40,7 +40,7 @@ class MainArgParse(object):
         self.psr.parse_args(args=self._sort_args(), namespace=self)
 
     def apply(self):
-        config = DefaultConfig("docker_compose")
+        config = DefaultConfig("python")
         config.obtain_environment_variables()
 
         self.app = create_app(config=config)
