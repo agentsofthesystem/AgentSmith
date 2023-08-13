@@ -23,6 +23,7 @@ class GuiApp:
 
         app = create_app(config=config)
         app.debug = False
+        app.config['ENV'] = "production"
 
         return app
 
