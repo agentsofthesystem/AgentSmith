@@ -31,7 +31,7 @@ class MainArgParse:
 
         self._add_generic_args(psr)
 
-        self._add_subparser(psr)
+        # self._add_subparser(psr)
 
         if len(sys.argv) == 1:
             psr.print_help()
@@ -88,8 +88,8 @@ if __name__ == "__main__":
     """
     Main script entry point
     """
-    _arg = MainArgParse()
-    _arg.apply()
+    # _arg = MainArgParse()
+    # _arg.apply()
 
     gui_globals = GuiGlobals()
     gui = GuiApp(gui_globals)

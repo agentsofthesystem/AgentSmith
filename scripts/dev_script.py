@@ -35,11 +35,13 @@ def main():
         "-logFile": f"{log_file_path}",
     }
 
-    client.game.game_startup(game_name, input_args=input_args)
+    # client.game.game_startup(game_name, input_args=input_args)
 
-    time.sleep(30)
+    # time.sleep(30)
 
-    client.game.game_shutdown(game_name)
+    # client.game.game_shutdown(game_name)
+    schema = client.game.get_games_schema()
+    print(schema)
 
 
 if __name__ == "__main__":

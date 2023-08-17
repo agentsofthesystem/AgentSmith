@@ -51,6 +51,12 @@ class AppUrls:
     ###############################################################################
     ###############################################################################
 
+    def get_all_games_url(self) -> str:
+        return f"{self.base_url}/games"
+
+    def get_games_schmea_url(self) -> str:
+        return f"{self.base_url}/games/schema"
+
     def get_game_startup_url(self, game_name) -> str:
         return f"{self.base_url}/game/startup/{game_name}"
 

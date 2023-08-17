@@ -5,12 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Flask",
+            "name": "Python: Server",
             "type": "python",
             "request": "launch",
             "module": "flask",
             "env": {
-                "FLASK_APP": "main.py",
+                "FLASK_APP": "server.py",
                 "FLASK_DEBUG": "1"
             },
             "args": [
@@ -23,12 +23,13 @@
             "justMyCode": false
         },
         {
-            "name": "Script: Run Tester",
+            "name": "Python: Gui",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/scripts/test_script.py",
+            "program": "${workspaceFolder}/gui.py",
+            "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/scripts"
+            "justMyCode": true
         },
     ]
 }

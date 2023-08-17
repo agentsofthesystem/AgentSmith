@@ -3,6 +3,7 @@ from flask import Blueprint, request, jsonify
 
 from application.common import logger
 from application.common.exceptions import InvalidUsage
+from application.api.v1.source.games import utils
 from application.api.v1.source.games.vrising_game import VrisingGame
 
 game = Blueprint("game", __name__, url_prefix="/v1")
@@ -21,6 +22,16 @@ class SupportedGameTypes(Enum):
 @staticmethod
 def _is_supported_game(game_name):
     return game_name in SupportedGameTypes._value2member_map_
+
+
+@game.route("/games", methods=["GET"])
+def get_all_games():
+    return jsonify(utils.get_all_games())
+
+
+@game.route("/games/schema", methods=["GET"])
+def get_game_schema():
+    return jsonify(utils.get_games_schema())
 
 
 @game.route("/game/startup/<string:game_name>", methods=["POST"])
