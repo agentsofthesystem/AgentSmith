@@ -23,7 +23,7 @@ class GuiApp:
 
         app = create_app(config=config)
         app.debug = False
-        app.config['ENV'] = "production"
+        app.config["ENV"] = "production"
 
         return app
 
@@ -51,6 +51,7 @@ class GuiApp:
         current_file = os.path.abspath(__file__)
         current_folder = os.path.dirname(current_file)
         icon_path = os.path.join(current_folder, "resources", "keeper.png")
+        print(f"Expecting Icon Path to be: {icon_path}")
         icon = QIcon(icon_path)
 
         # Adding item on the menu bar

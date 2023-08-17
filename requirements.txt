@@ -4,6 +4,7 @@ Flask-SQLAlchemy
 gunicorn
 psutil
 pydocstyle
+pyinstaller
 pyqt5
 pysteamcmd
 pytest

@@ -11,3 +11,7 @@ instance/*
 steamcmd.zip
 steamcmd.tar.gz
 
+# Package files from pyinstalller
+build/
+dist/
+launch.spec

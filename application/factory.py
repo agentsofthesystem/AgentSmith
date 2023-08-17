@@ -55,6 +55,6 @@ def create_app(config=None):
 
         DATABASE.create_all()
 
-    logger.info(f"{flask_app.config['APP_NAME']} has successfully initialized.")
+    logger.info(f"{flask_app.config['APP_NAME']} has been successfully created.")
 
     return flask_app
