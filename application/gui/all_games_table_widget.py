@@ -1,3 +1,5 @@
+import requests
+
 from PyQt5.QtWidgets import (
     QWidget,
     QTableWidget,
@@ -26,7 +28,8 @@ class AllGamesTableWindow(QMainWindow):
         self.width = 1280
         self.height = 960
 
-        self.init_ui()
+        self._initialized = False
+        self._table_widget = AllGamesTableWidget(self)
 
     def init_ui(self):
         self.setWindowTitle(self.title)
@@ -44,10 +47,11 @@ class AllGamesTableWindow(QMainWindow):
         exitButton.triggered.connect(self.close)
         fileMenu.addAction(exitButton)
 
+        self._table_widget.init_ui()
+        self._initialized = True
+
     def add_widget_items(self):
         self._main_widget = QWidget(self)
-
-        self._table_widget = AllGamesTableWidget(self)
 
         self._main_layout = QHBoxLayout(self._main_widget)
         self._main_layout.sizeConstraint = QLayout.SetDefaultConstraint
@@ -65,8 +69,6 @@ class AllGamesTableWidget(QWidget):
 
         self._num_cols = 0
 
-        self.init_ui()
-
     def init_ui(self):
         self.layout = QVBoxLayout()
 
@@ -74,7 +76,11 @@ class AllGamesTableWidget(QWidget):
 
         # Get schema from server and populate labesl and column count.
         # TODO - Make the backend serve up "pretty names"
-        cols = self._client.game.get_games_schema()
+        # try:
+        try:
+            cols = self._client.game.get_games_schema()
+        except requests.exceptions.ConnectionError:
+            cols = ["ERROR"]
 
         self._num_cols = len(cols)
         self.game_table.setColumnCount(self._num_cols)
@@ -87,8 +93,11 @@ class AllGamesTableWidget(QWidget):
         self.update_table()
 
     def update_table(self):
-        game_data = self._client.game.get_games()
-        all_games = game_data["items"]
+        try:
+            game_data = self._client.game.get_games()
+            all_games = game_data["items"]
+        except requests.exceptions.ConnectionError:
+            all_games = [{"ERROR": "Connection Error"}]
 
         num_rows = len(all_games)
         self.game_table.setRowCount(num_rows)

@@ -46,7 +46,10 @@ class GuiApp:
         self._gui_app.quit()
 
     def _launch_all_games_menu(self):
+        if not self._all_tables_table._initialized:
+            self._all_tables_table.init_ui()
         self._all_tables_table.show()
+        self._all_tables_table._table_widget.update_table()
 
     def _test_func(self):
         print("Test Function!")
