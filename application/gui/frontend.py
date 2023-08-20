@@ -7,8 +7,9 @@ from PyQt5.QtGui import QIcon
 
 from application.config.config import DefaultConfig
 from application.gui.globals import GuiGlobals
-from application.gui.all_games_table_widget import AllGamesTableWindow
+from application.gui.game_manager import GameManagerWindow
 from application.factory import create_app
+from client import Client
 
 
 class GuiApp:
@@ -16,11 +17,18 @@ class GuiApp:
         # Globals
         self._globals = globals_obj
         self._globals._FLASK_APP = self._create_backend()
+        self._globals._client = Client(
+            "http://" + self._globals._server_host,
+            self._globals._server_port,
+            verbose=False,
+        )
 
         # Declare variables
-        self._gui_app = None
+        self._gui_app = QApplication([])
         self._server_thread = None
-        self._all_tables_table = None
+
+        # Instantiate this last always!
+        self._game_manager = GameManagerWindow(self._globals)
 
     def _create_backend(self) -> Flask:
         config = DefaultConfig("python")
@@ -45,20 +53,17 @@ class GuiApp:
     def quit_gui(self):
         self._gui_app.quit()
 
-    def _launch_all_games_menu(self):
-        if not self._all_tables_table._initialized:
-            self._all_tables_table.init_ui()
-        self._all_tables_table.show()
-        self._all_tables_table._table_widget.update_table()
+    def _launch_game_manager(self):
+        if not self._game_manager._initialized:
+            self._game_manager.init_ui()
+        self._game_manager.show()
+        self._game_manager._game_summary.update_table()
 
     def _test_func(self):
         print("Test Function!")
 
-    def initialize(self, with_server=False):
-        self._gui_app = QApplication([])
+    def initialize(self, with_server=False, testing_mode=False):
         self._gui_app.setQuitOnLastWindowClosed(False)
-
-        self._all_tables_table = AllGamesTableWindow()
 
         # Adding an icon
         current_file = os.path.abspath(__file__)
@@ -76,16 +81,19 @@ class GuiApp:
 
         main_menu = QMenu()
 
-        all_games = QAction("AllGames")
-        all_games.triggered.connect(self._launch_all_games_menu)
+        all_games = QAction("Game Manager")
+        all_games.triggered.connect(self._launch_game_manager)
         main_menu.addAction(all_games)
 
-        games = QAction("Games")
-        games.triggered.connect(self._test_func)
-        main_menu.addAction(games)
+        # Installed Games Menu & Submenues.
+        sub_menu1 = QMenu("Installed Games", parent=main_menu)
+        installed1 = QAction("Game 1")
+        installed2 = QAction("Game 2")
+        sub_menu1.addAction(installed1)
+        sub_menu1.addAction(installed2)
+        main_menu.addMenu(sub_menu1)
 
         # To quit the app
-        menu3 = QMenu()
         quit = QAction("Quit")
         quit.triggered.connect(self.quit_gui)
         main_menu.addAction(quit)
@@ -94,5 +102,8 @@ class GuiApp:
 
         if with_server:
             self._spawn_server_on_thread()
+
+        if testing_mode:
+            self._launch_game_manager()
 
         self._gui_app.exec_()

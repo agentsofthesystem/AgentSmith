@@ -5,9 +5,9 @@ import time
 from jinja2 import Environment, FileSystemLoader
 
 from application.api.v1.source.models.games import Games
-from application.api.v1.source.games.game_argument import GameArgument
-from application.api.v1.source.games.game_base import BaseGame
-from application.api.v1.source.games import utils
+from application.api.v1.source.games.common.game_argument import GameArgument
+from application.api.v1.source.games.common.game_base import BaseGame
+from application.api.v1.source.games.common import utils
 from application.common import logger, constants
 from application.common.toolbox import _get_proc_by_name
 from application.extensions import DATABASE
@@ -18,6 +18,7 @@ class VrisingGame(BaseGame):
         super(VrisingGame, self).__init__()
 
         self._game_name = "vrising"
+        self._game_pretty_name = "V Rising"
         self._game_executable = "VRisingServer.exe"
         self._game_steam_id = "1829350"
 

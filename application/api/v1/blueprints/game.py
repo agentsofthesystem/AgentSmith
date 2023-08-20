@@ -3,7 +3,7 @@ from flask import Blueprint, request, jsonify
 
 from application.common import logger
 from application.common.exceptions import InvalidUsage
-from application.api.v1.source.games import utils
+from application.api.v1.source.games.common import utils
 from application.api.v1.source.games.vrising_game import VrisingGame
 
 game = Blueprint("game", __name__, url_prefix="/v1")

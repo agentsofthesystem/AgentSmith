@@ -31,5 +31,14 @@
             "console": "integratedTerminal",
             "justMyCode": true
         },
+        {
+            "name": "Python: Object Scanner",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/scripts/object_scanner.py",
+            "cwd": "${workspaceFolder}/scripts",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
     ]
 }

@@ -93,4 +93,4 @@ if __name__ == "__main__":
 
     gui_globals = GuiGlobals()
     gui = GuiApp(gui_globals)
-    gui.initialize(with_server=False)
+    gui.initialize(with_server=False, testing_mode=False)
