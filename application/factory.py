@@ -2,7 +2,7 @@ import os
 
 from flask import Flask
 
-from application.common import logger
+from application.common import logger, constants
 from application.config.config import DefaultConfig
 from application.debugger import init_debugger
 from application.extensions import DATABASE
@@ -11,6 +11,21 @@ from application.api.v1.blueprints.app import app
 from application.api.v1.blueprints.executable import executable
 from application.api.v1.blueprints.game import game
 from application.api.v1.blueprints.steam import steam
+from application.api.v1.source.models.games import Games
+from application.api.v1.source.models.settings import Settings
+
+
+def _seed_starter_data():
+    steam_setting_obj = Settings.query.filter_by(
+        setting_name=constants.STARTUP_STEAM_SETTING_NAME
+    ).first()
+
+    if steam_setting_obj is None:
+        new_setting = Settings()
+        new_setting.setting_name = constants.STARTUP_STEAM_SETTING_NAME
+        new_setting.setting_value = constants.STARTUP_STEAM_INSTALL_DIR
+        DATABASE.session.add(new_setting)
+        DATABASE.session.commit()
 
 
 def create_app(config=None):
@@ -46,14 +61,14 @@ def create_app(config=None):
 
     # @flask_app.before_request
     # def before_request_func():
-    #     print("Executing Before Request Funcion!")
+    #     print("Executing Before Request Function!")
 
     DATABASE.init_app(flask_app)
 
     with flask_app.app_context():
-        from application.api.v1.source.models.games import Games
-
         DATABASE.create_all()
+
+        _seed_starter_data()
 
     logger.info(f"{flask_app.config['APP_NAME']} has been successfully created.")
 

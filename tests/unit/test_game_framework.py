@@ -1,6 +1,3 @@
-import os
-
-
 class TestGameFramework:
     @classmethod
     def setup_class(cls):

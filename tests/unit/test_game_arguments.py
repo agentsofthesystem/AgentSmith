@@ -1,6 +1,6 @@
 import os
 
-from application.api.v1.source.games.game_argument import GameArgument
+from application.api.v1.source.games.common.game_argument import GameArgument
 
 
 class TestGameArgs:
@@ -16,9 +16,9 @@ class TestGameArgs:
         this_arg = GameArgument("--abc", "123", use_equals=True)
         formatted_arg = this_arg._format_string()
 
-        assert formatted_arg == "--abc=123"
+        assert formatted_arg == '--abc="123"'
 
         this_arg = GameArgument("--abc", "'123'", use_equals=False)
         formatted_arg = this_arg._format_string()
 
-        assert formatted_arg == "--abc '123'"
+        assert formatted_arg == "--abc \"'123'\""
