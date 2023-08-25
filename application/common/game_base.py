@@ -1,10 +1,10 @@
 import abc
 import time
 
-from application.api.v1.source.games.common.game_argument import GameArgument
-from application.api.v1.source.models.games import Games
 from application.common import logger
+from application.common.game_argument import GameArgument
 from application.common.exceptions import InvalidUsage
+from application.source.models.games import Games
 
 
 class BaseGame:

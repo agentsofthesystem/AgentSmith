@@ -4,13 +4,12 @@ import time
 
 from jinja2 import Environment, FileSystemLoader
 
-from application.api.v1.source.models.games import Games
-from application.api.v1.source.games.common.game_argument import GameArgument
-from application.api.v1.source.games.common.game_base import BaseGame
-from application.api.v1.source.games.common import utils
 from application.common import logger, constants
-from application.common.toolbox import _get_proc_by_name
+from application.common.game_argument import GameArgument
+from application.common.game_base import BaseGame
+from application.common.toolbox import _get_proc_by_name, get_resources_dir
 from application.extensions import DATABASE
+from application.source.models.games import Games
 
 
 class VrisingGame(BaseGame):
@@ -55,7 +54,7 @@ class VrisingGame(BaseGame):
         command = self._get_command_str()
 
         # Create a formatted batch file.
-        env = Environment(loader=FileSystemLoader(utils.get_resources_dir()))
+        env = Environment(loader=FileSystemLoader(get_resources_dir()))
         template = env.get_template("start_server_template.bat.j2")
         output_from_parsed_template = template.render(
             GAME_STEAM_ID=self._game_steam_id,

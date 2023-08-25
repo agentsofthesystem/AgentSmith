@@ -1,6 +1,3 @@
-from application.common import toolbox
-
-
 import os
 import subprocess
 
@@ -8,9 +5,9 @@ from datetime import datetime
 from pysteamcmd.steamcmd import Steamcmd
 from sqlalchemy import exc
 
-from application.api.v1.source.models.games import Games
-from application.api.v1.source.models.game_arguments import GamesArguments
-from application.common import logger
+from application.source.models.games import Games
+from application.source.models.game_arguments import GamesArguments
+from application.common import logger, toolbox
 from application.common.exceptions import InvalidUsage
 from application.extensions import DATABASE
 

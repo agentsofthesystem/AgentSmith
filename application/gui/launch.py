@@ -1,8 +1,10 @@
 import os
+import requests
+import sys
 
 from flask import Flask
 from threading import Thread
-from PyQt5.QtWidgets import QAction, QSystemTrayIcon, QMenu, QApplication
+from PyQt5.QtWidgets import QAction, QSystemTrayIcon, QMenu, QApplication, QMessageBox
 from PyQt5.QtGui import QIcon
 
 from application.config.config import DefaultConfig
@@ -28,7 +30,15 @@ class GuiApp:
         self._server_thread = None
 
         # Instantiate this last always!
-        self._game_manager = GameManagerWindow(self._globals)
+        try:
+            self._game_manager = GameManagerWindow(self._globals)
+        except requests.exceptions.ConnectionError:
+            message = QMessageBox()
+            message.setText(
+                "Error: Unable to start due to backend server being offline. Exiting..."
+            )
+            message.exec()
+            sys.exit(1)
 
     def _create_backend(self) -> Flask:
         config = DefaultConfig("python")

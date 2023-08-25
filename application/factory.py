@@ -11,9 +11,9 @@ from application.api.v1.blueprints.app import app
 from application.api.v1.blueprints.executable import executable
 from application.api.v1.blueprints.game import game
 from application.api.v1.blueprints.steam import steam
-from application.api.v1.source.models.games import Games
-from application.api.v1.source.models.game_arguments import GamesArguments
-from application.api.v1.source.models.settings import Settings
+from application.source.models.games import Games
+from application.source.models.game_arguments import GamesArguments
+from application.source.models.settings import Settings
 
 
 def _seed_starter_data():

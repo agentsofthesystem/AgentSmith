@@ -1,4 +1,5 @@
 black
+debugpy
 flask
 Flask-SQLAlchemy
 gunicorn

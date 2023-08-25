@@ -10,7 +10,7 @@ app_folder = os.path.dirname(parent_folder)
 
 sys.path.append(app_folder)
 
-from application.api.v1.source import games
+from application.source import games
 
 
 @staticmethod

@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from application.common import logger
 from application.common.exceptions import InvalidUsage
-from application.api.v1.source.executable_manager import GenericExecutableManager
+from application.source.executable_manager import GenericExecutableManager
 
 executable = Blueprint("executable", __name__, url_prefix="/v1")
 

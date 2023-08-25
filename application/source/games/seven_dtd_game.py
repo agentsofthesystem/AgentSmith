@@ -1,5 +1,5 @@
-from application.api.v1.source.games.common.game_argument import GameArgument
-from application.api.v1.source.games.common.game_base import BaseGame
+from application.common.game_argument import GameArgument
+from application.common.game_base import BaseGame
 
 
 # NOTE - This Game is not yet implemented.

@@ -1,7 +1,7 @@
 from flask import Blueprint, request
 from application.common import logger
 from application.common.exceptions import InvalidUsage
-from application.api.v1.source.steam_manager import SteamManager
+from application.source.steam_manager import SteamManager
 
 steam = Blueprint("steam", __name__, url_prefix="/v1")
 

@@ -1,12 +1,9 @@
 from PyQt5.QtWidgets import (
     QWidget,
-    QComboBox,
     QLabel,
     QLineEdit,
-    QPushButton,
     QHBoxLayout,
     QVBoxLayout,
-    QFrame,
 )
 from PyQt5.QtCore import Qt
 

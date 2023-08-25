@@ -16,7 +16,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 
 from application.common import constants
-from application.api.v1.source import games
+from application.source import games
 from client import Client
 
 

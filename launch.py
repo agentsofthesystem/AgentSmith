@@ -1,7 +1,7 @@
 import sys
 
 
-from application.gui.frontend import GuiApp
+from application.gui.launch import GuiApp
 from application.gui.globals import GuiGlobals
 
 sys.path.append(".")

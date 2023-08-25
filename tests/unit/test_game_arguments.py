@@ -1,6 +1,6 @@
 import os
 
-from application.api.v1.source.games.common.game_argument import GameArgument
+from application.source.games.common.game_argument import GameArgument
 
 
 class TestGameArgs:
