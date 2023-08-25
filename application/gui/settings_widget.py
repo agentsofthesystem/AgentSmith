@@ -35,12 +35,12 @@ class SettingsWidget(QWidget):
         )
         self._globals._steam_install_path = steam_install_dir
 
-        arg_label = QLabel("Steam Install Path: ")
-        arg_text_edit = QLineEdit(self._globals._steam_install_path)
-        arg_text_edit.textChanged.connect(self._update_steam_install_path)
+        label = QLabel("Steam Install Path: ")
+        text_edit = QLineEdit(self._globals._steam_install_path)
+        text_edit.textChanged.connect(self._update_steam_install_path)
 
-        h_layout.addWidget(arg_label)
-        h_layout.addWidget(arg_text_edit)
+        h_layout.addWidget(label)
+        h_layout.addWidget(text_edit)
 
         self._layout.addLayout(h_layout)
 

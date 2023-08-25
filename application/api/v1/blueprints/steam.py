@@ -27,21 +27,34 @@ def steam_app_install():
         "password",
     ]
 
-    if required_data != list(payload.keys()):
+    if not set(required_data).issubset(set(list(payload.keys()))):
         message = "Error: Missing Required Data"
         logger.error(message)
+        logger.info(payload.keys())
         raise InvalidUsage(message, status_code=400)
 
+    steam_id = payload["steam_id"]
     steam_mgr = SteamManager(payload["steam_install_path"])
 
     steam_mgr.install_steam_app(
-        payload["steam_id"],
+        steam_id,
         payload["install_dir"],
         payload["user"],
         payload["password"],
     )
 
+    payload.pop("steam_install_path")
+    payload.pop("steam_id")
+    payload.pop("install_dir")
+    payload.pop("user")
+    payload.pop("password")
+
+    # Check if args were included.
+    if len(payload.keys()) > 0:
+        steam_mgr.save_game_arguments(steam_id, payload)
+
     logger.info("Steam Application has been installed")
+
     return "Success"
 
 

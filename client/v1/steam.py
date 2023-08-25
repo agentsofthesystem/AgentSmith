@@ -7,8 +7,14 @@ class SteamGameClient(BaseClient):
         super(SteamGameClient, self).__init__(urls, verbose)
 
     def install_steam_app(
-        self, steam_install_path, steam_id, install_dir, user="anonymous", password=None
-    ):
+        self,
+        steam_install_path,
+        steam_id,
+        install_dir,
+        user="anonymous",
+        password=None,
+        input_args=None,
+    ) -> bool:
         post_url = self._urls.get_install_url()
 
         payload = {
@@ -19,12 +25,17 @@ class SteamGameClient(BaseClient):
             "password": password,
         }
 
+        if input_args:
+            payload.update(input_args)
+
         if self._verbose:
             print("Installing Application:")
             print(f"Post Url: {post_url}")
 
         response = self.make_request(RequestTypes.POST, post_url, payload=payload)
         self.handle_response(response)
+
+        return True if response.status_code == 200 else False
 
     def remove_steam_app(self):
         post_url = self._urls.get_remove_url()

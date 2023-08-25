@@ -41,12 +41,6 @@ class GameManagerWindow(QMainWindow):
         mainMenu = self.menuBar()
         fileMenu = mainMenu.addMenu(" &File")
 
-        updateButton = QAction(" &New Game", self)
-        updateButton.setShortcut("Ctrl+N")
-        updateButton.setStatusTip("Add a New Supported Game")
-        updateButton.triggered.connect(self._show_new_game_widget)
-        fileMenu.addAction(updateButton)
-
         exitButton = QAction(QIcon("exit24.png"), " &Exit", self)
         exitButton.setShortcut("Ctrl+Q")
         exitButton.setStatusTip("Exit application")

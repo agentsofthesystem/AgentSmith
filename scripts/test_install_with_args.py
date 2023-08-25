@@ -18,7 +18,7 @@ def main():
 
     client = Client(hostname, port=port, verbose=True)
 
-    game_name = "vrising"
+    steam_id = "1829350"  # Steam id for vrising private server
 
     persistent_data_path = r"C:\STEAM_TEST\installs\vrising\save_data"
     log_file_path = r"C:\STEAM_TEST\installs\vrising\logs\VRisingServer.log"
@@ -35,13 +35,17 @@ def main():
         "-logFile": f"{log_file_path}",
     }
 
-    # client.game.game_startup(game_name, input_args=input_args)
+    # Example to install Vrising Game Server
+    if platform.system() == "Windows":
+        steam_install_path = r"C:\STEAM_TEST\steam"
+        install_path = r"C:\STEAM_TEST\installs\vrising"
+    else:
+        steam_install_path = "/c/STEAM_TEST/steam"
+        install_path = "/c/STEAM_TEST/installs/vrising"
 
-    # time.sleep(30)
-
-    # client.game.game_shutdown(game_name)
-    schema = client.game.get_games_schema()
-    print(schema)
+    client.steam.install_steam_app(
+        steam_install_path, steam_id, install_path, input_args=input_args
+    )
 
 
 if __name__ == "__main__":

@@ -9,6 +9,7 @@ from pysteamcmd.steamcmd import Steamcmd
 from sqlalchemy import exc
 
 from application.api.v1.source.models.games import Games
+from application.api.v1.source.models.game_arguments import GamesArguments
 from application.common import logger
 from application.common.exceptions import InvalidUsage
 from application.extensions import DATABASE
@@ -29,6 +30,25 @@ class SteamManager:
 
         self._steamcmd_exe = self._steam.steamcmd_exe
         self._steam_install_dir = steam_install_dir
+
+    def save_game_arguments(self, steam_id: str, input_args: {}):
+        game_obj = Games.query.filter_by(game_steam_id=steam_id).first()
+        game_id = game_obj.game_id
+
+        for key, value in input_args.items():
+            arg_qry = GamesArguments.query.filter_by(game_arg=key, game_id=game_id)
+
+            if arg_qry.first() is None:
+                new_arg = GamesArguments()
+                new_arg.game_arg = key
+                new_arg.game_arg_value = value
+                new_arg.game_id = game_id
+                DATABASE.session.add(new_arg)
+
+            else:
+                arg_qry.update({key: value})
+
+            DATABASE.session.commit()
 
     def install_steam_app(
         self, steam_id, installation_dir, user="anonymous", password=None

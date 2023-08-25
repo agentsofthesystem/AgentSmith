@@ -11,9 +11,11 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QVBoxLayout,
     QFrame,
+    QMessageBox,
 )
 from PyQt5.QtCore import Qt
 
+from application.common import constants
 from application.api.v1.source import games
 from client import Client
 
@@ -39,7 +41,7 @@ def _find_conforming_modules(package):
         # Load the module from file
         spec = importlib.util.spec_from_file_location(module_name, full_path)
         this_module = importlib.util.module_from_spec(spec)
-        bar = spec.loader.exec_module(this_module)
+        _ = spec.loader.exec_module(this_module)
 
         for x in dir(this_module):
             if inspect.isclass(getattr(this_module, x)):
@@ -69,7 +71,11 @@ class NewGameWidget(QWidget):
         self._layout = QVBoxLayout()
         self._client = client
         self._supported_games = {}
+
         self._current_inputs = None
+        self._current_args_list = []
+        self._current_game_install_path = QLineEdit()
+
         self._initialized = False
 
     def _build_inputs(self, game_name):
@@ -88,7 +94,19 @@ class NewGameWidget(QWidget):
             h_layout.addWidget(arg_label)
             h_layout.addWidget(arg_text_edit)
 
+            self._current_args_list.append({arg_label: arg_text_edit})
+
             v_layout.addLayout(h_layout)
+
+        h_layout_install_path = QHBoxLayout()
+        label = QLabel("Game Install Path: ")
+        text_edit = QLineEdit("")
+        self._current_game_install_path = text_edit
+
+        h_layout_install_path.addWidget(label)
+        h_layout_install_path.addWidget(text_edit)
+
+        v_layout.addLayout(h_layout_install_path)
 
         install_button = QPushButton("Install")
         install_button.clicked.connect(lambda: self._install_game(game_name))
@@ -130,12 +148,51 @@ class NewGameWidget(QWidget):
         self._initialized = True
 
     def _text_changed(self, game_pretty_name):
-        print("Text changed:", game_pretty_name)
+        print("Curent Game changed to:", game_pretty_name)
         old_inputs = self._current_inputs
         old_inputs.hide()
+        self._current_args_list = []
+        self._current_game_install_path = QLineEdit()
         self._current_inputs = self._build_inputs(game_pretty_name)
         self._layout.replaceWidget(old_inputs, self._current_inputs)
 
     def _install_game(self, game_name):
         print(f"Installing Game Name: {game_name}")
-        # TODO - Implement this bad boy!
+
+        input_dict = {}
+        game_object = self._supported_games[game_name]
+        steam_id = game_object._game_steam_id
+        install_path = self._current_game_install_path.text()
+        steam_install_dir = self._client.app.get_setting_by_name(
+            constants.STARTUP_STEAM_SETTING_NAME
+        )
+
+        if install_path == "":
+            message = QMessageBox()
+            message.setText(f"Error: Must supply an install path. Try again!")
+            message.exec()
+            return
+
+        for arg in self._current_args_list:
+            label = list(arg.keys())[0]
+            line_edit = arg[label]
+
+            if line_edit.text() == "":
+                message = QMessageBox()
+                message.setText(
+                    f"Error: Must supply a value for Argument, {label.text()}. Try again!"
+                )
+                message.exec()
+                return
+
+            input_dict[label.text()] = line_edit.text()
+
+        print(f"Game Install Path is: {install_path}")
+        print(f"Game Steam Id: {steam_id}")
+        print(f"Steam Install Dir: {steam_install_dir}")
+        print("Input Args:")
+        print(input_dict)
+
+        self._client.steam.install_steam_app(
+            steam_install_dir, steam_id, install_path, input_args=input_dict
+        )
