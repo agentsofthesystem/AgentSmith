@@ -15,5 +15,6 @@ class GuiGlobals:
         self._server_host = "127.0.0.1"
         self._server_port = "3000"
         self._client = None
+        self._installed_games_menu = None
 
         self._steam_install_path = "NOT_SET"

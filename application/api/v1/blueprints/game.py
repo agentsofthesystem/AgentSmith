@@ -28,6 +28,11 @@ def get_all_games():
     return jsonify(toolbox.get_all_games())
 
 
+@game.route("/games/<string:name>/arguments", methods=["GET"])
+def get_games_arguments(name):
+    return jsonify(toolbox.get_game_arguments(name))
+
+
 @game.route("/games/schema", methods=["GET"])
 def get_game_schema():
     return jsonify(toolbox.get_games_schema())

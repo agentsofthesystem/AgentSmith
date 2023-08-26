@@ -4,12 +4,13 @@ import sys
 
 from flask import Flask
 from threading import Thread
-from PyQt5.QtWidgets import QAction, QSystemTrayIcon, QMenu, QApplication, QMessageBox
 from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QAction, QSystemTrayIcon, QMenu, QApplication
 
 from application.config.config import DefaultConfig
 from application.gui.globals import GuiGlobals
 from application.gui.game_manager import GameManagerWindow
+from application.gui.intalled_games_menu import InstalledGameMenu
 from application.factory import create_app
 from client import Client
 
@@ -28,9 +29,9 @@ class GuiApp:
         # Declare variables
         self._gui_app = QApplication([])
         self._server_thread = None
-
-        # Instantiate this last always!
-        self._game_manager = GameManagerWindow(self._globals)
+        self._main_menu = QMenu()
+        self._installed_games_menu = None
+        self._game_manager = None
 
     def _create_backend(self) -> Flask:
         config = DefaultConfig("python")
@@ -64,6 +65,17 @@ class GuiApp:
         print("Test Function!")
 
     def initialize(self, with_server=False, testing_mode=False):
+        # If running the unified launch script, this will need to start up first.
+        if with_server:
+            self._spawn_server_on_thread()
+
+        # Instantiate this last always!
+        self._installed_games_menu = InstalledGameMenu(
+            self._main_menu, self._globals._client
+        )
+        self._globals._installed_games_menu = self._installed_games_menu
+        self._game_manager = GameManagerWindow(self._globals)
+
         self._gui_app.setQuitOnLastWindowClosed(False)
 
         # Adding an icon
@@ -80,30 +92,19 @@ class GuiApp:
         tray.setVisible(True)
 
         # Creating the options
-
-        main_menu = QMenu()
-
         all_games = QAction("Game Manager")
         all_games.triggered.connect(self._launch_game_manager)
-        main_menu.addAction(all_games)
+        self._main_menu.addAction(all_games)
 
         # Installed Games Menu & Submenues.
-        sub_menu1 = QMenu("Installed Games", parent=main_menu)
-        installed1 = QAction("Game 1")
-        installed2 = QAction("Game 2")
-        sub_menu1.addAction(installed1)
-        sub_menu1.addAction(installed2)
-        main_menu.addMenu(sub_menu1)
+        self._main_menu.addMenu(self._installed_games_menu)
 
         # To quit the app
         quit = QAction("Quit")
         quit.triggered.connect(self.quit_gui)
-        main_menu.addAction(quit)
+        self._main_menu.addAction(quit)
 
-        tray.setContextMenu(main_menu)
-
-        if with_server:
-            self._spawn_server_on_thread()
+        tray.setContextMenu(self._main_menu)
 
         if testing_mode:
             self._launch_game_manager()

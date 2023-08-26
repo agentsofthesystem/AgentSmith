@@ -9,6 +9,8 @@ class Games(PaginatedApi, DATABASE.Model):
     game_id = DATABASE.Column(DATABASE.Integer, primary_key=True)
     game_steam_id = DATABASE.Column(DATABASE.Integer, unique=True)
     game_install_dir = DATABASE.Column(DATABASE.String(256))
+    game_name = DATABASE.Column(DATABASE.String(256))
+    game_pretty_name = DATABASE.Column(DATABASE.String(256))
 
     game_pid = DATABASE.Column(DATABASE.Integer, nullable=True)
 

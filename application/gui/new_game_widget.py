@@ -1,7 +1,3 @@
-import os
-import inspect
-import importlib.util
-
 from PyQt5.QtWidgets import (
     QWidget,
     QComboBox,
@@ -15,48 +11,9 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt
 
-from application.common import constants
+from application.common import constants, toolbox
+from application.gui.globals import GuiGlobals
 from application.source import games
-from client import Client
-
-
-@staticmethod
-def _find_conforming_modules(package):
-    package_location = package.__path__
-
-    files_in_package = os.listdir(package_location[0])
-
-    conforming_modules = {}
-
-    for myfile in files_in_package:
-        if myfile == "__init__.py" or myfile == "__pycache__":
-            continue
-
-        module_name = myfile.split(".py")[0]
-        full_path = os.path.join(package_location[0], myfile)
-
-        if os.path.isdir(full_path):
-            continue
-
-        # Load the module from file
-        spec = importlib.util.spec_from_file_location(module_name, full_path)
-        this_module = importlib.util.module_from_spec(spec)
-        _ = spec.loader.exec_module(this_module)
-
-        for x in dir(this_module):
-            if inspect.isclass(getattr(this_module, x)):
-                if x == "BaseGame":
-                    conforming_modules.update({module_name: this_module})
-                    break
-
-    return conforming_modules
-
-
-@staticmethod
-def _instantiate_object(module_name, module):
-    for item in inspect.getmembers(module, inspect.isclass):
-        if item[1].__module__ == module_name:
-            return item[1]()
 
 
 class NewGameWidget(QWidget):
@@ -66,10 +23,12 @@ class NewGameWidget(QWidget):
     BaseGame object.  That way the gui maintains itself. Nothing is hard coded.
     """
 
-    def __init__(self, client: Client, parent: QWidget):
+    def __init__(self, globals: GuiGlobals, parent: QWidget):
         super(QWidget, self).__init__(parent)
         self._layout = QVBoxLayout()
-        self._client = client
+        self._globals = globals
+        self._client = globals._client
+        self._install_games_menu = globals._installed_games_menu
         self._supported_games = {}
 
         self._current_inputs = None
@@ -123,10 +82,12 @@ class NewGameWidget(QWidget):
 
         self._combo_box = QComboBox()
 
-        modules_dict = _find_conforming_modules(games)
+        modules_dict = toolbox._find_conforming_modules(games)
 
         for module_name in modules_dict.keys():
-            game_obj = _instantiate_object(module_name, modules_dict[module_name])
+            game_obj = toolbox._instantiate_object(
+                module_name, modules_dict[module_name]
+            )
             self._supported_games[game_obj._game_pretty_name] = game_obj
             self._combo_box.addItem(game_obj._game_pretty_name)
 
@@ -196,3 +157,5 @@ class NewGameWidget(QWidget):
         self._client.steam.install_steam_app(
             steam_install_dir, steam_id, install_path, input_args=input_dict
         )
+
+        self._install_games_menu.update_menu()

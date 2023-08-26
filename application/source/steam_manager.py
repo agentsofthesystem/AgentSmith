@@ -5,6 +5,7 @@ from datetime import datetime
 from pysteamcmd.steamcmd import Steamcmd
 from sqlalchemy import exc
 
+from application.source import games
 from application.source.models.games import Games
 from application.source.models.game_arguments import GamesArguments
 from application.common import logger, toolbox
@@ -59,9 +60,23 @@ class SteamManager:
         # If the object exists, then the user has already attempted installation once. Do not make a new
         # databse record again.
         if not game_qry.first():
+            modules_dict = toolbox._find_conforming_modules(games)
+            correct_game_object = None
+
+            for module_name in modules_dict.keys():
+                game_obj = toolbox._instantiate_object(
+                    module_name, modules_dict[module_name]
+                )
+                if game_obj._game_steam_id == steam_id:
+                    correct_game_object = game_obj
+                    del game_obj
+                    break
+
             new_game = Games()
             new_game.game_steam_id = int(steam_id)
             new_game.game_install_dir = installation_dir
+            new_game.game_pretty_name = correct_game_object._game_pretty_name
+            new_game.game_name = correct_game_object._game_name
             DATABASE.session.add(new_game)
         else:
             # If it exists, just update the timestamp so the user knows the last time this game was installed/updated.

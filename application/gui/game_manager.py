@@ -31,14 +31,12 @@ class GameManagerWindow(QMainWindow):
 
         self._initialized = False
         self._globals = globals
-        self._new_game = NewGameWidget(self._globals._client, self)
+        self._new_game = NewGameWidget(self._globals, self)
         self._game_summary = GameSummaryWidget(self._globals._client, self)
         self._settings = SettingsWidget(self._globals._client, self._globals, self)
 
     def init_ui(self):
         self.setWindowTitle(self.title)
-
-        self.add_widget_items()
 
         mainMenu = self.menuBar()
         fileMenu = mainMenu.addMenu(" &File")
@@ -65,6 +63,8 @@ class GameManagerWindow(QMainWindow):
         self._game_summary.init_ui(all_games)
         self._settings.init_ui()
 
+        self.add_widget_items()
+
         self.setGeometry(self.left, self.top, self.width, self.height)
 
         self._initialized = True
@@ -78,6 +78,7 @@ class GameManagerWindow(QMainWindow):
 
         self.tabs = QTabWidget()
         self.tabs.setUsesScrollButtons(False)
+        self.tabs.currentChanged.connect(self._on_tab_change)  # changed!
 
         self.tab1 = QWidget()
         self.tab2 = QWidget()
@@ -104,6 +105,9 @@ class GameManagerWindow(QMainWindow):
         self.setCentralWidget(self._main_widget)
 
         self.adjustSize()
+
+    def _on_tab_change(self):
+        self._game_summary.update_table()
 
     def _show_new_game_widget(self):
         if not self._new_game._initialized:
