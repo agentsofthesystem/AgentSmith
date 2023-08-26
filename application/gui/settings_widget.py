@@ -20,8 +20,6 @@ class SettingsWidget(QWidget):
         self._globals = globals
         self._initialized = False
 
-        self.init_ui()
-
     def init_ui(self):
         self._layout.setAlignment(Qt.AlignTop)
 

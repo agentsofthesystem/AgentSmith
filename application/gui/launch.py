@@ -30,15 +30,7 @@ class GuiApp:
         self._server_thread = None
 
         # Instantiate this last always!
-        try:
-            self._game_manager = GameManagerWindow(self._globals)
-        except requests.exceptions.ConnectionError:
-            message = QMessageBox()
-            message.setText(
-                "Error: Unable to start due to backend server being offline. Exiting..."
-            )
-            message.exec()
-            sys.exit(1)
+        self._game_manager = GameManagerWindow(self._globals)
 
     def _create_backend(self) -> Flask:
         config = DefaultConfig("python")
@@ -67,7 +59,6 @@ class GuiApp:
         if not self._game_manager._initialized:
             self._game_manager.init_ui()
         self._game_manager.show()
-        self._game_manager._game_summary.update_table()
 
     def _test_func(self):
         print("Test Function!")
@@ -76,6 +67,7 @@ class GuiApp:
         self._gui_app.setQuitOnLastWindowClosed(False)
 
         # Adding an icon
+        # TODO - Make this dynamic for pyinstaller - Location will be different.
         current_file = os.path.abspath(__file__)
         current_folder = os.path.dirname(current_file)
         icon_path = os.path.join(current_folder, "resources", "keeper.png")
