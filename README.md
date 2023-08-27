@@ -1,4 +1,4 @@
-# Private Game Server Manager - Agent
+# Game Keeper (Agent)
 
 ## About
 
@@ -10,48 +10,71 @@ a very good solution that exists already so this tool might fill that vacuum.
 
 I am creating a solution that is a sort of two-part solution.  The first part will be what runs on someone's local machine and has the
 ability to install steam apps, start/stop servers, and do other similar tasks.  There will also be a client and a minimal 
-user interface.  The client and the agent, shall be able to communicate securely so not just anyone can interact with
-the agent. 
+graphical user interface.  The client and the agent, shall be able to communicate securely when performed outside of one's
+local network so not just anyone can interact with the agent.  
 
-The other part, this is where users get to be creative is up to you.  Part one (this repository) is a web api that executes 
-commands on a machine, an agent.  The agent is supposed to be "dumb" in the sense that it can perform tasks, but it's only 
-a puppet and cannot think for itself.  
+Part one (this repository) is a web api that executes commands on a machine, an agent.  The agent is supposed to be "dumb" 
+in the sense that it can perform tasks, but it's only a puppet and cannot think for itself.  At a minimum, giving this 
+part of the solution out allows a pair of friends to keep a game server running.  One person installs the agent at home, 
+set ups the game server, and gives the other friend located elsewhere the client.  The second friend gets to remotely 
+start/stop the server with the client, if needed.  Anyone, so inclined, can build additional automation around this 
+part of the solution, if desired.   
 
-Whatever controls it for whatever purpose is up to the user.  That is part two.  I intend to make part two a web application 
-where my friends and I can control our individual game servers collectively and securely, and I want to keep that to myself.  
-However, I think there is value in making this portion of work open to others so that is going to be publicly available in the hopes 
-that others get use out of it.  
-
-At a minimum, giving this part of the solution out allows a pair of friends to keep a game server running.  One person
-installs the agent at home, set ups the game server, and gives the other friend located elsewhere the client.  The second
-friend gets to remotely start/stop the server with the client, if needed.  
+For Part Two, I intend to make collaborative web application where my friends and I can control our servers via a web 
+interface, and have other additional abilities.  One day, perhaps, I'll make that available to others.  
 
 Out of all my mates, I write software for fun and this is a personal project. Help is always welcome.  If you get use
-out of this tool and with to contribute back, please do.  You're welcome to use this software personally however you like 
-and not ever bother to provide updates.  However, I'm licensing it such that if you take this work and use it for personal
-gain, then at a minimum you must provide any software changes you make back.  In either case, you must credit this
-software.
+out of this tool and with to contribute back, please do.  You're welcome to use this software personally however you like.  
+However, I'm licensing it such that if you take this work and use it for personal gain, then at a minimum you must 
+provide any software changes you make back.  In either case, you must credit this software.
 
 I have identified work I intend to do for the future and could use help with in the "Future Work" section.  Please create
-an issue for ideas.
+an issue for ideas.  I also wanted to share, what I don't intend to do as well so that is also clear.
 
 # Getting Started
 
-I've written instructions for use of this software [here](./docs/getting-started.md).
+I've written instructions for every day use of this software as well as what a developer might need 
+[here](./docs/getting-started.md).
 
 # Future Work
 
 There will always be room for improvements, but here are some goals the author has to improve behavior and usability
 overall:
 
-1. This is a web api meant to be use by any requestor.  Entities that call endpoints are impatient and tend to want
-   a response quickly.  Right now, installing software will result in long wait times in some cases.  There needs to
-   be a method to background long running tasks and report their status as a 1-100% percentage of completion.  That way
-   a requestor can kick of a job, and check on how it is going.  
-2. Add unit testing framework.  
-3. Add github actions.
-4. Improve the usage instructions.
-5. Create a simple public facing Git Hub project board. 
+1. Get unit test framework to minimal code coverage; 20%.
+2. Add github actions.
+3. Improve the usage instructions.
+4. Create a simple public facing Git Hub project board. 
+5. Come up with a more permanent name. 
+6. Split the client into its own repository / python package. 
+7. Implement authentication mechanism for client to use.
+8. Implement pyinstaller so that a function EXE file can be deployed/published for releases. 
+9. Cross-platform support - I'd like to be able to support Linux Game Servers as well :)
+
+# Limitations
+
+The software has some limitations that users ought to be aware of.
+
+1. The steamcmd client that downloads a game server (based on its steam_id) does so as an anonymous user.  If it 
+   doesn't download publically, it's not supported very well.  The package I used addresses this but I haven't paid 
+   much attention to it. If your needs require authentication, be prepared for some issues.
+2. Windows firewall:  This software cannot click the button that says "Allow this app through the firewall".  
+3. Port Forwarding: This software cannot set up port forwarding rules on any network hardware
+4. Linux: To start, the agent software is intended to operate on Windows.  However, the client can run on windows or 
+   linux. 
+
+# Author's areas of dis-interest
+
+In this section, the author is attempting to describe what he personally is not interested in working.
+
+1. I want to add the games that I want to manage into the software.  I tried to go for an interface that is genearlized
+   so I didn't have to build the software this way, but each game has unique start up and shutdown needs.  Therefore,
+   if you as a user want a game added.  Be prepared to contribute!  
+2. The Graphical User Interface - To be honest, I'm not a GUI person.  It's not a pretty GUI but it gets the job done. 
+   I'm not going to personally work issues to enhance the GUI, but I'm not opposed to making it better.  If someone
+   wants to make it better go for it!  
+3. Supporting new features so you can use this for personal gain. Again, If you do this, you must share the code back
+   for the community, but I'm not going to be helping.  
 
 # References
 

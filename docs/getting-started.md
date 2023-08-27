@@ -4,8 +4,8 @@ This document should contain everything a developer needs to know in order to de
 
 ## Usage
 
-TODO - Write documentation for the every day user.
+The every day user of this software may find instructions [here](./usage.md).
 
 ## Development
 
-Development documentation can be found [here](./developer.md)
+Development documentation can be found [here](./developer.md).

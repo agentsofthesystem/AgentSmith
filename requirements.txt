@@ -1,4 +1,5 @@
 black
+coverage
 debugpy
 flask
 Flask-SQLAlchemy
