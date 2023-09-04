@@ -2,11 +2,12 @@
 
 ## About
 
-My name is Joshua and my group of friends play various games like 7 Days to Die which require one of us to host a server
-at our home.  Often it's a hassle to update a server or handle restarts of a server that might have gone down.  We have
-often mused over a tool that can handle this workload for us or at least make it easier.  Also, a tool that doesn't require
-one of us to expose a home server to the open internet or have to require one of us to setup a home VPN. I have not found 
-a very good solution that exists already so this tool might fill that vacuum.   
+A group of friends play various games like 7 Days to Die and VRising which require one of us to host a server
+at our home.  We do this as opposed to paying for online hosting because this is a free options.  Often it's a hassle 
+to update a server or handle restarts of a server that might have gone down.  We have often mused over a tool that can 
+handle this workload for us or at least make it easier.  Also, a tool that doesn't require one of us to expose a home 
+server to the open internet or have to require one of us to setup a home VPN. I have not found a very good solution 
+that exists already so this tool might fill that vacuum.   
 
 I am creating a solution that is a sort of two-part solution.  The first part will be what runs on someone's local machine and has the
 ability to install steam apps, start/stop servers, and do other similar tasks.  There will also be a client and a minimal 

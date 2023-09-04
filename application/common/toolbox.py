@@ -83,7 +83,7 @@ def get_game_arguments(name):
 
 
 @staticmethod
-def _find_conforming_modules(package):
+def _find_conforming_modules(package) -> {}:
     package_location = package.__path__
 
     files_in_package = os.listdir(package_location[0])

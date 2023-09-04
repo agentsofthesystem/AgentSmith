@@ -1,6 +1,4 @@
 import os
-import requests
-import sys
 
 from flask import Flask
 from threading import Thread
@@ -13,6 +11,8 @@ from application.gui.game_manager import GameManagerWindow
 from application.gui.intalled_games_menu import InstalledGameMenu
 from application.factory import create_app
 from client import Client
+
+from PyQt5 import QtCore
 
 
 class GuiApp:
@@ -60,9 +60,6 @@ class GuiApp:
         if not self._game_manager._initialized:
             self._game_manager.init_ui()
         self._game_manager.show()
-
-    def _test_func(self):
-        print("Test Function!")
 
     def initialize(self, with_server=False, testing_mode=False):
         # If running the unified launch script, this will need to start up first.
