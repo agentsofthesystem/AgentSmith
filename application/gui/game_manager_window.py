@@ -13,15 +13,15 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import QIcon
 
 from application.gui.globals import GuiGlobals
-from application.gui.new_game_widget import NewGameWidget
-from application.gui.game_summary_widget import GameSummaryWidget
-from application.gui.settings_widget import SettingsWidget
+from application.gui.widgets.game_control_widget import GameControlWidget
+from application.gui.widgets.game_summary_widget import GameSummaryWidget
+from application.gui.widgets.settings_widget import SettingsWidget
 
 
 class GameManagerWindow(QMainWindow):
     def __init__(self, globals: GuiGlobals):
         super().__init__()
-        self.title = "Game Keeper Manager"
+        self.title = "Game Manager"
 
         # TODO - Make these constants or compute middle of screen.
         self.left = 50
@@ -31,7 +31,7 @@ class GameManagerWindow(QMainWindow):
 
         self._initialized = False
         self._globals = globals
-        self._new_game = NewGameWidget(self._globals, self)
+        self._game_control = GameControlWidget(self._globals._client, self)
         self._game_summary = GameSummaryWidget(self._globals._client, self)
         self._settings = SettingsWidget(self._globals._client, self._globals, self)
 
@@ -59,7 +59,7 @@ class GameManagerWindow(QMainWindow):
             message.exec()
             sys.exit(1)
 
-        self._new_game.init_ui()
+        self._game_control.init_ui(all_games)
         self._game_summary.init_ui(all_games)
         self._settings.init_ui()
 
@@ -68,6 +68,15 @@ class GameManagerWindow(QMainWindow):
         self.setGeometry(self.left, self.top, self.width, self.height)
 
         self._initialized = True
+
+    def _add_tab_widget(self, title: str, widget: QWidget):
+
+        tab = QWidget()
+        tab.layout = QVBoxLayout()
+        tab.layout.addWidget(widget)
+        tab.setLayout(tab.layout)
+
+        self.tabs.addTab(tab, title)
 
     def add_widget_items(self):
         self._main_widget = QWidget(self)
@@ -80,25 +89,14 @@ class GameManagerWindow(QMainWindow):
         self.tabs.setUsesScrollButtons(False)
         self.tabs.currentChanged.connect(self._on_tab_change)  # changed!
 
-        self.tab1 = QWidget()
-        self.tab2 = QWidget()
-        self.tab3 = QWidget()
+        tab_items = [
+            ("Game Control", self._game_control),
+            ("Game Summary", self._game_summary),
+            ("Settings", self._settings)
+        ]
 
-        self.tab1.layout = QVBoxLayout()
-        self.tab1.layout.addWidget(self._new_game)
-        self.tab1.setLayout(self.tab1.layout)
-
-        self.tab2.layout = QVBoxLayout()
-        self.tab2.layout.addWidget(self._game_summary)
-        self.tab2.setLayout(self.tab2.layout)
-
-        self.tab3.layout = QVBoxLayout()
-        self.tab3.layout.addWidget(self._settings)
-        self.tab3.setLayout(self.tab3.layout)
-
-        self.tabs.addTab(self.tab1, "New Game")
-        self.tabs.addTab(self.tab2, "Game Summary")
-        self.tabs.addTab(self.tab3, "Settings")
+        for tab in tab_items:
+            self._add_tab_widget(tab[0], tab[1])
 
         self._main_layout.addWidget(self.tabs)
 
@@ -108,8 +106,3 @@ class GameManagerWindow(QMainWindow):
 
     def _on_tab_change(self):
         self._game_summary.update_table()
-
-    def _show_new_game_widget(self):
-        if not self._new_game._initialized:
-            self._new_game.init_ui()
-        self._new_game.show()

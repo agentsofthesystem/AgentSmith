@@ -7,7 +7,8 @@ from PyQt5.QtWidgets import QAction, QSystemTrayIcon, QMenu, QApplication
 
 from application.config.config import DefaultConfig
 from application.gui.globals import GuiGlobals
-from application.gui.game_manager import GameManagerWindow
+from application.gui.game_install_window import GameInstallWindow
+from application.gui.game_manager_window import GameManagerWindow
 from application.gui.intalled_games_menu import InstalledGameMenu
 from application.factory import create_app
 from client import Client
@@ -56,10 +57,16 @@ class GuiApp:
     def quit_gui(self):
         self._gui_app.quit()
 
-    def _launch_game_manager(self):
+    def _launch_game_manager_window(self):
         if not self._game_manager._initialized:
             self._game_manager.init_ui()
         self._game_manager.show()
+
+    def _launch_game_install_window(self):
+        if not self._game_install._initialized:
+            self._game_install.init_ui()
+        self._game_install.show()
+
 
     def initialize(self, with_server=False, testing_mode=False):
         # If running the unified launch script, this will need to start up first.
@@ -72,6 +79,7 @@ class GuiApp:
         )
         self._globals._installed_games_menu = self._installed_games_menu
         self._game_manager = GameManagerWindow(self._globals)
+        self._game_install = GameInstallWindow(self._globals)
 
         self._gui_app.setQuitOnLastWindowClosed(False)
 
@@ -89,12 +97,20 @@ class GuiApp:
         tray.setVisible(True)
 
         # Creating the options
-        all_games = QAction("Game Manager")
-        all_games.triggered.connect(self._launch_game_manager)
-        self._main_menu.addAction(all_games)
+        game_manager = QAction("Game Manager")
+        game_manager.triggered.connect(self._launch_game_manager_window)
+        self._main_menu.addAction(game_manager)
+
+        self._main_menu.addSeparator()
+
+        game_install = QAction("Install Game")
+        game_install.triggered.connect(self._launch_game_install_window)
+        self._main_menu.addAction(game_install)  
 
         # Installed Games Menu & Submenues.
         self._main_menu.addMenu(self._installed_games_menu)
+
+        self._main_menu.addSeparator()
 
         # To quit the app
         quit = QAction("Quit")

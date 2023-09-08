@@ -106,6 +106,8 @@ class NewGameWidget(QWidget):
 
         self.setLayout(self._layout)
 
+        self.show()
+
         self._initialized = True
 
     def _text_changed(self, game_pretty_name):
