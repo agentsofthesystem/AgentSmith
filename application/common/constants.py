@@ -8,11 +8,19 @@ class DeployTypes(Enum):
     PYTHON = "python"
 
 
-STARTUP_BATCH_FILE_NAME = "startup.bat"
+class FileModes(Enum):
+    NOT_A_FILE = 0
+    FILE = 1
+    DIRECTORY = 2
 
-STARTUP_STEAM_SETTING_NAME = "steam_install_dir"
-STARTUP_STEAM_INSTALL_DIR = (
+
+STARTUP_BATCH_FILE_NAME: str = "startup.bat"
+
+STARTUP_STEAM_SETTING_NAME: str = "steam_install_dir"
+STARTUP_STEAM_INSTALL_DIR: str = (
     r"C:\STEAM\steam_cmd" if platform.system() == "Windows" else "/opt/steam/steam_cmd"
 )
+
+WAIT_FOR_BACKEND: int = 1
 
 _DeployTypes = DeployTypes

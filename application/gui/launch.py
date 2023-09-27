@@ -13,8 +13,6 @@ from application.gui.intalled_games_menu import InstalledGameMenu
 from application.factory import create_app
 from client import Client
 
-from PyQt5 import QtCore
-
 
 class GuiApp:
     def __init__(self, globals_obj: GuiGlobals) -> None:
@@ -67,7 +65,6 @@ class GuiApp:
             self._game_install.init_ui()
         self._game_install.show()
 
-
     def initialize(self, with_server=False, testing_mode=False):
         # If running the unified launch script, this will need to start up first.
         if with_server:
@@ -79,6 +76,7 @@ class GuiApp:
         )
         self._globals._installed_games_menu = self._installed_games_menu
         self._game_manager = GameManagerWindow(self._globals)
+        self._globals._game_control_widget = self._game_manager._game_control
         self._game_install = GameInstallWindow(self._globals)
 
         self._gui_app.setQuitOnLastWindowClosed(False)
@@ -103,9 +101,9 @@ class GuiApp:
 
         self._main_menu.addSeparator()
 
-        game_install = QAction("Install Game")
+        game_install = QAction("New Game")
         game_install.triggered.connect(self._launch_game_install_window)
-        self._main_menu.addAction(game_install)  
+        self._main_menu.addAction(game_install)
 
         # Installed Games Menu & Submenues.
         self._main_menu.addMenu(self._installed_games_menu)

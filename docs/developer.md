@@ -83,16 +83,11 @@ NOTE:
 
 # Software Development Process 
 
-## Documentation
+## Documentation & Code Quality
+ 
+All that fun stuff is going to be [here](./software-code-quality.md).  Really, have a read, PR's depend on it!  
 
-This readme will contain most pertinent information or links to other markdown files.  The code itself ought to conform
-to pydocs and use pydocstyle to maintain that standard.   The docs folder will hold all files related to software
-documentation.  
-
-## Software Code Quality
-
-For a dispassionate method to keep the software looking spiffy, use the python "black" package.  Simply run "black ."
-and your code will magically be styled.  
+Grumble? I tried to keep it simple...
 
 ## Software Testing
 

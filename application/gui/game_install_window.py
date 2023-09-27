@@ -1,6 +1,3 @@
-import requests
-import sys
-
 from PyQt5.QtWidgets import (
     QWidget,
     QVBoxLayout,
@@ -30,7 +27,6 @@ class GameInstallWindow(QMainWindow):
         self._new_game = NewGameWidget(self._globals, self)
 
     def init_ui(self):
-
         self.setWindowTitle(self.title)
 
         mainMenu = self.menuBar()
@@ -63,4 +59,3 @@ class GameInstallWindow(QMainWindow):
         self.setCentralWidget(self._main_widget)
 
         self.adjustSize()
-        

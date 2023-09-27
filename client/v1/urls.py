@@ -84,6 +84,15 @@ class AppUrls:
     def get_game_shutdown_url(self, game_name) -> str:
         return f"{self.base_url}/game/shutdown/{game_name}"
 
+    def get_arguments_url(self) -> str:
+        return f"{self.base_url}/game/arguments"
+
+    def get_argument_by_id_url(self, argument_id: int) -> str:
+        return f"{self.base_url}/game/argument/{argument_id}"
+
+    def get_argument_by_name_url(self, game_name, argument_name: str) -> str:
+        return f"{self.base_url}/game/{game_name}/argument/{argument_name}"
+
     ###############################################################################
     ###############################################################################
     ## Key/Access Related Urls

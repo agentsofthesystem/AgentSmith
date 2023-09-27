@@ -1,3 +1,4 @@
+from application.common.constants import FileModes
 from client.common.base_client import BaseClient, RequestTypes
 from client.v1.urls import AppUrls
 
@@ -30,24 +31,6 @@ class SupportedGameClient(BaseClient):
 
         return response.json()
 
-    def get_game_arguments(self, name):
-        get_url = self._urls.get_games_args_url(name)
-
-        if self._verbose:
-            print(f"Getting argument for games:")
-            print(f"Get Url: {get_url}")
-
-        response = self.make_request(RequestTypes.GET, get_url)
-        self.handle_response(response)
-
-        if response.status_code == 200:
-            data = response.json()
-            arg_list = data["items"]
-        else:
-            arg_list = None
-
-        return arg_list
-
     def game_startup(self, game_name, input_args={}):
         post_url = self._urls.get_game_startup_url(game_name)
 
@@ -75,4 +58,142 @@ class SupportedGameClient(BaseClient):
             print(f"Post Url: {post_url}")
 
         response = self.make_request(RequestTypes.POST, post_url)
+        self.handle_response(response)
+
+    def create_argument(
+        self,
+        game_name: str,
+        argument_name: str,
+        game_arg_value: str,
+        is_permanent: bool = False,
+        required: bool = False,
+        file_mode: FileModes = FileModes.NOT_A_FILE.value,
+    ):
+        post_url = self._urls.get_arguments_url()
+
+        payload = {
+            "game_name": game_name,
+            "game_arg": argument_name,
+            "game_arg_value": game_arg_value,
+            "is_permanent": is_permanent,
+            "required": game_arg_value,
+            "file_mode": file_mode,
+        }
+
+        if self._verbose:
+            print("Creating System Argument:")
+            print(f"Post Url: {post_url}")
+
+        response = self.make_request(RequestTypes.POST, post_url, payload=payload)
+        self.handle_response(response)
+
+        if response.status_code == 200:
+            output = response.json()
+            argument_id = output["game_arg_id"]
+        else:
+            print("Error: Unable to create argument.")
+            argument_id = -1
+
+        return argument_id
+
+    def get_all_arguments(self):
+        get_url = self._urls.get_arguments_url()
+
+        if self._verbose:
+            print("Getting All System Arguments:")
+            print(f"Get Url: {get_url}")
+
+        response = self.make_request(RequestTypes.GET, get_url)
+        self.handle_response(response)
+
+        output = response.json()
+
+        return output
+
+    def get_argument_by_game_name(self, game_name):
+        game_output = self.get_games()
+        arg_output = self.get_all_arguments()
+        arg_list = []
+        game_id = -1
+
+        for game in game_output["items"]:
+            if game["game_name"] == game_name:
+                game_id = game["game_id"]
+                break
+
+        if game_id == -1:
+            print("Error Game Does not exist!")
+            return
+
+        for arg in arg_output["items"]:
+            if arg["game_id"] == game_id:
+                arg_list.append(arg)
+
+        if arg_list == []:
+            print("Error: No Arguments found")
+            return None
+
+        return arg_list
+
+    def get_argument_by_name(self, game_name, argument_name):
+        get_url = self._urls.get_argument_by_name_url(game_name, argument_name)
+
+        if self._verbose:
+            print(f"Getting Game {game_name} Argument by name: {argument_name}")
+            print(f"Post Url: {get_url}")
+
+        response = self.make_request(RequestTypes.GET, get_url)
+        self.handle_response(response)
+
+        output = response.json()
+
+        if response.status_code == 200:
+            output = response.json()
+
+            items = output["items"]
+
+            if items == []:
+                items = None
+            else:
+                items = items[0]
+
+        else:
+            items = None
+
+        return items
+
+    def get_arguments_by_id(self, argument_id):
+        get_url = self._urls.get_argument_by_id_url(argument_id)
+
+        if self._verbose:
+            print(f"Getting System Argument by id: {argument_id}")
+            print(f"Post Url: {get_url}")
+
+        response = self.make_request(RequestTypes.GET, get_url)
+        self.handle_response(response)
+
+        if response.status_code == 200:
+            output = response.json()
+            items = output["items"]
+
+            if items == []:
+                items = None
+
+        else:
+            items = None
+
+        return items
+
+    def update_argument_by_name(self, game_name, argument_name, new_value, **kwargs):
+        patch_url = self._urls.get_argument_by_name_url(game_name, argument_name)
+
+        payload = {"game_arg": argument_name, "game_arg_value": new_value}
+
+        payload.update(kwargs)
+
+        if self._verbose:
+            print(f"Updating Game {game_name} Argument by name: {argument_name}")
+            print(f"Patch Url: {patch_url}")
+
+        response = self.make_request(RequestTypes.PATCH, patch_url, payload=payload)
         self.handle_response(response)

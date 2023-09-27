@@ -20,19 +20,57 @@ class VrisingGame(BaseGame):
         self._game_pretty_name = "V Rising"
         self._game_executable = "VRisingServer.exe"
         self._game_steam_id = "1829350"
+        self._game_info_url = (
+            "https://github.com/StunlockStudios/vrising-dedicated-server-instructions"
+        )
 
         # Add Args here, can update later.
         self._add_argument(
-            GameArgument("-persistentDataPath", value=None, required=True)
+            GameArgument(
+                "-persistentDataPath",
+                value=None,
+                required=True,
+                is_permanent=True,
+                file_mode=constants.FileModes.DIRECTORY.value,
+            )
         )
         self._add_argument(
-            GameArgument("-serverName", value=None, required=True, use_quotes=True)
+            GameArgument(
+                "-serverName",
+                value=None,
+                required=True,
+                use_quotes=True,
+                is_permanent=True,
+            )
         )
         self._add_argument(
-            GameArgument("-saveName", value=None, required=True, use_quotes=True)
+            GameArgument(
+                "-saveName",
+                value=None,
+                required=True,
+                use_quotes=True,
+                is_permanent=True,
+            )
         )
         self._add_argument(
-            GameArgument("-logFile", value=None, required=True, use_quotes=True)
+            GameArgument(
+                "-logFile",
+                value=None,
+                required=True,
+                use_quotes=True,
+                is_permanent=True,
+                file_mode=constants.FileModes.FILE.value,
+            )
+        )
+        # Default is 27015
+        self._add_argument(
+            GameArgument(
+                "-serverPort",
+                value=27015,
+                required=True,
+                use_quotes=True,
+                is_permanent=True,
+            )
         )
 
     def _run_game(self, command, working_dir) -> None:

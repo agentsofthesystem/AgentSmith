@@ -11,22 +11,6 @@ from application.api.v1.blueprints.app import app
 from application.api.v1.blueprints.executable import executable
 from application.api.v1.blueprints.game import game
 from application.api.v1.blueprints.steam import steam
-from application.source.models.games import Games
-from application.source.models.game_arguments import GamesArguments
-from application.source.models.settings import Settings
-
-
-def _seed_starter_data():
-    steam_setting_obj = Settings.query.filter_by(
-        setting_name=constants.STARTUP_STEAM_SETTING_NAME
-    ).first()
-
-    if steam_setting_obj is None:
-        new_setting = Settings()
-        new_setting.setting_name = constants.STARTUP_STEAM_SETTING_NAME
-        new_setting.setting_value = constants.STARTUP_STEAM_INSTALL_DIR
-        DATABASE.session.add(new_setting)
-        DATABASE.session.commit()
 
 
 def create_app(config=None):
@@ -67,9 +51,22 @@ def create_app(config=None):
     DATABASE.init_app(flask_app)
 
     with flask_app.app_context():
+        from application.source.models.games import Games
+        from application.source.models.game_arguments import GamesArguments
+        from application.source.models.settings import Settings
+
         DATABASE.create_all()
 
-        _seed_starter_data()
+        steam_setting_obj = Settings.query.filter_by(
+            setting_name=constants.STARTUP_STEAM_SETTING_NAME
+        ).first()
+
+        if steam_setting_obj is None:
+            new_setting = Settings()
+            new_setting.setting_name = constants.STARTUP_STEAM_SETTING_NAME
+            new_setting.setting_value = constants.STARTUP_STEAM_INSTALL_DIR
+            DATABASE.session.add(new_setting)
+            DATABASE.session.commit()
 
     logger.info(f"{flask_app.config['APP_NAME']} has been successfully created.")
 

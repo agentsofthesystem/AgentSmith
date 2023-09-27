@@ -1,7 +1,6 @@
-from datetime import datetime
-
 from application.extensions import DATABASE
 from application.common.pagination import PaginatedApi
+from application.common.constants import FileModes
 
 
 class GamesArguments(PaginatedApi, DATABASE.Model):
@@ -19,6 +18,10 @@ class GamesArguments(PaginatedApi, DATABASE.Model):
     game_arg_value = DATABASE.Column(DATABASE.String(256))
 
     required = DATABASE.Column(DATABASE.Boolean, nullable=True, default=True)
+    is_permanent = DATABASE.Column(DATABASE.Boolean, nullable=True, default=False)
+    file_mode = DATABASE.Column(
+        DATABASE.Integer, nullable=True, default=FileModes.NOT_A_FILE.value
+    )
 
     def to_dict(self):
         data = {}

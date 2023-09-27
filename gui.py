@@ -90,7 +90,6 @@ if __name__ == "__main__":
     """
     # _arg = MainArgParse()
     # _arg.apply()
-
     gui_globals = GuiGlobals()
     gui = GuiApp(gui_globals)
     gui.initialize(with_server=False, testing_mode=False)

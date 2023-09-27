@@ -9,6 +9,7 @@ from PyQt5.QtCore import Qt
 
 from application.common import constants
 from application.gui.globals import GuiGlobals
+from application.gui.widgets.file_select_widget import FileSelectWidget
 from client import Client
 
 
@@ -31,8 +32,9 @@ class SettingsWidget(QWidget):
         self._globals._steam_install_path = steam_install_dir
 
         label = QLabel("Steam Install Path: ")
-        text_edit = QLineEdit(self._globals._steam_install_path)
-        text_edit.textChanged.connect(self._update_steam_install_path)
+        text_edit = FileSelectWidget(self._client, constants.FileModes.DIRECTORY, self)
+        text_edit.get_line_edit().setText(steam_install_dir)
+        text_edit.get_line_edit().textChanged.connect(self._update_steam_install_path)
 
         h_layout.addWidget(label)
         h_layout.addWidget(text_edit)

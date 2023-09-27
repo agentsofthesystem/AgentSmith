@@ -70,7 +70,6 @@ class GameManagerWindow(QMainWindow):
         self._initialized = True
 
     def _add_tab_widget(self, title: str, widget: QWidget):
-
         tab = QWidget()
         tab.layout = QVBoxLayout()
         tab.layout.addWidget(widget)
@@ -92,7 +91,7 @@ class GameManagerWindow(QMainWindow):
         tab_items = [
             ("Game Control", self._game_control),
             ("Game Summary", self._game_summary),
-            ("Settings", self._settings)
+            ("Settings", self._settings),
         ]
 
         for tab in tab_items:

@@ -16,6 +16,7 @@ class BaseGame:
         self._game_executable = None
         self._game_steam_id = None
         self._game_installed = False
+        self._game_info_url = ""
 
     @abc.abstractmethod
     def startup(self) -> None:
@@ -80,9 +81,12 @@ class BaseGame:
     def _get_argument_list(self) -> []:
         return list(self._game_args.keys())
 
+    def _get_argument_dict(self) -> []:
+        return self._game_args
+
     def _get_command_str(self) -> str:
         arg_string = ""
-        for arg_name, arg in self._game_args.items():
+        for _, arg in self._game_args.items():
             arg_string += str(arg) + " "
 
         return f"{self._game_executable} {arg_string}"

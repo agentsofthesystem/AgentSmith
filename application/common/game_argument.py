@@ -1,3 +1,6 @@
+from application.common.constants import FileModes
+
+
 class GameArgument:
     FORMAT_STR = "{arg} {val}"
     FORMAT_STR_NO_EQUAL_WITH_QUOTES = '{arg} "{val}"'
@@ -5,11 +8,20 @@ class GameArgument:
     FORMAT_STR_WITH_EQUALS_AND_QUOTES = '{arg}="{val}"'
 
     def __init__(
-        self, argument, value=None, required=False, use_equals=False, use_quotes=True
+        self,
+        argument,
+        value=None,
+        required=False,
+        use_equals=False,
+        use_quotes=True,
+        is_permanent=False,
+        file_mode=FileModes.NOT_A_FILE.value,
     ) -> None:
         self._arg = argument
         self._value = value
         self._required = required
+        self._is_permanent = is_permanent
+        self._file_mode = file_mode
         self._use_equals = use_equals
         self._use_quotes = use_quotes
 

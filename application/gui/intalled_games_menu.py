@@ -79,7 +79,7 @@ class InstalledGameMenu(QMenu):
         if self._is_running(game_pid) and self._executable_is_found(game_exe):
             self._client.game.game_shutdown(game_name)
         else:
-            args_list = self._client.game.get_game_arguments(game_name)
+            args_list = self._client.game.get_argument_by_game_name(game_name)
             arg_dict = {}
 
             for arg in args_list:

@@ -49,10 +49,6 @@ def steam_app_install():
     payload.pop("user")
     payload.pop("password")
 
-    # Check if args were included.
-    if len(payload.keys()) > 0:
-        steam_mgr.save_game_arguments(steam_id, payload)
-
     logger.info("Steam Application has been installed")
 
     return "Success"

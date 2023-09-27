@@ -65,23 +65,6 @@ def get_all_games():
     return Games.to_collection_dict(Games.query, page, per_page, "game.get_all_games")
 
 
-def get_game_arguments(name):
-    page = request.args.get("page", 1, type=int)
-    per_page = min(
-        request.args.get("per_page", 10, type=int), 10000
-    )  # TODO Replace update limit
-
-    game_obj = Games.query.filter_by(game_name=name).first()
-
-    if game_obj is None:
-        raise InvalidUsage(f"Game, {name}, does not exit!", status_code=400)
-
-    args = GamesArguments.query.filter_by(game_id=game_obj.game_id)
-    return GamesArguments.to_collection_dict(
-        args, page, per_page, "game.get_games_arguments", name=name
-    )
-
-
 @staticmethod
 def _find_conforming_modules(package) -> {}:
     package_location = package.__path__
