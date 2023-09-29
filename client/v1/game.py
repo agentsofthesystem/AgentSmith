@@ -76,7 +76,7 @@ class SupportedGameClient(BaseClient):
             "game_arg": argument_name,
             "game_arg_value": game_arg_value,
             "is_permanent": is_permanent,
-            "required": game_arg_value,
+            "required": required,
             "file_mode": file_mode,
         }
 

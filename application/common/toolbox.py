@@ -99,6 +99,8 @@ def _find_conforming_modules(package) -> {}:
 
 @staticmethod
 def _instantiate_object(module_name, module):
+    return_obj = None
     for item in inspect.getmembers(module, inspect.isclass):
         if item[1].__module__ == module_name:
-            return item[1]()
+            return_obj = item[1]()
+    return return_obj

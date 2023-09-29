@@ -125,7 +125,31 @@ class GameControlWidget(QWidget):
 
         v_layout.addLayout(h_layout_all_game_info)
 
+        ## Game Status.
+
+        h_sep = QFrame()
+        h_sep.setFrameShape(QFrame.HLine)
+        v_layout.addWidget(h_sep)
+
+        h_layout_game_status = QHBoxLayout()
+        v_layout_game_status_labels = QVBoxLayout()
+        v_layout_game_status_text = QVBoxLayout()
+
+        v_layout_game_status_labels.addWidget(QLabel("Game PID"))
+        v_layout_game_status_labels.addWidget(QLabel("Game Exe Found?"))
+
+        v_layout_game_status_text.addWidget(QLabel("TBD"))
+        v_layout_game_status_text.addWidget(QLabel("TBD"))
+
+        h_layout_game_status.addLayout(v_layout_game_status_labels)
+        h_layout_game_status.addLayout(v_layout_game_status_text)
+        v_layout.addLayout(h_layout_game_status)
+
         # Game Arguments
+        h_sep = QFrame()
+        h_sep.setFrameShape(QFrame.HLine)
+        v_layout.addWidget(h_sep)
+
         title2 = QLabel("Game Arguments:")
         title2.setStyleSheet("text-decoration: underline")
         v_layout.addWidget(title2)

@@ -51,12 +51,14 @@ class GameArgumentsWidget(QWidget):
             arg_box.addWidget(QLabel("Required: "))
             arg_box.addWidget(required_cb)
 
-            arg_box.addWidget(QPushButton("Save"))
+            save_button = QPushButton("Save")
+            arg_box.addWidget(save_button)
             delete_button = QPushButton("Delete")
 
-            # TODO - This is not working...
+            # Don't want to allow somone to delete a permanent argument
             if is_permanent:
                 delete_button.setEnabled(False)
+                delete_button.setStyleSheet("text-decoration: line-through;")
 
             arg_box.addWidget(delete_button)
 

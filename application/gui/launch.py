@@ -10,6 +10,7 @@ from application.gui.globals import GuiGlobals
 from application.gui.game_install_window import GameInstallWindow
 from application.gui.game_manager_window import GameManagerWindow
 from application.gui.intalled_games_menu import InstalledGameMenu
+from application.gui.widgets.settings_widget import SettingsWidget
 from application.factory import create_app
 from client import Client
 
@@ -65,6 +66,11 @@ class GuiApp:
             self._game_install.init_ui()
         self._game_install.show()
 
+    def _launch_settings_widget(self):
+        if not self._settings._initialized:
+            self._settings.init_ui()
+        self._settings.show()
+
     def initialize(self, with_server=False, testing_mode=False):
         # If running the unified launch script, this will need to start up first.
         if with_server:
@@ -78,6 +84,7 @@ class GuiApp:
         self._game_manager = GameManagerWindow(self._globals)
         self._globals._game_control_widget = self._game_manager._game_control
         self._game_install = GameInstallWindow(self._globals)
+        self._settings = SettingsWidget(self._globals._client, self._globals)
 
         self._gui_app.setQuitOnLastWindowClosed(False)
 
@@ -109,6 +116,11 @@ class GuiApp:
         self._main_menu.addMenu(self._installed_games_menu)
 
         self._main_menu.addSeparator()
+
+        # Overall app settings
+        settings = QAction("Settings")
+        settings.triggered.connect(self._launch_settings_widget)
+        self._main_menu.addAction(settings)
 
         # To quit the app
         quit = QAction("Quit")

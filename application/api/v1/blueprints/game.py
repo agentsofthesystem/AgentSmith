@@ -7,8 +7,9 @@ from flask.views import MethodView
 from application.common import logger, toolbox
 from application.common.constants import FileModes
 from application.common.exceptions import InvalidUsage
+from application.common.game_base import BaseGame
 from application.extensions import DATABASE
-from application.source.games.vrising_game import VrisingGame
+from application.source import games
 from application.source.models.games import Games
 from application.source.models.game_arguments import GamesArguments
 
@@ -19,15 +20,6 @@ game = Blueprint("game", __name__, url_prefix="/v1")
 ## Supported Game Related Endpoints
 ###############################################################################
 ###############################################################################
-
-
-class SupportedGameTypes(Enum):
-    VRISING = "VRISING"
-
-
-@staticmethod
-def _is_supported_game(game_name):
-    return game_name in SupportedGameTypes._value2member_map_
 
 
 @game.route("/games", methods=["GET"])
@@ -42,15 +34,24 @@ def get_game_schema():
 
 @game.route("/game/startup/<string:game_name>", methods=["POST"])
 def game_startup(game_name):
-    game_name_upper = game_name.upper()
+    """
+    Instead of hardcoding a bunch of if/elif, can dynamically import the game module,
+    and search it for the game_name provided.
+    """
+    game: BaseGame = None
+    supported_game_modules = toolbox._find_conforming_modules(games)
+    for module_name in supported_game_modules.keys():
+        check_game: BaseGame = toolbox._instantiate_object(
+            module_name, supported_game_modules[module_name]
+        )
+        if check_game._game_name == game_name:
+            game = check_game
+            break
 
-    if not _is_supported_game(game_name_upper):
-        message = f"/game/startup - {game_name} - is not a suppported game."
+    if game is None:
+        message = f"/game/startup - Error: {game_name} is not a supported game!"
         logger.error(message)
         raise InvalidUsage(message, status_code=400)
-
-    if game_name_upper == SupportedGameTypes.VRISING.value:
-        game = VrisingGame()
 
     payload = request.json
 
@@ -82,15 +83,24 @@ def game_startup(game_name):
 
 @game.route("/game/shutdown/<string:game_name>", methods=["POST"])
 def game_shutdown(game_name):
-    game_name_upper = game_name.upper()
+    """
+    Instead of hardcoding a bunch of if/elif, can dynamically import the game module,
+    and search it for the game_name provided.
+    """
+    game: BaseGame = None
+    supported_game_modules = toolbox._find_conforming_modules(games)
+    for module_name in supported_game_modules.keys():
+        check_game: BaseGame = toolbox._instantiate_object(
+            module_name, supported_game_modules[module_name]
+        )
+        if check_game._game_name == game_name:
+            game = check_game
+            break
 
-    if not _is_supported_game(game_name_upper):
-        message = f"/game/startup - {game_name} - is not a suppported game."
+    if game is None:
+        message = f"/game/startup - Error: {game_name} is not a supported game!"
         logger.error(message)
         raise InvalidUsage(message, status_code=400)
-
-    if game_name_upper == SupportedGameTypes.VRISING.value:
-        game = VrisingGame()
 
     logger.info("Shutting down game server")
 
@@ -184,7 +194,7 @@ class GameArguments(MethodView):
             new_argument.required = payload["required"]
 
         if "is_permanent" in payload:
-            new_argument.required = payload["is_permanent"]
+            new_argument.is_permanent = payload["is_permanent"]
 
         if "file_mode" in payload:
             mode = int(payload["file_mode"])

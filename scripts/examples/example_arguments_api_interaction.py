@@ -48,6 +48,22 @@ def main():
     print(all_args)
     print("****************************")
 
+    # client.game.update_argument_by_name(
+    #     "vrising", "-persistentDataPath", "C:/STEAM_TEST/installs/vrising/save_data", is_permanent=True
+    # )
+    # client.game.update_argument_by_name(
+    #     "vrising", "-serverName", "world", is_permanent=True
+    # )
+    # client.game.update_argument_by_name(
+    #     "vrising", "-saveName", "world1", is_permanent=True
+    # )
+    # client.game.update_argument_by_name(
+    #     "vrising", "-logFile", "C:/STEAM_TEST/installs/vrising/logs/VRisingServer.log", is_permanent=True
+    # )
+    # client.game.update_argument_by_name(
+    #     "vrising", "-serverPort", "27015", is_permanent=True
+    # )
+
 
 if __name__ == "__main__":
     main()

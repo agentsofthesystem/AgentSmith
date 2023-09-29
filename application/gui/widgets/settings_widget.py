@@ -1,7 +1,6 @@
 from PyQt5.QtWidgets import (
     QWidget,
     QLabel,
-    QLineEdit,
     QHBoxLayout,
     QVBoxLayout,
 )
@@ -14,12 +13,13 @@ from client import Client
 
 
 class SettingsWidget(QWidget):
-    def __init__(self, client: Client, globals: GuiGlobals, parent: QWidget):
+    def __init__(self, client: Client, globals: GuiGlobals, parent: QWidget = None):
         super(QWidget, self).__init__(parent)
         self._layout = QVBoxLayout()
         self._client = client
         self._globals = globals
         self._initialized = False
+        self.setWindowTitle("App Settings")
 
     def init_ui(self):
         self._layout.setAlignment(Qt.AlignTop)

@@ -6,7 +6,6 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QMainWindow,
     QAction,
-    QTabWidget,
     QLayout,
     QMessageBox,
 )
@@ -14,8 +13,6 @@ from PyQt5.QtGui import QIcon
 
 from application.gui.globals import GuiGlobals
 from application.gui.widgets.game_control_widget import GameControlWidget
-from application.gui.widgets.game_summary_widget import GameSummaryWidget
-from application.gui.widgets.settings_widget import SettingsWidget
 
 
 class GameManagerWindow(QMainWindow):
@@ -32,8 +29,6 @@ class GameManagerWindow(QMainWindow):
         self._initialized = False
         self._globals = globals
         self._game_control = GameControlWidget(self._globals._client, self)
-        self._game_summary = GameSummaryWidget(self._globals._client, self)
-        self._settings = SettingsWidget(self._globals._client, self._globals, self)
 
     def init_ui(self):
         self.setWindowTitle(self.title)
@@ -60,22 +55,12 @@ class GameManagerWindow(QMainWindow):
             sys.exit(1)
 
         self._game_control.init_ui(all_games)
-        self._game_summary.init_ui(all_games)
-        self._settings.init_ui()
 
         self.add_widget_items()
 
         self.setGeometry(self.left, self.top, self.width, self.height)
 
         self._initialized = True
-
-    def _add_tab_widget(self, title: str, widget: QWidget):
-        tab = QWidget()
-        tab.layout = QVBoxLayout()
-        tab.layout.addWidget(widget)
-        tab.setLayout(tab.layout)
-
-        self.tabs.addTab(tab, title)
 
     def add_widget_items(self):
         self._main_widget = QWidget(self)
@@ -84,24 +69,8 @@ class GameManagerWindow(QMainWindow):
         self._main_layout.sizeConstraint = QLayout.SetDefaultConstraint
         self._main_widget.setLayout(self._main_layout)
 
-        self.tabs = QTabWidget()
-        self.tabs.setUsesScrollButtons(False)
-        self.tabs.currentChanged.connect(self._on_tab_change)  # changed!
-
-        tab_items = [
-            ("Game Control", self._game_control),
-            ("Game Summary", self._game_summary),
-            ("Settings", self._settings),
-        ]
-
-        for tab in tab_items:
-            self._add_tab_widget(tab[0], tab[1])
-
-        self._main_layout.addWidget(self.tabs)
+        self._main_layout.addWidget(self._game_control)
 
         self.setCentralWidget(self._main_widget)
 
         self.adjustSize()
-
-    def _on_tab_change(self):
-        self._game_summary.update_table()
