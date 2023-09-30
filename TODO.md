@@ -12,6 +12,7 @@
 8. Add open source license.
 9. User Testing
 10. Search code for TODOs and resolve.
+11. Remove code comments and random print statements.
 
 ## To get to version 0.0.2
 
@@ -26,4 +27,11 @@
 
 1. ~~Get rid of tabs on the Game control gui. Move settings under its own button on main system tray.  Get rid of
    summary table. Not really useful.~~ 
-2. Make the gui layout all nice a good looking. (Not my thing...)
+2. ~~Make the gui layout all nice a good looking. (Not my thing...)~~
+3. Make New Game Widget size correctly.
+
+# Other things to watch out for....
+
+1. Things might not behave right if deleting a game.
+2. Installing the same game twice?
+3. Errors that happen when a game is installed without any args. Edge case!

@@ -16,12 +16,6 @@ class GameInstallWindow(QMainWindow):
         super().__init__()
         self.title = "Game Installer"
 
-        # TODO - Make these constants or compute middle of screen.
-        self.left = 50
-        self.top = 50
-        self.width = 800
-        self.height = 600
-
         self._initialized = False
         self._globals = globals
         self._new_game = NewGameWidget(self._globals, self)
@@ -41,8 +35,6 @@ class GameInstallWindow(QMainWindow):
         self._new_game.init_ui()
 
         self.add_widget_items()
-
-        self.setGeometry(self.left, self.top, self.width, self.height)
 
         self._initialized = True
 

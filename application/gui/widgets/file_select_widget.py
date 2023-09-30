@@ -6,27 +6,35 @@ from PyQt5.QtWidgets import (
     QFileDialog,
     QPushButton,
     QLineEdit,
-    QTreeView,
+    QSizePolicy,
 )
+from PyQt5.QtGui import QFont, QFontMetrics
 
 from application.common.constants import FileModes
 from client import Client
 
 
 class FileSelectWidget(QWidget):
-    def __init__(self, client: Client, file_mode: FileModes, parent: QWidget) -> None:
+    def __init__(
+        self, client: Client, file_mode: FileModes, parent: QWidget = None
+    ) -> None:
         super().__init__(parent)
 
         self._parent = parent
         self._client = client
         self._file_mode: FileModes = file_mode
-        self._layout = QHBoxLayout()
-
         self._selected_path: str = ""
-        self._path_line_edit = QLineEdit()
-        self._browse_button = QPushButton("Browse")
 
-        dialog = QFileDialog()
+        self.init_ui()
+
+    def init_ui(self):
+        self._layout = QHBoxLayout()
+        self._path_line_edit = QLineEdit(self)
+        self._browse_button = QPushButton("Browse", self)
+
+        self._path_line_edit.textChanged.connect(self._resize_to_content)
+
+        dialog = QFileDialog(self)
 
         if self._file_mode == FileModes.DIRECTORY:
             dialog.setFileMode(QFileDialog.Directory)
@@ -62,3 +70,16 @@ class FileSelectWidget(QWidget):
 
         if path:
             self._path_line_edit.setText(path)
+
+    def _resize_to_content(self):
+        text = self._path_line_edit.text()
+
+        # Use QFontMetrics this way;
+        font = QFont("", 0)
+        fm = QFontMetrics(font)
+        pixel_width = fm.width(text)
+        pixel_height = fm.height()
+
+        self._path_line_edit.setFixedSize(pixel_width, pixel_height)
+
+        self.adjustSize()

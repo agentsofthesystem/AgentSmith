@@ -20,12 +20,6 @@ class GameManagerWindow(QMainWindow):
         super().__init__()
         self.title = "Game Manager"
 
-        # TODO - Make these constants or compute middle of screen.
-        self.left = 50
-        self.top = 50
-        self.width = 800
-        self.height = 600
-
         self._initialized = False
         self._globals = globals
         self._game_control = GameControlWidget(self._globals._client, self)
@@ -58,8 +52,6 @@ class GameManagerWindow(QMainWindow):
 
         self.add_widget_items()
 
-        self.setGeometry(self.left, self.top, self.width, self.height)
-
         self._initialized = True
 
     def add_widget_items(self):
@@ -74,3 +66,6 @@ class GameManagerWindow(QMainWindow):
         self.setCentralWidget(self._main_widget)
 
         self.adjustSize()
+
+    def update(self):
+        self._game_control.update_installed_games()

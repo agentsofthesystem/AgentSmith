@@ -11,12 +11,13 @@ class BaseGame:
     DEFAULT_WAIT_PERIOD = 5
 
     def __init__(self) -> None:
-        self._game_args = {}
-        self._game_name = None
-        self._game_executable = None
-        self._game_steam_id = None
-        self._game_installed = False
-        self._game_info_url = ""
+        self._game_args: dict = {}
+        self._game_name: str = None
+        self._game_pretty_name: str = None
+        self._game_executable: str = None
+        self._game_steam_id: str = None
+        self._game_installed: bool = False
+        self._game_info_url: str = ""
 
     @abc.abstractmethod
     def startup(self) -> None:

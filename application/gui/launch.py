@@ -59,6 +59,7 @@ class GuiApp:
     def _launch_game_manager_window(self):
         if not self._game_manager._initialized:
             self._game_manager.init_ui()
+        # self._game_manager.update()
         self._game_manager.show()
 
     def _launch_game_install_window(self):

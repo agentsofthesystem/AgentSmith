@@ -131,7 +131,7 @@ class SupportedGameClient(BaseClient):
 
         if arg_list == []:
             print("Error: No Arguments found")
-            return None
+            return []
 
         return arg_list
 
