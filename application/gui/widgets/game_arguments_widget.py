@@ -20,7 +20,14 @@ from client import Client
 
 
 class GameArgumentsWidget(QWidget):
-    def __init__(self, client: Client, arg_data: dict, parent: QWidget) -> None:
+    ARG_NAME_COL = 0
+    ARG_VALUE_COL = 1
+    ARG_REQUIRED_COL = 2
+    ARG_ACTION_COL = 3
+
+    def __init__(
+        self, client: Client, arg_data: dict, parent: QWidget, disable_cols: list = []
+    ) -> None:
         super(QWidget, self).__init__(parent)
 
         self._parent = parent
@@ -28,6 +35,7 @@ class GameArgumentsWidget(QWidget):
         self._layout = QVBoxLayout()
         self._arg_data = arg_data
         self._args_dict: dict = {}
+        self._disable_cols = disable_cols
 
         self.init_ui()
 
@@ -52,7 +60,15 @@ class GameArgumentsWidget(QWidget):
 
     def _update_table(self):
         num_rows = len(self._arg_data)
+
         header_labels = ["Arg Name", "Value", "Required", "Actions"]
+
+        if len(self._disable_cols) > 0:
+            if "Required" in self._disable_cols:
+                header_labels.remove("Required")
+            if "Actions" in self._disable_cols:
+                header_labels.remove("Actions")
+
         num_cols = len(header_labels)
 
         self._table.setRowCount(num_rows)
@@ -68,10 +84,13 @@ class GameArgumentsWidget(QWidget):
             file_mode = arg["file_mode"]
             is_permanent = arg["is_permanent"]
 
+            # TODO - This works... but its janky and can break.
+            # If someone disables required but not actions then c == 3 will equal the self._ARG_ACTIONS_COL but its
+            # hard coded to 4.  Change it to go back and hide the columns later.
             for c in range(0, num_cols):
-                if c == 0:
+                if c == self.ARG_NAME_COL:
                     self._table.setItem(r, c, QTableWidgetItem(arg_name))
-                elif c == 1:
+                elif c == self.ARG_VALUE_COL:
                     value_widget = self._get_file_edit_by_mode(file_mode, arg_value)
 
                     if (
@@ -83,11 +102,15 @@ class GameArgumentsWidget(QWidget):
                         self._args_dict[arg_name] = value_widget
 
                     self._table.setCellWidget(r, c, value_widget)
-                elif c == 2:
+                elif c == self.ARG_REQUIRED_COL:
+                    if "Required" in self._disable_cols:
+                        continue
                     required_cb = QCheckBox()
                     required_cb.setChecked(True if arg_required == 1 else False)
                     self._table.setCellWidget(r, c, required_cb)
-                else:
+                elif c == self.ARG_ACTION_COL:
+                    if "Actions" in self._disable_cols:
+                        continue
                     action_widget = self._get_action_widget(is_permanent)
                     self._table.setCellWidget(r, c, action_widget)
 

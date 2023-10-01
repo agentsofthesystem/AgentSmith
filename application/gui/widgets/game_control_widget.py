@@ -13,6 +13,7 @@ from PyQt5.QtCore import Qt
 from application.common import toolbox
 from application.common.game_base import BaseGame
 from application.source import games
+from application.gui.widgets.add_argument_widget import AddArgumentWidget
 from application.gui.widgets.game_arguments_widget import GameArgumentsWidget
 from client import Client
 
@@ -28,9 +29,15 @@ class GameControlWidget(QWidget):
         self._combo_box = QComboBox()
         self._layout.sizeConstraint = QLayout.SetDefaultConstraint
 
-        self._installed_supported_games = {}
-        self._current_game_frame = None
-        self._modules_dict = toolbox._find_conforming_modules(games)
+        self._installed_supported_games: dict = {}
+        self._current_game_frame: QFrame = None
+        self._modules_dict: dict = toolbox._find_conforming_modules(games)
+
+        self._startup_btn: QPushButton = None
+        self._shutdown_btn: QPushButton = None
+        self._restart_btn: QPushButton = None
+        self._uninstall_btn: QPushButton = None
+        self._add_arg_btn: QPushButton = None
 
     def _get_game_object(self, game_name):
         for module_name in self._modules_dict.keys():
@@ -52,7 +59,10 @@ class GameControlWidget(QWidget):
         self._layout.addWidget(h_sep)
 
         # Get first game in supported games.
-        self.update_installed_games(game_data=game_data)
+        self.update_installed_games(game_data=game_data, initialize=True)
+
+        # Current game frame gets created in update_installed_games
+        self._layout.addWidget(self._current_game_frame)
 
         self._combo_box.currentTextChanged.connect(self._text_changed)
 
@@ -62,7 +72,7 @@ class GameControlWidget(QWidget):
 
         self._initialized = True
 
-    def update_installed_games(self, game_data=None):
+    def update_installed_games(self, game_data=None, initialize=False):
         if game_data is None:
             game_data = self._client.game.get_games()
             game_data = game_data["items"]
@@ -83,7 +93,13 @@ class GameControlWidget(QWidget):
             self._current_game_frame = self._build_game_frame(
                 installed_supported_games[0]
             )
-            self._layout.addWidget(self._current_game_frame)
+
+            # Init routine uses this fucntion. Don't want to replace the widget the "first" time.
+            if not initialize:
+                old_game_frame = self._current_game_frame
+                old_game_frame.hide()
+                self._layout.replaceWidget(old_game_frame, self._current_game_frame)
+                self.adjustSize()
 
     def _build_game_frame(self, game_name):
         if len(self._installed_supported_games.keys()) == 0:
@@ -147,7 +163,13 @@ class GameControlWidget(QWidget):
 
         game_frame_main_layout.addWidget(game_args_label)
         game_frame_main_layout.addWidget(arg_widget)
-        game_frame_main_layout.addWidget(QPushButton("Add Argument"))
+
+        # Add argument button
+        self._add_arg_btn = QPushButton("Add Argument")
+        game_frame_main_layout.addWidget(self._add_arg_btn)
+        self._add_arg_btn.clicked.connect(
+            lambda: self._show_add_argument_widget(game_name)
+        )
 
         # Game controls
         game_control_label = QLabel("Game Controls:", game_frame)
@@ -156,10 +178,19 @@ class GameControlWidget(QWidget):
 
         game_control_h_layout = QHBoxLayout()
 
-        game_control_h_layout.addWidget(QPushButton("Startup"))
-        game_control_h_layout.addWidget(QPushButton("Shutdown"))
-        game_control_h_layout.addWidget(QPushButton("Restart"))
-        game_control_h_layout.addWidget(QPushButton("Uninstall"))
+        self._startup_btn = QPushButton("Startup")
+        self._startup_btn.clicked.connect(lambda: self._startup_game(game_name))
+        self._shutdown_btn = QPushButton("Shutdown")
+        self._shutdown_btn.clicked.connect(lambda: self._shutdown_game(game_name))
+        self._restart_btn = QPushButton("Restart")
+        self._restart_btn.clicked.connect(lambda: self._restart_game(game_name))
+        self._uninstall_btn = QPushButton("Uninstall")
+        self._uninstall_btn.clicked.connect(lambda: self._uninstall_game(game_name))
+
+        game_control_h_layout.addWidget(self._startup_btn)
+        game_control_h_layout.addWidget(self._shutdown_btn)
+        game_control_h_layout.addWidget(self._restart_btn)
+        game_control_h_layout.addWidget(self._uninstall_btn)
         game_frame_main_layout.addLayout(game_control_h_layout)
 
         # Finalize game frame
@@ -187,3 +218,22 @@ class GameControlWidget(QWidget):
             old_game_frame = self._current_game_frame
             old_game_frame.hide()
             self._layout.replaceWidget(old_game_frame, self._current_game_frame)
+
+    def _show_add_argument_widget(self, game_name):
+        print(f"Showing Add Arg Widget for game: {game_name}")
+        # TODO - Fix/Implement
+        add_arg_widget = AddArgumentWidget(self._client, game_name)
+        add_arg_widget.init_ui()
+        add_arg_widget.show()
+
+    def _startup_game(self, game_name):
+        print(f"Staring up game: {game_name}")
+
+    def _shutdown_game(self, game_name):
+        print(f"Shutting down game: {game_name}")
+
+    def _restart_game(self, game_name):
+        print(f"Restarting game: {game_name}")
+
+    def _uninstall_game(self, game_name):
+        print(f"Uninstall game: {game_name}")

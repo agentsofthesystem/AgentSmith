@@ -14,7 +14,7 @@ from application.gui.widgets.new_game_widget import NewGameWidget
 class GameInstallWindow(QMainWindow):
     def __init__(self, globals: GuiGlobals):
         super().__init__()
-        self.title = "Game Installer"
+        self.title = "Install New Game Server"
 
         self._initialized = False
         self._globals = globals

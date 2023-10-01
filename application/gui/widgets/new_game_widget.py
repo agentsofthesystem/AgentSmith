@@ -54,7 +54,6 @@ class NewGameWidget(QWidget):
         input_frame = QFrame()
 
         input_frame_main_layout = QVBoxLayout()
-        input_frame_args_layout = QHBoxLayout()
         input_frame_path_layout = QHBoxLayout()
 
         game_object: BaseGame = self._supported_games[game_name]
@@ -70,7 +69,11 @@ class NewGameWidget(QWidget):
             arg_dict["is_permanent"] = arg_obj._is_permanent
             args_list.append(arg_dict)
 
-        self._arg_widget = GameArgumentsWidget(self._client, args_list, input_frame)
+        disabled_cols = ["Required", "Actions"]
+
+        self._arg_widget = GameArgumentsWidget(
+            self._client, args_list, input_frame, disable_cols=disabled_cols
+        )
 
         input_frame_main_layout.addWidget(self._arg_widget)
 
@@ -85,14 +88,16 @@ class NewGameWidget(QWidget):
         self._current_game_install_path = text_edit
         install_path_layout.addWidget(label)
         install_path_layout.addWidget(text_edit)
-        install_button = QPushButton("Install")
-        install_button.clicked.connect(lambda: self._install_game(game_name))
-        install_path_layout.addWidget(install_button)
         input_frame_path_layout.addLayout(install_path_layout)
 
         # combine args and input path
         input_frame_main_layout.addWidget(h_sep)
         input_frame_main_layout.addLayout(input_frame_path_layout)
+
+        # installation button
+        install_button = QPushButton("Install Game Server")
+        install_button.clicked.connect(lambda: self._install_game(game_name))
+        input_frame_main_layout.addWidget(install_button)
 
         input_frame.setLayout(input_frame_main_layout)
         input_frame.setFrameStyle(QFrame.StyledPanel | QFrame.Plain)
