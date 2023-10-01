@@ -31,6 +31,18 @@ class SupportedGameClient(BaseClient):
 
         return response.json()
 
+    def get_game_by_name(self, game_name):
+        get_url = self._urls.get_game_by_name_url(game_name)
+
+        if self._verbose:
+            print(f"Getting Specific Game: {game_name}")
+            print(f"Get Url: {get_url}")
+
+        response = self.make_request(RequestTypes.GET, get_url)
+        self.handle_response(response)
+
+        return response.json()
+
     def game_startup(self, game_name, input_args={}):
         post_url = self._urls.get_game_startup_url(game_name)
 

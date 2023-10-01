@@ -63,7 +63,7 @@ class GuiApp:
             self._game_manager.update()
         self._game_manager.show()
 
-    def _launch_game_install_window(self):
+    def _launch_new_game_window(self):
         if not self._game_install._initialized:
             self._game_install.init_ui()
         self._game_install.show()
@@ -111,7 +111,7 @@ class GuiApp:
         self._main_menu.addSeparator()
 
         game_install = QAction("New Game")
-        game_install.triggered.connect(self._launch_game_install_window)
+        game_install.triggered.connect(self._launch_new_game_window)
         self._main_menu.addAction(game_install)
 
         # Installed Games Menu & Submenues.

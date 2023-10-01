@@ -66,6 +66,14 @@ def get_all_games():
 
 
 @staticmethod
+def get_game_by_name(game_name):
+    game_query = Games.query.filter_by(game_name=game_name)
+    return Games.to_collection_dict(
+        game_query, 1, 1, "game.get_game_by_name", game_name=game_name
+    )
+
+
+@staticmethod
 def _find_conforming_modules(package) -> {}:
     package_location = package.__path__
 

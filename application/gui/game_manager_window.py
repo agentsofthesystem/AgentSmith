@@ -22,7 +22,7 @@ class GameManagerWindow(QMainWindow):
 
         self._initialized = False
         self._globals = globals
-        self._game_control = GameControlWidget(self._globals._client, self)
+        self._game_control = GameControlWidget(self._globals._client, globals, self)
 
     def init_ui(self):
         self.setWindowTitle(self.title)

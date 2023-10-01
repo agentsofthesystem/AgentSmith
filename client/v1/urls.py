@@ -72,6 +72,9 @@ class AppUrls:
     def get_all_games_url(self) -> str:
         return f"{self.base_url}/games"
 
+    def get_game_by_name_url(self, game_name) -> str:
+        return f"{self.base_url}/game/{game_name}"
+
     def get_games_args_url(self, name) -> str:
         return f"{self.base_url}/games/{name}/arguments"
 
