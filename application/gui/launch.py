@@ -3,7 +3,7 @@ import os
 from flask import Flask
 from threading import Thread
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QAction, QSystemTrayIcon, QMenu, QApplication
+from PyQt5.QtWidgets import QAction, QSystemTrayIcon, QMenu, QApplication, QMessageBox
 
 from application.config.config import DefaultConfig
 from application.common.toolbox import _get_application_path
@@ -58,6 +58,17 @@ class GuiApp:
         self._gui_app.quit()
 
     def _launch_game_manager_window(self):
+        
+        games = self._globals._client.game.get_games()
+
+        if len(games['items']) == 0:
+            message = QMessageBox()
+            message.setText(
+            f"Please install a game before using the Game Manager!"
+            )
+            message.exec()
+            return
+
         if not self._game_manager._initialized:
             self._game_manager.init_ui()
         else:
