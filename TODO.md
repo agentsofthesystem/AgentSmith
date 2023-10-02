@@ -7,7 +7,7 @@
 3. Add ability to add a new argument.
 4. ~~Add ability to start/stop from game control widget.~~
 5. Add ability to delete game from game control widget.
-6. Add ability for app/gui to work if used via pyinstaller
+6. ~~Add ability for app/gui to work if used via pyinstaller.~~
 7. Get 7DTD to work with this tool.
 8. Add open source license.
 9. User Testing

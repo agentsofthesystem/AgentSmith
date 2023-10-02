@@ -58,14 +58,11 @@ class GuiApp:
         self._gui_app.quit()
 
     def _launch_game_manager_window(self):
-        
         games = self._globals._client.game.get_games()
 
-        if len(games['items']) == 0:
+        if len(games["items"]) == 0:
             message = QMessageBox()
-            message.setText(
-            f"Please install a game before using the Game Manager!"
-            )
+            message.setText(f"Please install a game before using the Game Manager!")
             message.exec()
             return
 
