@@ -2,12 +2,11 @@ import os
 import inspect
 import importlib.util
 import psutil
+import sys
 
 from flask import request
 
-from application.common.exceptions import InvalidUsage
 from application.source.models.games import Games
-from application.source.models.game_arguments import GamesArguments
 
 
 @staticmethod
@@ -112,3 +111,13 @@ def _instantiate_object(module_name, module):
         if item[1].__module__ == module_name:
             return_obj = item[1]()
     return return_obj
+
+
+@staticmethod
+def _get_application_path():
+    if getattr(sys, "frozen", False):
+        application_path = os.path.join(sys._MEIPASS, "application")
+    elif __file__:
+        current_file = os.path.abspath(__file__)
+        application_path = os.path.dirname(os.path.dirname(current_file))
+    return application_path

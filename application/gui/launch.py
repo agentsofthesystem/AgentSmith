@@ -6,6 +6,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction, QSystemTrayIcon, QMenu, QApplication
 
 from application.config.config import DefaultConfig
+from application.common.toolbox import _get_application_path
 from application.gui.globals import GuiGlobals
 from application.gui.game_install_window import GameInstallWindow
 from application.gui.game_manager_window import GameManagerWindow
@@ -91,10 +92,9 @@ class GuiApp:
         self._gui_app.setQuitOnLastWindowClosed(False)
 
         # Adding an icon
-        # TODO - Make this dynamic for pyinstaller - Location will be different.
-        current_file = os.path.abspath(__file__)
-        current_folder = os.path.dirname(current_file)
-        icon_path = os.path.join(current_folder, "resources", "keeper.png")
+        icon_path = os.path.join(
+            _get_application_path(), "gui", "resources", "keeper.png"
+        )
         print(f"Expecting Icon Path to be: {icon_path}")
         icon = QIcon(icon_path)
 
