@@ -11,7 +11,7 @@ from application.common.game_base import BaseGame
 from application.extensions import DATABASE
 from application.source import games
 from application.source.models.games import Games
-from application.source.models.game_arguments import GamesArguments
+from application.source.models.game_arguments import GameArguments
 
 game = Blueprint("game", __name__, url_prefix="/v1")
 
@@ -63,6 +63,7 @@ def game_startup(game_name):
     if "input_args" in payload.keys():
         input_args = payload["input_args"]
 
+    game._rebuild_arguments_dict()
     required_data = game._get_argument_list()
 
     if not set(required_data).issubset(set(input_args.keys())):
@@ -120,7 +121,7 @@ def game_shutdown(game_name):
     return jsonify("Success")
 
 
-class GameArguments(MethodView):
+class GameArgumentsApi(MethodView):
     def __init__(self, model):
         self.model = model
 
@@ -146,14 +147,14 @@ class GameArguments(MethodView):
         if game_arg_id:
             qry = self._get_argument(game_arg_id)
             return jsonify(
-                GamesArguments.to_collection_dict(
+                GameArguments.to_collection_dict(
                     qry, page, per_page, "game.arguments", game_arg_id=game_arg_id
                 )
             )
         elif argument_name:
             qry = self._get_argument_by_name(game_name, argument_name)
             return jsonify(
-                GamesArguments.to_collection_dict(
+                GameArguments.to_collection_dict(
                     qry,
                     page,
                     per_page,
@@ -165,7 +166,7 @@ class GameArguments(MethodView):
         else:
             qry = self._get_all()
             return jsonify(
-                GamesArguments.to_collection_dict(
+                GameArguments.to_collection_dict(
                     qry, page, per_page, "game.group_arguments"
                 )
             )
@@ -190,7 +191,7 @@ class GameArguments(MethodView):
                 status_code=400,
             )
 
-        new_argument = GamesArguments()
+        new_argument = GameArguments()
         new_argument.game_arg = payload["game_arg"]
         new_argument.game_arg_value = payload["game_arg_value"]
         new_argument.game_id = game_id
@@ -254,7 +255,7 @@ class GameArguments(MethodView):
 
     def delete(self, game_arg_id, argument_name=None):
         qry = self._get_argument(game_arg_id)
-        arg_obj: GamesArguments = qry.first()
+        arg_obj: GameArguments = qry.first()
 
         if arg_obj is None:
             raise InvalidUsage(
@@ -274,17 +275,17 @@ class GameArguments(MethodView):
 
 game.add_url_rule(
     "/game/arguments",
-    view_func=GameArguments.as_view("group_arguments", GamesArguments),
+    view_func=GameArgumentsApi.as_view("group_arguments", GameArguments),
     methods=["GET", "POST"],
 )
 game.add_url_rule(
     "/game/argument/<int:game_arg_id>",
-    view_func=GameArguments.as_view("arguments", GamesArguments),
+    view_func=GameArgumentsApi.as_view("arguments", GameArguments),
     defaults={"argument_name": None},
 )
 game.add_url_rule(
     "/game/<string:game_name>/argument/<string:argument_name>",
-    view_func=GameArguments.as_view("game_arguments_by_name", GamesArguments),
+    view_func=GameArgumentsApi.as_view("game_arguments_by_name", GameArguments),
     defaults={"game_arg_id": None},
     methods=["GET", "PATCH"],
 )

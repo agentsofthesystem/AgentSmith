@@ -52,7 +52,7 @@ def create_app(config=None):
 
     with flask_app.app_context():
         from application.source.models.games import Games
-        from application.source.models.game_arguments import GamesArguments
+        from application.source.models.game_arguments import GameArguments
         from application.source.models.settings import Settings
 
         DATABASE.create_all()

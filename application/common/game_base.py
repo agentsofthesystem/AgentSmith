@@ -5,6 +5,7 @@ from application.common import logger
 from application.common.game_argument import GameArgument
 from application.common.exceptions import InvalidUsage
 from application.source.models.games import Games
+from application.source.models.game_arguments import GameArguments
 
 
 class BaseGame:
@@ -91,6 +92,29 @@ class BaseGame:
             arg_string += str(arg) + " "
 
         return f"{self._game_executable} {arg_string}"
+
+    def _rebuild_arguments_dict(self) -> None:
+        game_qry = Games.query.filter_by(game_name=self._game_name)
+        game_obj = game_qry.first()
+
+        game_arg_objs = GameArguments.query.filter_by(game_id=game_obj.game_id).all()
+
+        self._reset_arguments()
+
+        for argument in game_arg_objs:
+            game_arg: GameArgument = GameArgument(
+                argument.game_arg,
+                value=argument.game_arg_value,
+                required=argument.required,
+                use_equals=argument.use_equals,
+                use_quotes=argument.use_quotes,
+                is_permanent=argument.is_permanent,
+                file_mode=argument.file_mode,
+            )
+            self._add_argument(game_arg)
+
+    def _reset_arguments(self) -> None:
+        self._game_args.clear()
 
     def _update_argument(self, arg_name, value) -> None:
         if arg_name not in self._game_args.keys():

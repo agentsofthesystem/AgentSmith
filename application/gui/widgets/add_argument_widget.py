@@ -143,5 +143,6 @@ class AddArgumentWidget(QWidget):
             message.setText(f"New Arg: There was an error creating the argument.")
         else:
             message.setText(f"Success!")
+            self.hide()
+
         message.exec()
-        return

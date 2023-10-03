@@ -110,7 +110,7 @@ class VrisingGame(BaseGame):
         game_obj = game_qry.first()
         game_install_dir = game_obj.game_install_dir
 
-        # Need game install locatoin to write batch file.
+        # Need game install location to write batch file.
         full_path_startup_script = os.path.join(
             game_install_dir, constants.STARTUP_BATCH_FILE_NAME
         )

@@ -3,7 +3,7 @@ from application.common.pagination import PaginatedApi
 from application.common.constants import FileModes
 
 
-class GamesArguments(PaginatedApi, DATABASE.Model):
+class GameArguments(PaginatedApi, DATABASE.Model):
     __tablename__ = "game_arguments"
 
     game_arg_id = DATABASE.Column(DATABASE.Integer, primary_key=True)
