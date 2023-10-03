@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import QIcon
 
 from application.gui.globals import GuiGlobals
-from application.gui.widgets.game_control_widget import GameControlWidget
+from application.gui.widgets.game_manager_widget import GameManagerWidget
 
 
 class GameManagerWindow(QMainWindow):
@@ -22,7 +22,9 @@ class GameManagerWindow(QMainWindow):
 
         self._initialized = False
         self._globals = globals
-        self._game_control = GameControlWidget(self._globals._client, globals, self)
+        self._game_manager_widget = GameManagerWidget(
+            self._globals._client, globals, self
+        )
 
     def init_ui(self):
         self.setWindowTitle(self.title)
@@ -48,7 +50,7 @@ class GameManagerWindow(QMainWindow):
             message.exec()
             sys.exit(1)
 
-        self._game_control.init_ui(all_games)
+        self._game_manager_widget.init_ui(all_games)
 
         self.add_widget_items()
 
@@ -61,11 +63,11 @@ class GameManagerWindow(QMainWindow):
         self._main_layout.sizeConstraint = QLayout.SetDefaultConstraint
         self._main_widget.setLayout(self._main_layout)
 
-        self._main_layout.addWidget(self._game_control)
+        self._main_layout.addWidget(self._game_manager_widget)
 
         self.setCentralWidget(self._main_widget)
 
         self.adjustSize()
 
     def update(self):
-        self._game_control.update_installed_games()
+        self._game_manager_widget.update_installed_games()

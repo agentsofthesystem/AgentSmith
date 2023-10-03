@@ -23,8 +23,8 @@ class GamesArguments(PaginatedApi, DATABASE.Model):
         DATABASE.Integer, nullable=True, default=FileModes.NOT_A_FILE.value
     )
 
-    # self._use_equals = use_equals
-    # self._use_quotes = use_quotes
+    use_equals = DATABASE.Column(DATABASE.Boolean, nullable=True, default=False)
+    use_quotes = DATABASE.Column(DATABASE.Boolean, nullable=True, default=True)
 
     def to_dict(self):
         data = {}

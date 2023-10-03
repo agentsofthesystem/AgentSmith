@@ -37,7 +37,7 @@ def main():
     arg_1_value_again = client.game.get_argument_by_name("vrising", "-test123")
     print(arg_1_value_again)
 
-    by_id = client.game.get_arguments_by_id(arg_id_1)
+    by_id = client.game.get_argument_by_id(arg_id_1)
     print("****************************")
     print(by_id)
     print("****************************")

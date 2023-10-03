@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import (
     QWidget,
     QVBoxLayout,
-    QLabel,
+    QMessageBox,
     QPushButton,
     QLineEdit,
     QCheckBox,
@@ -49,7 +49,7 @@ class GameArgumentsWidget(QWidget):
             QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents
         )
 
-        self._update_table()
+        self.update_table()
 
         self.setLayout(self._table_layout)
 
@@ -58,7 +58,11 @@ class GameArgumentsWidget(QWidget):
     def get_args_dict(self) -> dict:
         return self._args_dict
 
-    def _update_table(self):
+    def update_table(self, game_arguments=None):
+        # Allow argument data to be updated by external caller.
+        if game_arguments:
+            self._arg_data = game_arguments
+
         num_rows = len(self._arg_data)
 
         header_labels = ["Arg Name", "Value", "Required", "Actions"]
@@ -71,6 +75,7 @@ class GameArgumentsWidget(QWidget):
 
         num_cols = len(header_labels)
 
+        self._table.setRowCount(0)  # Reset
         self._table.setRowCount(num_rows)
         self._table.setColumnCount(num_cols)
 
@@ -79,10 +84,14 @@ class GameArgumentsWidget(QWidget):
         for r in range(0, num_rows):
             arg = self._arg_data[r]
             arg_name = arg["game_arg"]
+            arg_id = arg["game_arg_id"]
             arg_required = arg["required"]
             arg_value = arg["game_arg_value"]
             file_mode = arg["file_mode"]
             is_permanent = arg["is_permanent"]
+
+            # Value widget for the given row
+            value_widget = None
 
             # TODO - This works... but its janky and can break.
             # If someone disables required but not actions then c == 3 will equal the self._ARG_ACTIONS_COL but its
@@ -111,7 +120,9 @@ class GameArgumentsWidget(QWidget):
                 elif c == self.ARG_ACTION_COL:
                     if "Actions" in self._disable_cols:
                         continue
-                    action_widget = self._get_action_widget(is_permanent)
+                    action_widget = self._get_action_widget(
+                        is_permanent, arg_id, arg_name
+                    )
                     self._table.setCellWidget(r, c, action_widget)
 
                 self._table.horizontalHeader().setSectionResizeMode(
@@ -122,14 +133,18 @@ class GameArgumentsWidget(QWidget):
         self._table.resizeColumnsToContents()
         self.adjustSize()
 
-    def _get_action_widget(self, is_permanent):
+    def _get_action_widget(self, is_permanent: bool, arg_id: str, arg_name: str):
         action_widget = QWidget(self._table)
         action_box = QHBoxLayout()
         action_box.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         save_button = QPushButton("Save", action_widget)
-        action_box.addWidget(save_button)
         delete_button = QPushButton("Delete", action_widget)
+
+        save_button.clicked.connect(lambda: self._update_argument(arg_id, arg_name))
+        delete_button.clicked.connect(lambda: self._delete_argument(arg_id))
+
+        action_box.addWidget(save_button)
 
         # Don't want to allow somone to delete a permanent argument
         if is_permanent:
@@ -160,3 +175,31 @@ class GameArgumentsWidget(QWidget):
         arg_edit_widget.show()
 
         return arg_edit_widget
+
+    def _delete_argument(self, arg_id):
+        print(f"Deleting Argument id: {arg_id}!")
+
+        message = QMessageBox()
+
+        if self._client.game.delete_argument_by_id(arg_id):
+            message.setText(f"Argument Deleted.")
+        else:
+            message.setText(f"Error: Argument not deleted...")
+        message.exec()
+
+    def _update_argument(self, arg_id, arg_name):
+        print(f"Updating Argument id: {arg_id}!")
+
+        value_widget = self._args_dict[arg_name]
+        if isinstance(value_widget, FileSelectWidget):
+            new_arg_value = value_widget.get_line_edit().text()
+        else:
+            new_arg_value = value_widget.text()
+
+        message = QMessageBox()
+
+        if self._client.game.update_argument_by_id(arg_id, new_arg_value):
+            message.setText(f"Updated Argument: {arg_name} to: {new_arg_value}.")
+        else:
+            message.setText(f"Error: Argument not updated...")
+        message.exec()

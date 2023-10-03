@@ -80,6 +80,8 @@ class SupportedGameClient(BaseClient):
         is_permanent: bool = False,
         required: bool = False,
         file_mode: FileModes = FileModes.NOT_A_FILE.value,
+        use_equals: bool = False,
+        use_quotes: bool = True,
     ):
         post_url = self._urls.get_arguments_url()
 
@@ -90,6 +92,8 @@ class SupportedGameClient(BaseClient):
             "is_permanent": is_permanent,
             "required": required,
             "file_mode": file_mode,
+            "use_equals": use_equals,
+            "use_quotes": use_quotes,
         }
 
         if self._verbose:
@@ -174,7 +178,7 @@ class SupportedGameClient(BaseClient):
 
         return items
 
-    def get_arguments_by_id(self, argument_id):
+    def get_argument_by_id(self, argument_id):
         get_url = self._urls.get_argument_by_id_url(argument_id)
 
         if self._verbose:
@@ -209,3 +213,37 @@ class SupportedGameClient(BaseClient):
 
         response = self.make_request(RequestTypes.PATCH, patch_url, payload=payload)
         self.handle_response(response)
+
+    def update_argument_by_id(self, argument_id, new_value, **kwargs):
+        patch_url = self._urls.get_argument_by_id_url(argument_id)
+
+        payload = {"game_arg_value": new_value}
+
+        payload.update(kwargs)
+
+        if self._verbose:
+            print(f"Updating Argument ID: {argument_id}")
+            print(f"Patch Url: {patch_url}")
+
+        response = self.make_request(RequestTypes.PATCH, patch_url, payload=payload)
+        self.handle_response(response)
+
+        if response.status_code == 200:
+            return True
+        else:
+            return False
+
+    def delete_argument_by_id(self, argument_id):
+        delete_url = self._urls.get_argument_by_id_url(argument_id)
+
+        if self._verbose:
+            print(f"Deleting Argument ID: {argument_id}")
+            print(f"Patch Url: {delete_url}")
+
+        response = self.make_request(RequestTypes.DELETE, delete_url)
+        self.handle_response(response)
+
+        if response.status_code == 200:
+            return True
+        else:
+            return False

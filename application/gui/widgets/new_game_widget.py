@@ -38,7 +38,6 @@ class NewGameWidget(QWidget):
         self._globals: GuiGlobals = globals
         self._client = globals._client
         self._install_games_menu = globals._installed_games_menu
-        self._game_control_widget = globals._game_control_widget
         self._supported_games: dict = {}
         self._arg_widget: GameArgumentsWidget = None
 
@@ -208,6 +207,8 @@ class NewGameWidget(QWidget):
                 is_permanent=arg_object._is_permanent,
                 required=arg_object._required,
                 file_mode=arg_object._file_mode,
+                use_equals=arg_object._use_equals,
+                use_quotes=arg_object._use_quotes,
             )
 
         self._install_games_menu.update_menu()

@@ -16,27 +16,31 @@ from application.common import toolbox
 from application.common.game_base import BaseGame
 from application.source import games
 from application.gui.widgets.add_argument_widget import AddArgumentWidget
+from application.gui.intalled_games_menu import InstalledGameMenu
 from application.gui.widgets.game_arguments_widget import GameArgumentsWidget
 from client import Client
 
 
-class GameControlWidget(QWidget):
+class GameManagerWidget(QWidget):
     MILIS_PER_SECOND = 1000
     REFRESH_INTERVAL = 10 * MILIS_PER_SECOND
 
     def __init__(self, client: Client, globals, parent: QWidget) -> None:
         super(QWidget, self).__init__(parent)
 
-        self._parent = parent
-        self._client = client
+        self._parent: QWidget = parent
+        self._client: Client = client
 
+        # Complex types
         self._layout = QVBoxLayout()
         self._combo_box = QComboBox()
-        self._layout.sizeConstraint = QLayout.SetDefaultConstraint
-
-        self._installed_supported_games: dict = {}
-        self._install_games_menu = globals._installed_games_menu
+        self._install_games_menu: InstalledGameMenu = globals._installed_games_menu
         self._current_game_frame: QFrame = None
+        self._add_arguments_widget: AddArgumentWidget = globals._add_arguments_widget
+        self._current_arg_widget: GameArgumentsWidget = None
+
+        # Primitives
+        self._installed_supported_games: dict = {}
         self._modules_dict: dict = toolbox._find_conforming_modules(games)
         self._current_game_name: str = None
         self._current_game_exe: str = None
@@ -65,6 +69,7 @@ class GameControlWidget(QWidget):
         return None
 
     def init_ui(self, game_data):
+        self._layout.sizeConstraint = QLayout.SetDefaultConstraint
         self._layout.setAlignment(Qt.AlignTop)
 
         self._layout.addWidget(self._combo_box)
@@ -122,41 +127,48 @@ class GameControlWidget(QWidget):
 
     def _refresh_on_timer(self):
         # Don't want to make request of API before window has been opened for the first time.
-        if self._current_game_name and self._current_game_exe:
-            response_data = self._client.game.get_game_by_name(self._current_game_name)
-            game_data = response_data["items"][0]
+        if not (self._current_game_name and self._current_game_exe):
+            return
 
-            game_pid = game_data["game_pid"]
+        response_data = self._client.game.get_game_by_name(self._current_game_name)
+        game_data = response_data["items"][0]
+
+        game_pid = game_data["game_pid"]
+        is_game_pid = False
+
+        if game_pid is None:
+            self._game_pid_label.setText("Game PID Not in Database")
             is_game_pid = False
+        else:
+            self._game_pid_label.setText(f"{game_pid}")
+            is_game_pid = True
 
-            if game_pid is None:
-                self._game_pid_label.setText("Game PID Not in Database")
-                is_game_pid = False
-            else:
-                self._game_pid_label.setText(f"{game_pid}")
-                is_game_pid = True
+        is_exe_found = self._executable_is_found(self._current_game_exe)
 
-            is_exe_found = self._executable_is_found(self._current_game_exe)
+        if is_exe_found:
+            self._game_exe_found_label.setText("Executable Running!")
+        else:
+            self._game_exe_found_label.setText("Executable Not Found on Host.")
 
-            if is_exe_found:
-                self._game_exe_found_label.setText("Executable Running!")
-            else:
-                self._game_exe_found_label.setText("Executable Not Found on Host.")
+        # Game is running
+        if is_game_pid and is_exe_found:
+            self._disable_btn(self._startup_btn)
+            self._disable_btn(self._uninstall_btn)
+            self._enable_btn(self._shutdown_btn)
+            self._enable_btn(self._restart_btn)
+        else:
+            # Game is not running
+            self._enable_btn(self._startup_btn)
+            self._enable_btn(self._uninstall_btn)
+            self._disable_btn(self._shutdown_btn)
+            self._disable_btn(self._restart_btn)
 
-            # Game is running
-            if is_game_pid and is_exe_found:
-                self._disable_btn(self._startup_btn)
-                self._disable_btn(self._uninstall_btn)
-                self._enable_btn(self._shutdown_btn)
-                self._enable_btn(self._restart_btn)
-            else:
-                # Game is not running
-                self._enable_btn(self._startup_btn)
-                self._enable_btn(self._uninstall_btn)
-                self._disable_btn(self._shutdown_btn)
-                self._disable_btn(self._restart_btn)
+        game_arguments = self._client.game.get_argument_by_game_name(
+            self._current_game_name
+        )
 
         self._install_games_menu.update_menu()
+        self._current_arg_widget.update_table(game_arguments=game_arguments)
 
         self._timer.setInterval(self.REFRESH_INTERVAL)
 
@@ -231,16 +243,18 @@ class GameControlWidget(QWidget):
         game_args_label = QLabel("Game Arguments:", game_frame)
         game_args_label.setStyleSheet("text-decoration: underline;")
         game_args = self._client.game.get_argument_by_game_name(game_object._game_name)
-        arg_widget = GameArgumentsWidget(self._client, game_args, game_frame)
+        self._current_arg_widget = GameArgumentsWidget(
+            self._client, game_args, game_frame
+        )
 
         game_frame_main_layout.addWidget(game_args_label)
-        game_frame_main_layout.addWidget(arg_widget)
+        game_frame_main_layout.addWidget(self._current_arg_widget)
 
         # Add argument button
         self._add_arg_btn = QPushButton("Add Argument")
         game_frame_main_layout.addWidget(self._add_arg_btn)
         self._add_arg_btn.clicked.connect(
-            lambda: self._show_add_argument_widget(game_name)
+            lambda: self._show_add_argument_widget(self._current_game_name)
         )
 
         # Game controls
@@ -304,10 +318,11 @@ class GameControlWidget(QWidget):
 
     def _show_add_argument_widget(self, game_name):
         print(f"Showing Add Arg Widget for game: {game_name}")
-        # TODO - Fix/Implement
-        add_arg_widget = AddArgumentWidget(self._client, game_name)
-        add_arg_widget.init_ui()
-        add_arg_widget.show()
+        if not self._add_arguments_widget._initialized:
+            self._add_arguments_widget.init_ui(game_name)
+        else:
+            self._add_arguments_widget.update(game_name)
+        self._add_arguments_widget.show()
 
     def _startup_game(self, game_name):
         print(f"Staring up game: {game_name}")

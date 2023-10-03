@@ -13,6 +13,9 @@
 9. User Testing
 10. Search code for TODOs and resolve.
 11. Remove code comments and random print statements.
+12. Add pydocs to classes, files, functions, etc...
+13. Clean up imports in all files.
+14. Clean up typing hints in all files.
 
 ## To get to version 0.0.2
 
@@ -21,12 +24,13 @@
 3. Finalize Documenation 
   - Add docs for how a dev can add a new game.
   - Add docs for user docs with vrising example to install/use game. 
+4. Turn off auto updates on Game Manager window when its closed.
 
 # Nice to haves.
 
 1. ~~Get rid of tabs on the Game control gui. Move settings under its own button on main system tray.  Get rid of summary table. Not really useful.~~ 
 2. ~~Make the gui layout all nice a good looking. (Not my thing...)~~
-3. Make New Game Widget size correctly.
+3. ~~Make New Game Widget size correctly.~~
 
 # Other things to watch out for....
 

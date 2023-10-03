@@ -2,7 +2,8 @@
 from flask import Flask
 
 from application.gui.intalled_games_menu import InstalledGameMenu
-from application.gui.widgets.game_control_widget import GameControlWidget
+from application.gui.widgets.add_argument_widget import AddArgumentWidget
+from application.gui.widgets.game_manager_widget import GameManagerWidget
 from client import Client
 
 
@@ -24,4 +25,4 @@ class GuiGlobals:
         self._FLASK_APP: Flask = None
         self._client: Client = None
         self._installed_games_menu: InstalledGameMenu = None
-        self._game_control_widget: GameControlWidget = None
+        self._add_arguments_widget: AddArgumentWidget = None

@@ -80,6 +80,7 @@ class FileSelectWidget(QWidget):
         pixel_width = fm.width(text)
         pixel_height = fm.height()
 
+        # TODO - Have min pixel width and do not go below it.
         self._path_line_edit.setFixedSize(pixel_width, pixel_height)
 
         self.adjustSize()

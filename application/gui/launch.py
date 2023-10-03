@@ -11,6 +11,7 @@ from application.gui.globals import GuiGlobals
 from application.gui.game_install_window import GameInstallWindow
 from application.gui.game_manager_window import GameManagerWindow
 from application.gui.intalled_games_menu import InstalledGameMenu
+from application.gui.widgets.add_argument_widget import AddArgumentWidget
 from application.gui.widgets.settings_widget import SettingsWidget
 from application.factory import create_app
 from client import Client
@@ -32,7 +33,7 @@ class GuiApp:
         self._server_thread = None
         self._main_menu = QMenu()
         self._installed_games_menu = None
-        self._game_manager = None
+        self._game_manager_window = None
 
     def _create_backend(self) -> Flask:
         config = DefaultConfig("python")
@@ -66,21 +67,21 @@ class GuiApp:
             message.exec()
             return
 
-        if not self._game_manager._initialized:
-            self._game_manager.init_ui()
+        if not self._game_manager_window._initialized:
+            self._game_manager_window.init_ui()
         else:
-            self._game_manager.update()
-        self._game_manager.show()
+            self._game_manager_window.update()
+        self._game_manager_window.show()
 
     def _launch_new_game_window(self):
-        if not self._game_install._initialized:
-            self._game_install.init_ui()
-        self._game_install.show()
+        if not self._game_install_window._initialized:
+            self._game_install_window.init_ui()
+        self._game_install_window.show()
 
     def _launch_settings_widget(self):
-        if not self._settings._initialized:
-            self._settings.init_ui()
-        self._settings.show()
+        if not self._settings_widget._initialized:
+            self._settings_widget.init_ui()
+        self._settings_widget.show()
 
     def initialize(self, with_server=False, testing_mode=False):
         # If running the unified launch script, this will need to start up first.
@@ -91,11 +92,15 @@ class GuiApp:
         self._installed_games_menu = InstalledGameMenu(
             self._main_menu, self._globals._client
         )
+        self._add_arguments_widget = AddArgumentWidget(self._globals._client)
+
+        # Assign those widgets to global before instantiating other windows.
+        self._globals._add_arguments_widget = self._add_arguments_widget
         self._globals._installed_games_menu = self._installed_games_menu
-        self._game_manager = GameManagerWindow(self._globals)
-        self._globals._game_control_widget = self._game_manager._game_control
-        self._game_install = GameInstallWindow(self._globals)
-        self._settings = SettingsWidget(self._globals._client, self._globals)
+
+        self._game_manager_window = GameManagerWindow(self._globals)
+        self._game_install_window = GameInstallWindow(self._globals)
+        self._settings_widget = SettingsWidget(self._globals._client, self._globals)
 
         self._gui_app.setQuitOnLastWindowClosed(False)
 

@@ -201,6 +201,12 @@ class GameArguments(MethodView):
         if "is_permanent" in payload:
             new_argument.is_permanent = payload["is_permanent"]
 
+        if "use_equals" in payload:
+            new_argument.use_equals = payload["use_equals"]
+
+        if "use_quotes" in payload:
+            new_argument.use_quotes = payload["use_quotes"]
+
         if "file_mode" in payload:
             mode = int(payload["file_mode"])
             if mode == FileModes.FILE.value:
@@ -228,12 +234,16 @@ class GameArguments(MethodView):
         if game_arg_id and argument_name is None:
             qry = self._get_argument(game_arg_id)
         elif argument_name and game_arg_id is None:
+            # Only need to check this if using arg name to patch.
+            if "game_arg" not in payload:
+                raise InvalidUsage(
+                    "Bad Request: Missing Argument Name", status_code=400
+                )
+
             qry = self._get_argument_by_name(game_name, argument_name)
 
         payload = request.json
 
-        if "game_arg" not in payload:
-            raise InvalidUsage("Bad Request: Missing Argument Name", status_code=400)
         if "game_arg_value" not in payload:
             raise InvalidUsage("Bad Request: Missing Argument Value", status_code=400)
 
@@ -242,11 +252,24 @@ class GameArguments(MethodView):
 
         return "Success"
 
-    def delete(self, game_arg_id):
+    def delete(self, game_arg_id, argument_name=None):
         qry = self._get_argument(game_arg_id)
-        DATABASE.session.delete(qry)
+        arg_obj: GamesArguments = qry.first()
+
+        if arg_obj is None:
+            raise InvalidUsage(
+                f"Bad Request: Argument ID {game_arg_id} does not exist!",
+                status_code=400,
+            )
+
+        if arg_obj.is_permanent:
+            raise InvalidUsage(
+                f"Bad Request: Cannot Delete a permanent Argument!", status_code=400
+            )
+
+        DATABASE.session.delete(arg_obj)
         DATABASE.session.commit()
-        return "", 204
+        return "", 200
 
 
 game.add_url_rule(
