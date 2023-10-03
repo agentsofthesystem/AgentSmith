@@ -6,13 +6,13 @@
 2. ~~Add ability to delete argument. If allowed.~~
 3. ~~Add ability to add a new argument.~~
 4. ~~Add ability to start/stop from game control widget.~~
-5. Add ability to uninstall a game from game control widget.
+5. ~~Add ability to uninstall a game from game control widget.~~
 6. ~~Add ability for app/gui to work if used via pyinstaller.~~
 7. Get 7DTD to work with this tool.
 8. Add open source license.
 9. User Testing
 10. Search code for TODOs and resolve.
-11. Remove code comments and random print statements.
+11. Remove code comments and random print statements. Except for client. Client can have print statements.
 12. Add pydocs to classes, files, functions, etc...
 13. Clean up imports in all files.
 14. Clean up typing hints in all files.
@@ -25,6 +25,7 @@
   - Add docs for how a dev can add a new game.
   - Add docs for user docs with vrising example to install/use game. 
 4. Turn off auto updates on Game Manager window when its closed.
+5. Add github issue template.
 
 # Nice to haves.
 
@@ -37,3 +38,4 @@
 1. Things might not behave right if deleting a game.
 2. Installing the same game twice?
 3. ~~Errors that happen when a game is installed without any args. Edge case!~~
+4. Having two games installed and uninstalling one of them. Not sure how game manager GUI will react.
