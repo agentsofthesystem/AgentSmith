@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import (
     QComboBox,
     QHBoxLayout,
     QLayout,
+    QMessageBox,
 )
 from PyQt5.QtCore import Qt, QTimer
 
@@ -48,7 +49,6 @@ class GameManagerWidget(QWidget):
         # Time to update this class widget
         self._timer: QTimer = QTimer(self)
         self._timer.timeout.connect(self._refresh_on_timer)
-        self._timer.start(1000)  # 1 second interval
 
         # Widget items that need to be tracked.
         self._startup_btn: QPushButton = None
@@ -96,10 +96,15 @@ class GameManagerWidget(QWidget):
 
         self._initialized = True
 
-    def update_installed_games(self, game_data=None, initialize=False):
+    def update_installed_games(
+        self, game_data=None, initialize=False, skip_timer=False
+    ):
         if game_data is None:
             game_data = self._client.game.get_games()
             game_data = game_data["items"]
+
+        if not self._timer.isActive() and not skip_timer:
+            self._timer.start(1000)
 
         self._combo_box.clear()
         self._installed_supported_games.clear()
@@ -354,6 +359,25 @@ class GameManagerWidget(QWidget):
 
     def _uninstall_game(self, game_name):
         print(f"Uninstall game: {game_name}")
-        # TODO - Not yet implemented
-        # self._client.game.uninstall_game(game_name)
-        self._install_games_menu.update_menu()
+
+        # Stop the regular refresh from happening.
+        self._timer.stop()
+
+        message = QMessageBox()
+        if self._client.game.uninstall(game_name):
+            message.setText(f"Game {game_name} was uninstalled!")
+            self.update_installed_games(skip_timer=True)
+
+            installed_supported_games = list(self._installed_supported_games.keys())
+
+            if len(installed_supported_games) == 0:
+                self.hide()
+                self._parent.hide()
+            else:
+                self._timer.start(1000)  # Turn it back on.
+
+            self._install_games_menu.update_menu()
+
+        else:
+            message.setText(f"Error: Unable to uninstall game server...")
+        message.exec()

@@ -84,11 +84,16 @@ class GameArgumentsWidget(QWidget):
         for r in range(0, num_rows):
             arg = self._arg_data[r]
             arg_name = arg["game_arg"]
-            arg_id = arg["game_arg_id"]
             arg_required = arg["required"]
             arg_value = arg["game_arg_value"]
             file_mode = arg["file_mode"]
             is_permanent = arg["is_permanent"]
+
+            # When using this widget on the New game Widget, args come from class obj, not database.
+            if "game_arg_id" in arg:
+                arg_id = arg["game_arg_id"]
+            else:
+                arg_id = -1
 
             # Value widget for the given row
             value_widget = None

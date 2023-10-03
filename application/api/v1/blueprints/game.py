@@ -43,20 +43,7 @@ def game_startup(game_name):
     Instead of hardcoding a bunch of if/elif, can dynamically import the game module,
     and search it for the game_name provided.
     """
-    game: BaseGame = None
-    supported_game_modules = toolbox._find_conforming_modules(games)
-    for module_name in supported_game_modules.keys():
-        check_game: BaseGame = toolbox._instantiate_object(
-            module_name, supported_game_modules[module_name]
-        )
-        if check_game._game_name == game_name:
-            game = check_game
-            break
-
-    if game is None:
-        message = f"/game/startup - Error: {game_name} is not a supported game!"
-        logger.error(message)
-        raise InvalidUsage(message, status_code=400)
+    game: BaseGame = toolbox._get_supported_game_object(game_name)
 
     payload = request.json
 
@@ -78,7 +65,7 @@ def game_startup(game_name):
 
     # Cannot startup a game that does not exist!
     if not game._is_game_installed():
-        message = f"/game/startup - Error: {game_name} is not installed. The user must install first!"
+        message = f"/game/startup - Error: {game_name} is not installed!"
         logger.error(message)
         raise InvalidUsage(message, status_code=400)
 
@@ -89,36 +76,41 @@ def game_startup(game_name):
 
 @game.route("/game/shutdown/<string:game_name>", methods=["POST"])
 def game_shutdown(game_name):
-    """
-    Instead of hardcoding a bunch of if/elif, can dynamically import the game module,
-    and search it for the game_name provided.
-    """
-    game: BaseGame = None
-    supported_game_modules = toolbox._find_conforming_modules(games)
-    for module_name in supported_game_modules.keys():
-        check_game: BaseGame = toolbox._instantiate_object(
-            module_name, supported_game_modules[module_name]
-        )
-        if check_game._game_name == game_name:
-            game = check_game
-            break
-
-    if game is None:
-        message = f"/game/startup - Error: {game_name} is not a supported game!"
-        logger.error(message)
-        raise InvalidUsage(message, status_code=400)
-
     logger.info("Shutting down game server")
+    game: BaseGame = toolbox._get_supported_game_object(game_name)
 
     # Cannot shutdown a game that does not exist!
     if not game._is_game_installed():
-        message = f"/game/startup - Error: {game_name} is not installed. The user must install first!"
+        message = f"/game/shutdown - Error: {game_name} is not installed!"
         logger.error(message)
         raise InvalidUsage(message, status_code=400)
 
     game.shutdown()
 
     return jsonify("Success")
+
+
+@game.route("/game/uninstall/<string:game_name>", methods=["POST"])
+def game_uninstall(game_name):
+    game: BaseGame = toolbox._get_supported_game_object(game_name)
+
+    # Cannot uninstall  a game that does not exist!
+    if not game._is_game_installed():
+        message = f"/game/uninstall - Error: {game_name} is not installed!"
+        logger.error(message)
+        raise InvalidUsage(message, status_code=400)
+
+    # Going to issue shutdown command... just because.
+    game.shutdown()
+
+    if game.uninstall():
+        return jsonify("Success")
+    else:
+        message = (
+            f"/game/uninstall - Error: {game_name} did not uninstall sucessfully..."
+        )
+        logger.error(message)
+        raise InvalidUsage(message, status_code=500)
 
 
 class GameArgumentsApi(MethodView):

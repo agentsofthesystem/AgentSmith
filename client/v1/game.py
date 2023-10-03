@@ -72,6 +72,21 @@ class SupportedGameClient(BaseClient):
         response = self.make_request(RequestTypes.POST, post_url)
         self.handle_response(response)
 
+    def uninstall(self, game_name):
+        post_url = self._urls.get_game_uninstall_url(game_name)
+
+        if self._verbose:
+            print(f"Uninstalling Game: {game_name}")
+            print(f"Post Url: {post_url}")
+
+        response = self.make_request(RequestTypes.POST, post_url)
+        self.handle_response(response)
+
+        if response.status_code == 200:
+            return True
+        else:
+            return False
+
     def create_argument(
         self,
         game_name: str,

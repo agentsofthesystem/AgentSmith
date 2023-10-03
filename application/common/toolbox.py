@@ -6,6 +6,10 @@ import sys
 
 from flask import request
 
+from application.common import logger
+from application.common.exceptions import InvalidUsage
+from application.common.game_base import BaseGame
+from application.source import games
 from application.source.models.games import Games
 
 
@@ -121,3 +125,27 @@ def _get_application_path():
         current_file = os.path.abspath(__file__)
         application_path = os.path.dirname(os.path.dirname(current_file))
     return application_path
+
+
+@staticmethod
+def _get_supported_game_object(game_name: str) -> BaseGame:
+    """
+    Instead of hardcoding a bunch of if/elif, can dynamically import the game module,
+    and search it for the game_name provided.
+    """
+    game: BaseGame = None
+    supported_game_modules = _find_conforming_modules(games)
+    for module_name in supported_game_modules.keys():
+        check_game: BaseGame = _instantiate_object(
+            module_name, supported_game_modules[module_name]
+        )
+        if check_game._game_name == game_name:
+            game = check_game
+            break
+
+    if game is None:
+        message = f"/game/startup - Error: {game_name} is not a supported game!"
+        logger.error(message)
+        raise InvalidUsage(message, status_code=400)
+
+    return game

@@ -1,9 +1,11 @@
 import abc
 import time
+import shutil
 
 from application.common import logger
 from application.common.game_argument import GameArgument
 from application.common.exceptions import InvalidUsage
+from application.extensions import DATABASE
 from application.source.models.games import Games
 from application.source.models.game_arguments import GameArguments
 
@@ -29,6 +31,39 @@ class BaseGame:
     def shutdown(self) -> None:
         """Implementation Specific shutdown Routine."""
         self._input_check_routine()
+
+    def uninstall(self) -> bool:
+        print("BaseGame: Uninstall Called!")
+
+        is_successful = True
+
+        # Eliminate database objects
+        game_obj = Games.query.filter_by(game_name=self._game_name).first()
+        game_arg_objs = GameArguments.query.filter_by(game_id=game_obj.game_id).all()
+
+        # But first save off the installation path.
+        game_install_dir = game_obj.game_install_dir
+
+        try:
+            for argument in game_arg_objs:
+                DATABASE.session.delete(argument)
+            DATABASE.session.delete(game_obj)
+            DATABASE.session.commit()
+        except Exception as e:
+            logger.critical("BaseGame: Uninstall - Database Error.")
+            logger.error(e)
+            is_successful = False
+
+        try:
+            shutil.rmtree(game_install_dir, ignore_errors=True)
+        except Exception as e:
+            logger.critical(
+                "BaseGame: Uninstall - Unable to remove installation files."
+            )
+            logger.error(e)
+            is_successful = False
+
+        return is_successful
 
     def restart(self, wait_period=DEFAULT_WAIT_PERIOD) -> None:
         """Simple Routine to shutdown and re-run the startup routines."""
