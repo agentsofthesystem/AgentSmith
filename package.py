@@ -6,9 +6,9 @@ from sys import platform
 def main():
     # On windows, the separator is a semi-colon. On linux it's a colon.
     if platform == "win32":
-        sep = ';'
+        sep = ";"
     else:
-        sep = ':'
+        sep = ":"
 
     PyInstaller.__main__.run(
         [
