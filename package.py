@@ -1,16 +1,23 @@
 import PyInstaller.__main__
 
+from sys import platform
+
 
 def main():
-    # This is the command line version of what this script is attempting to capture.
+    # On windows, the separator is a semi-colon. On linux it's a colon.
+    if platform == "win32":
+        sep = ';'
+    else:
+        sep = ':'
+
     PyInstaller.__main__.run(
         [
             "launch.py",
             "--onefile",
             "--icon=./application/gui/resources/keeper.ico",
-            "--add-data=./application/gui/resources/keeper.png;./application/gui/resources",
-            "--add-data=./application/source/games/*.py;./application/source/games",
-            "--add-data=./application/source/games/resources/*;./application/source/games/resources",
+            f"--add-data=./application/gui/resources/keeper.png{sep}./application/gui/resources",
+            f"--add-data=./application/source/games/*.py{sep}./application/source/games",
+            f"--add-data=./application/source/games/resources/*{sep}./application/source/games/resources",
             "--clean",
         ]
     )
