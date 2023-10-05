@@ -25,7 +25,7 @@
   - Add docs for how a dev can add a new game.
   - Add docs for user docs with vrising example to install/use game. 
 4. Turn off auto updates on Game Manager window when its closed.
-5. Add github issue template.
+5. ~~Add github issue template.~~
 
 # Nice to haves.
 
@@ -35,7 +35,7 @@
 
 # Other things to watch out for....
 
-1. Things might not behave right if deleting a game.
-2. Installing the same game twice?
+1. ~~Things might not behave right if deleting a game.~~
+2. What happens if I install the same game twice?
 3. ~~Errors that happen when a game is installed without any args. Edge case!~~
 4. Having two games installed and uninstalling one of them. Not sure how game manager GUI will react.
