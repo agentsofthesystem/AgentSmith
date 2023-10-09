@@ -6,6 +6,7 @@ venv/*
 
 # Database
 instance/*
+*.db
 
 # Steam Cmd Downloads
 steamcmd.zip
