@@ -105,8 +105,9 @@ uses to start up a debug session.  There are two relevant to debugging:
 
 The user may use one or the other, or both at the same time. 
 
-NOTE:
-   - **DO NOT** use print statements in as opposed to proper debugging and expect that to get merged!
+NOTES:
+   - **DO NOT** use print statements to write variables to the terminal in as opposed to proper debugging and expect 
+     that to get merged! 
    - I'm not going to leave instrutions for which buttons to click on VSCode to use the debugger.  
 
 ## References:

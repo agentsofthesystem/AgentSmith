@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt, QTimer
 
-from application.common import toolbox
+from application.common import toolbox, logger
 from application.common.game_base import BaseGame
 from application.source import games
 from application.gui.widgets.add_argument_widget import AddArgumentWidget
@@ -301,7 +301,7 @@ class GameManagerWidget(QWidget):
         return game_frame
 
     def _text_changed(self, game_pretty_name):
-        print("Curent Game changed to:", game_pretty_name)
+        logger.info("Curent Game changed to:", game_pretty_name)
 
         if game_pretty_name == "":
             return
@@ -322,7 +322,7 @@ class GameManagerWidget(QWidget):
         return True if toolbox._get_proc_by_name(exe_name) else False
 
     def _show_add_argument_widget(self, game_name):
-        print(f"Showing Add Arg Widget for game: {game_name}")
+        logger.info(f"Showing Add Arg Widget for game: {game_name}")
         if not self._add_arguments_widget._initialized:
             self._add_arguments_widget.init_ui(game_name)
         else:
@@ -330,7 +330,7 @@ class GameManagerWidget(QWidget):
         self._add_arguments_widget.show()
 
     def _startup_game(self, game_name):
-        print(f"Staring up game: {game_name}")
+        logger.info(f"Staring up game: {game_name}")
         args_list = self._client.game.get_argument_by_game_name(game_name)
         arg_dict = {}
 
@@ -341,12 +341,12 @@ class GameManagerWidget(QWidget):
         self._install_games_menu.update_menu()
 
     def _shutdown_game(self, game_name):
-        print(f"Shutting down game: {game_name}")
+        logger.info(f"Shutting down game: {game_name}")
         self._client.game.game_shutdown(game_name)
         self._install_games_menu.update_menu()
 
     def _restart_game(self, game_name):
-        print(f"Restarting game: {game_name}")
+        logger.info(f"Restarting game: {game_name}")
         self._client.game.game_shutdown(game_name)
         time.sleep(10)
         args_list = self._client.game.get_argument_by_game_name(game_name)
@@ -358,7 +358,7 @@ class GameManagerWidget(QWidget):
         self._client.game.game_startup(game_name, input_args=arg_dict)
 
     def _uninstall_game(self, game_name):
-        print(f"Uninstall game: {game_name}")
+        logger.info(f"Uninstall game: {game_name}")
 
         # Stop the regular refresh from happening.
         self._timer.stop()

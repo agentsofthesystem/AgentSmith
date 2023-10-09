@@ -1,12 +1,9 @@
-import os
-
 from PyQt5.QtWidgets import (
     QWidget,
     QHBoxLayout,
     QFileDialog,
     QPushButton,
     QLineEdit,
-    QSizePolicy,
 )
 from PyQt5.QtGui import QFont, QFontMetrics
 

@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt
 
-from application.common import constants
+from application.common import constants, logger
 from application.gui.globals import GuiGlobals
 from application.gui.widgets.file_select_widget import FileSelectWidget
 from client import Client
@@ -46,7 +46,7 @@ class SettingsWidget(QWidget):
         self._initialized = True
 
     def _update_steam_install_path(self, path):
-        print(f"New Steam Install Path: {path}")
+        logger.info(f"New Steam Install Path: {path}")
         # TODO - Check if this is a path and not something garbage.
         self._globals._steam_install_path = path
         self._client.app.update_setting_by_name(

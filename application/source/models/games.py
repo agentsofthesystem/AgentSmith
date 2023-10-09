@@ -7,15 +7,21 @@ from application.common.pagination import PaginatedApi
 class Games(PaginatedApi, DATABASE.Model):
     __tablename__ = "games"
     game_id = DATABASE.Column(DATABASE.Integer, primary_key=True)
-    game_steam_id = DATABASE.Column(DATABASE.Integer, unique=True)
-    game_install_dir = DATABASE.Column(DATABASE.String(256))
-    game_name = DATABASE.Column(DATABASE.String(256))
-    game_pretty_name = DATABASE.Column(DATABASE.String(256))
+    game_steam_id = DATABASE.Column(DATABASE.Integer, unique=True, nullable=False)
+    game_install_dir = DATABASE.Column(
+        DATABASE.String(256), unique=True, nullable=False
+    )
+    game_name = DATABASE.Column(DATABASE.String(256), nullable=False)
+    game_pretty_name = DATABASE.Column(DATABASE.String(256), nullable=False)
 
     game_pid = DATABASE.Column(DATABASE.Integer, nullable=True)
 
-    game_created = DATABASE.Column(DATABASE.DateTime, default=datetime.utcnow)
-    game_last_update = DATABASE.Column(DATABASE.DateTime, default=datetime.utcnow)
+    game_created = DATABASE.Column(
+        DATABASE.DateTime, default=datetime.utcnow, nullable=False
+    )
+    game_last_update = DATABASE.Column(
+        DATABASE.DateTime, default=datetime.utcnow, nullable=False
+    )
 
     def to_dict(self):
         data = {}

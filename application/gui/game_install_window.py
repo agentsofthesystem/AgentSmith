@@ -51,7 +51,3 @@ class GameInstallWindow(QMainWindow):
         self.setCentralWidget(self._main_widget)
 
         self.adjustSize()
-
-
-#    def update(self):
-#        self._new_game.upda

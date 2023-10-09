@@ -92,9 +92,7 @@ class VrisingGame(BaseGame):
         command = self._get_command_str()
 
         # Create a formatted batch file.
-        env = Environment(
-            loader=FileSystemLoader(get_resources_dir(__file__))
-        )  # TODO - pyinstaller will change this.
+        env = Environment(loader=FileSystemLoader(get_resources_dir(__file__)))
         template = env.get_template("start_server_template.bat.j2")
         output_from_parsed_template = template.render(
             GAME_STEAM_ID=self._game_steam_id,

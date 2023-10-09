@@ -14,17 +14,17 @@ class GameArguments(PaginatedApi, DATABASE.Model):
         nullable=False,
         index=True,
     )
-    game_arg = DATABASE.Column(DATABASE.Integer, unique=True)
-    game_arg_value = DATABASE.Column(DATABASE.String(256))
+    game_arg = DATABASE.Column(DATABASE.String(256), nullable=False)
+    game_arg_value = DATABASE.Column(DATABASE.String(256), nullable=False)
 
-    required = DATABASE.Column(DATABASE.Boolean, nullable=True, default=True)
-    is_permanent = DATABASE.Column(DATABASE.Boolean, nullable=True, default=False)
+    required = DATABASE.Column(DATABASE.Boolean, nullable=False, default=True)
+    is_permanent = DATABASE.Column(DATABASE.Boolean, nullable=False, default=False)
     file_mode = DATABASE.Column(
-        DATABASE.Integer, nullable=True, default=FileModes.NOT_A_FILE.value
+        DATABASE.Integer, nullable=False, default=FileModes.NOT_A_FILE.value
     )
 
-    use_equals = DATABASE.Column(DATABASE.Boolean, nullable=True, default=False)
-    use_quotes = DATABASE.Column(DATABASE.Boolean, nullable=True, default=True)
+    use_equals = DATABASE.Column(DATABASE.Boolean, nullable=False, default=False)
+    use_quotes = DATABASE.Column(DATABASE.Boolean, nullable=False, default=True)
 
     def to_dict(self):
         data = {}

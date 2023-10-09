@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from flask import Flask
 
 from application.gui.intalled_games_menu import InstalledGameMenu

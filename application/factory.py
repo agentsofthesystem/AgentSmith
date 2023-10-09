@@ -1,5 +1,7 @@
 import os
 
+from alembic import command
+from alembic.config import Config
 from flask import Flask
 
 from application.common import logger, constants
@@ -11,6 +13,36 @@ from application.api.v1.blueprints.app import app
 from application.api.v1.blueprints.executable import executable
 from application.api.v1.blueprints.game import game
 from application.api.v1.blueprints.steam import steam
+from application.source.models.settings import Settings
+
+CURRENT_FOLDER = os.path.dirname(__file__)
+STATIC_FOLDER = os.path.join(CURRENT_FOLDER, "static")
+TEMPLATE_FOLDER = os.path.join(CURRENT_FOLDER, "templates")
+ALEMBIC_FOLDER = os.path.join(CURRENT_FOLDER, "source", "alembic")
+
+
+def _handle_migrations(flask_app: Flask):
+    alembic_init = os.path.join(
+        os.path.dirname(__file__), ALEMBIC_FOLDER, "alembic.ini"
+    )
+    alembic_folder = os.path.join(os.path.dirname(__file__), ALEMBIC_FOLDER)
+
+    alembic_cfg = Config(alembic_init)
+
+    alembic_cfg.set_section_option(
+        alembic_cfg.config_ini_section,
+        "sqlalchemy.url",
+        flask_app.config["SQLALCHEMY_DATABASE_URI"],
+    )
+
+    alembic_cfg.set_section_option(
+        alembic_cfg.config_ini_section, "script_location", alembic_folder
+    )
+    with flask_app.app_context():
+        with DATABASE.engine.begin() as connection:
+            alembic_cfg.attributes["connection"] = connection
+
+            command.upgrade(alembic_cfg, "head")
 
 
 def create_app(config=None):
@@ -19,10 +51,6 @@ def create_app(config=None):
     if config is None:
         config = DefaultConfig("python")
         logger.critical("WARNING. Missing Configuration. Initializing with default...")
-
-    CURRENT_FOLDER = os.path.dirname(__file__)
-    STATIC_FOLDER = os.path.join(f"{CURRENT_FOLDER}", "static")
-    TEMPLATE_FOLDER = os.path.join(f"{CURRENT_FOLDER}", "templates")
 
     flask_app = Flask(
         config.APP_NAME,
@@ -44,19 +72,17 @@ def create_app(config=None):
     flask_app.register_blueprint(game)
     flask_app.register_blueprint(steam)
 
+    # Uncoment in a before request function is ever needed.
     # @flask_app.before_request
     # def before_request_func():
-    #     print("Executing Before Request Function!")
+    #     logger.info("Executing Before Request Function!")
 
     DATABASE.init_app(flask_app)
 
+    _handle_migrations(flask_app)
+
+    # Here just going to initialize some settings. TODO - Make into a function.
     with flask_app.app_context():
-        from application.source.models.games import Games
-        from application.source.models.game_arguments import GameArguments
-        from application.source.models.settings import Settings
-
-        DATABASE.create_all()
-
         steam_setting_obj = Settings.query.filter_by(
             setting_name=constants.STARTUP_STEAM_SETTING_NAME
         ).first()

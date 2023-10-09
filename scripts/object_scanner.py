@@ -55,8 +55,6 @@ def _instantiate_object(module_name, module):
 if __name__ == "__main__":
     cm_dict = _find_conforming_modules(games)
 
-    # print(cm_dict)
-
     modules_found = list(cm_dict.keys())
 
     for module_name in modules_found:

@@ -1,3 +1,4 @@
+from application.common import logger
 from application.common.game_argument import GameArgument
 from application.common.game_base import BaseGame
 
@@ -5,9 +6,9 @@ from application.common.game_base import BaseGame
 # NOTE - This Game is not yet implemented.
 
 
-class VrisingGame(BaseGame):
+class SevenDaysToDieGame(BaseGame):
     def __init__(self) -> None:
-        super(VrisingGame, self).__init__()
+        super(SevenDaysToDieGame, self).__init__()
 
         self._game_name = "7dtd"
         self._game_pretty_name = "7 Days To Die"
@@ -30,7 +31,7 @@ class VrisingGame(BaseGame):
         # Run base class checks
         super().startup()
 
-        print("Not Implemented")
+        logger.info("Not Implemented")
 
     def shutdown(self) -> None:
-        print("Not Implemented")
+        logger.info("Not Implemented")

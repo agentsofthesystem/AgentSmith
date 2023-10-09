@@ -33,7 +33,7 @@ class BaseGame:
         self._input_check_routine()
 
     def uninstall(self) -> bool:
-        print("BaseGame: Uninstall Called!")
+        logger.info("BaseGame: Uninstall Called!")
 
         is_successful = True
 

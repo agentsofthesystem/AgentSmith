@@ -12,10 +12,11 @@
 8. Add open source license.
 9. User Testing
 10. Search code for TODOs and resolve.
-11. Remove code comments and random print statements. Except for client. Client can have print statements.
+11. ~~Remove code comments and random print statements. Except for client. Client and misc scripts can have print statements.~~
 12. Add pydocs to classes, files, functions, etc...
 13. Clean up imports in all files.
 14. Clean up typing hints in all files.
+15. ~~Implement Alembic revisions.~~
 
 ## To get to version 0.0.2
 
@@ -26,6 +27,8 @@
   - Add docs for user docs with vrising example to install/use game. 
 4. Turn off auto updates on Game Manager window when its closed.
 5. ~~Add github issue template.~~
+6. Add ability to designate which port the flask app runs on in settings.
+7. Add ability to designate where the database file is saved.
 
 # Nice to haves.
 
@@ -39,3 +42,5 @@
 2. What happens if I install the same game twice?
 3. ~~Errors that happen when a game is installed without any args. Edge case!~~
 4. Having two games installed and uninstalling one of them. Not sure how game manager GUI will react.
+5. Add mypy to github actions.
+6. Github actions builds pyinstaller as linux executable, not windows. Need to explore how to make it a windows exe.

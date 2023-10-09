@@ -14,6 +14,7 @@ from PyQt5.QtWidgets import (
 
 from PyQt5.QtCore import Qt
 
+from application.common import logger
 from application.common.constants import FileModes
 from application.gui.widgets.file_select_widget import FileSelectWidget
 from client import Client
@@ -182,7 +183,7 @@ class GameArgumentsWidget(QWidget):
         return arg_edit_widget
 
     def _delete_argument(self, arg_id):
-        print(f"Deleting Argument id: {arg_id}!")
+        logger.debug(f"Deleting Argument id: {arg_id}!")
 
         message = QMessageBox()
 
@@ -193,7 +194,7 @@ class GameArgumentsWidget(QWidget):
         message.exec()
 
     def _update_argument(self, arg_id, arg_name):
-        print(f"Updating Argument id: {arg_id}!")
+        logger.debug(f"Updating Argument id: {arg_id}!")
 
         value_widget = self._args_dict[arg_name]
         if isinstance(value_widget, FileSelectWidget):

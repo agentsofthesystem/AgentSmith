@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 
+from application.common import logger
 from application.common.constants import _DeployTypes
 
 
@@ -17,13 +18,17 @@ class DefaultConfig:
     FLASK_RUN_HOST = "0.0.0.0"
     FLASK_RUN_PORT = "3000"
 
-    SQLALCHEMY_DATABASE_URI = f"sqlite:///{APP_NAME}.db"
+    # SQLALCHEMY_DATABASE_URI = f"sqlite:///{APP_NAME}.db"
+    base_folder = f"C:\\{APP_NAME}"
+    if not os.path.exists(base_folder):
+        os.makedirs(base_folder)
+    SQLALCHEMY_DATABASE_URI = f"sqlite:///{base_folder}\\{APP_NAME}.db"
 
     def __init__(self, deploy_type):
         configuration_options = [el.value for el in _DeployTypes]
 
         if deploy_type not in configuration_options:
-            print(
+            logger.info(
                 f"Configuration: {deploy_type} is not a valid configuration type, which are: {configuration_options}"
             )
             raise RuntimeError

@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt
 
-from application.common import constants, toolbox
+from application.common import constants, toolbox, logger
 from application.common.game_argument import GameArgument
 from application.common.game_base import BaseGame
 from application.gui.globals import GuiGlobals
@@ -138,7 +138,7 @@ class NewGameWidget(QWidget):
         self._initialized = True
 
     def _text_changed(self, game_pretty_name):
-        print("Curent Game changed to:", game_pretty_name)
+        logger.info("Curent Game changed to:", game_pretty_name)
         old_inputs = self._current_inputs
         old_inputs.hide()
         self._current_args_dict = {}
@@ -150,7 +150,7 @@ class NewGameWidget(QWidget):
         self.adjustSize()
 
     def _install_game(self, game_pretty_name):
-        print(f"Installing Game Name: {game_pretty_name}")
+        logger.info(f"Installing Game Name: {game_pretty_name}")
 
         input_dict = {}
         game_object: BaseGame = self._supported_games[game_pretty_name]

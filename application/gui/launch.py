@@ -6,6 +6,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction, QSystemTrayIcon, QMenu, QApplication, QMessageBox
 
 from application.config.config import DefaultConfig
+from application.common import logger
 from application.common.toolbox import _get_application_path
 from application.gui.globals import GuiGlobals
 from application.gui.game_install_window import GameInstallWindow
@@ -108,7 +109,7 @@ class GuiApp:
         icon_path = os.path.join(
             _get_application_path(), "gui", "resources", "keeper.png"
         )
-        print(f"Expecting Icon Path to be: {icon_path}")
+        logger.debug(f"Expecting Icon Path to be: {icon_path}")
         icon = QIcon(icon_path)
 
         # Adding item on the menu bar
