@@ -54,11 +54,15 @@ def create_app(config=None):
 
     flask_app = Flask(
         config.APP_NAME,
-        instance_relative_config=True,
+        instance_relative_config=False,
         static_folder=STATIC_FOLDER,
         static_url_path="/static",
         template_folder=TEMPLATE_FOLDER,
     )
+
+    # Changing instance path to directory above.
+    instance_path = os.path.dirname(flask_app.instance_path)
+    flask_app.instance_path = instance_path
 
     flask_app.config.from_object(config)
 
