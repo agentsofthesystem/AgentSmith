@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
 import os
+import platform
 
 from application.common import logger
 from application.common.constants import _DeployTypes
@@ -18,11 +18,16 @@ class DefaultConfig:
     FLASK_RUN_HOST = "0.0.0.0"
     FLASK_RUN_PORT = "3000"
 
-    # SQLALCHEMY_DATABASE_URI = f"sqlite:///{APP_NAME}.db"
-    base_folder = f"C:\\{APP_NAME}"
-    if not os.path.exists(base_folder):
-        os.makedirs(base_folder)
-    SQLALCHEMY_DATABASE_URI = f"sqlite:///{base_folder}\\{APP_NAME}.db"
+    # Designate where the database file is stored based on platform.
+    if platform.system() == "Windows":
+        base_folder = f"C:\\{APP_NAME}"
+        if not os.path.exists(base_folder):
+            os.makedirs(base_folder)
+        SQLALCHEMY_DATABASE_URI = f"sqlite:///{base_folder}\\{APP_NAME}.db"
+    else:
+        # Linux
+        # Right now, this is for testing since GitHub actions uses linux
+        SQLALCHEMY_DATABASE_URI = f"sqlite:///{APP_NAME}.db"
 
     def __init__(self, deploy_type):
         configuration_options = [el.value for el in _DeployTypes]
