@@ -16,9 +16,10 @@ class FileModes(Enum):
 
 STARTUP_BATCH_FILE_NAME: str = "startup.bat"
 
+# Initial settings and values.
 STARTUP_STEAM_SETTING_NAME: str = "steam_install_dir"
 STARTUP_STEAM_INSTALL_DIR: str = (
-    r"C:\STEAM\steam_cmd" if platform.system() == "Windows" else "/opt/steam/steam_cmd"
+    r"C:\STEAM_TEST\steam" if platform.system() == "Windows" else "/opt/steam/steam_cmd"
 )
 
 WAIT_FOR_BACKEND: int = 1

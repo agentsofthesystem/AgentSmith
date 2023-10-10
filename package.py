@@ -18,6 +18,10 @@ def main():
             f"--add-data=./application/gui/resources/keeper.png{sep}./application/gui/resources",
             f"--add-data=./application/source/games/*.py{sep}./application/source/games",
             f"--add-data=./application/source/games/resources/*{sep}./application/source/games/resources",
+            f"--add-data=./application/source/alembic/alembic.ini{sep}./application/source/alembic",
+            f"--add-data=./application/source/alembic/env.py{sep}./application/source/alembic",
+            f"--add-data=./application/source/alembic/script.py.mako{sep}./application/source/alembic",
+            f"--add-data=./application/source/alembic/versions/*.py{sep}./application/source/alembic/versions",
             "--clean",
         ]
     )

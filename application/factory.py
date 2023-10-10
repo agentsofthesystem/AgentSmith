@@ -5,6 +5,7 @@ from alembic.config import Config
 from flask import Flask
 
 from application.common import logger, constants
+from application.common.toolbox import _get_application_path
 from application.config.config import DefaultConfig
 from application.debugger import init_debugger
 from application.extensions import DATABASE
@@ -15,17 +16,14 @@ from application.api.v1.blueprints.game import game
 from application.api.v1.blueprints.steam import steam
 from application.source.models.settings import Settings
 
-CURRENT_FOLDER = os.path.dirname(__file__)
+CURRENT_FOLDER = _get_application_path()
 STATIC_FOLDER = os.path.join(CURRENT_FOLDER, "static")
 TEMPLATE_FOLDER = os.path.join(CURRENT_FOLDER, "templates")
 ALEMBIC_FOLDER = os.path.join(CURRENT_FOLDER, "source", "alembic")
 
 
 def _handle_migrations(flask_app: Flask):
-    alembic_init = os.path.join(
-        os.path.dirname(__file__), ALEMBIC_FOLDER, "alembic.ini"
-    )
-    alembic_folder = os.path.join(os.path.dirname(__file__), ALEMBIC_FOLDER)
+    alembic_init = os.path.join(ALEMBIC_FOLDER, "alembic.ini")
 
     alembic_cfg = Config(alembic_init)
 
@@ -36,7 +34,7 @@ def _handle_migrations(flask_app: Flask):
     )
 
     alembic_cfg.set_section_option(
-        alembic_cfg.config_ini_section, "script_location", alembic_folder
+        alembic_cfg.config_ini_section, "script_location", ALEMBIC_FOLDER
     )
     with flask_app.app_context():
         with DATABASE.engine.begin() as connection:
