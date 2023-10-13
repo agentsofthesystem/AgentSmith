@@ -22,6 +22,8 @@ def main():
             f"--add-data=./application/source/alembic/env.py{sep}./application/source/alembic",
             f"--add-data=./application/source/alembic/script.py.mako{sep}./application/source/alembic",
             f"--add-data=./application/source/alembic/versions/*.py{sep}./application/source/alembic/versions",
+            "--hidden-import=xml.etree.ElementTree",
+            "--hidden-import=telnetlib",
             "--clean",
         ]
     )
