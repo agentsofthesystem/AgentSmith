@@ -25,7 +25,6 @@ def recursive_chmod(parent_path: str) -> None:
 @staticmethod
 def _get_proc_by_name(process_name: str):
     process = None
-
     current_procs = list((p for p in psutil.process_iter()))
 
     for proc in current_procs:

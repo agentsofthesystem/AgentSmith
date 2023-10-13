@@ -1,5 +1,4 @@
 import os
-import subprocess
 import time
 
 from jinja2 import Environment, FileSystemLoader
@@ -73,17 +72,6 @@ class VrisingGame(BaseGame):
             )
         )
 
-    def _run_game(self, command, working_dir) -> None:
-        return subprocess.call(
-            command,
-            cwd=working_dir,
-            creationflags=subprocess.DETACHED_PROCESS,  # Use this on windows-specifically.
-            close_fds=True,
-            shell=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
-
     def startup(self) -> None:
         # Run base class checks
         super().startup()
@@ -93,7 +81,7 @@ class VrisingGame(BaseGame):
 
         # Create a formatted batch file.
         env = Environment(loader=FileSystemLoader(get_resources_dir(__file__)))
-        template = env.get_template("start_server_template.bat.j2")
+        template = env.get_template("start_vrising_server_template.bat.j2")
         output_from_parsed_template = template.render(
             GAME_STEAM_ID=self._game_steam_id,
             GAME_NAME=self._game_name,

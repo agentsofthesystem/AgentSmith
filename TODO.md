@@ -17,6 +17,7 @@
 13. Clean up imports in all files.
 14. Clean up typing hints in all files.
 15. ~~Implement Alembic revisions.~~
+16. Add default values to New Game Gui. 
 
 ## To get to version 0.0.2
 
@@ -29,6 +30,7 @@
 5. ~~Add github issue template.~~
 6. Add ability to designate which port the flask app runs on in settings.
 7. Add ability to designate where the database file is saved.
+8. Add a game update button, so someone can update a game server.  
 
 # Nice to haves.
 
@@ -44,3 +46,11 @@
 4. Having two games installed and uninstalling one of them. Not sure how game manager GUI will react.
 5. Add mypy to github actions.
 6. Github actions builds pyinstaller as linux executable, not windows. Need to explore how to make it a windows exe.
+7. When installing a game server, there's no way to specify which version of it.  The downloader assumes the user wants
+   the most recent release.
+
+# Bugs
+
+1. Changing between games on the GAme Control Gui doesn't work.
+2. Argument table on New Games windows does not resize properly.
+3. Quick Start/Stop GUI doesn't index properly. If I click to start vrising... 7dtd starts. etc..

@@ -1,6 +1,7 @@
 import abc
 import time
 import shutil
+import subprocess
 
 from application.common import logger
 from application.common.game_argument import GameArgument
@@ -72,6 +73,17 @@ class BaseGame:
         time.sleep(wait_period)
 
         self.startup()
+
+    def _run_game(self, command, working_dir) -> None:
+        return subprocess.call(
+            command,
+            cwd=working_dir,
+            creationflags=subprocess.DETACHED_PROCESS,  # Use this on windows-specifically.
+            close_fds=True,
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
 
     def _is_game_installed(self) -> bool:
         if not self._game_steam_id:
