@@ -301,20 +301,21 @@ class GameManagerWidget(QWidget):
         return game_frame
 
     def _text_changed(self, game_pretty_name):
-        logger.info("Curent Game changed to:", game_pretty_name)
+        logger.info(f"Curent Game changed to: {game_pretty_name}")
 
         if game_pretty_name == "":
             return
 
         self._current_args_list = []
-        self._current_game_frame = self._build_game_frame(game_pretty_name)
 
         # This callback might be triggered in the situation where there never was a current game. Ie. The first
         # game being installed.
         if self._current_game_frame is None:
+            self._current_game_frame = self._build_game_frame(game_pretty_name)
             self._layout.addWidget(self._current_game_frame)
         else:
             old_game_frame = self._current_game_frame
+            self._current_game_frame = self._build_game_frame(game_pretty_name)
             old_game_frame.hide()
             self._layout.replaceWidget(old_game_frame, self._current_game_frame)
 

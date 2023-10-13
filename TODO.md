@@ -8,7 +8,7 @@
 4. ~~Add ability to start/stop from game control widget.~~
 5. ~~Add ability to uninstall a game from game control widget.~~
 6. ~~Add ability for app/gui to work if used via pyinstaller.~~
-7. Get 7DTD to work with this tool.
+7. ~~Get 7DTD to work with this tool.~~
 8. Add open source license.
 9. User Testing
 10. Search code for TODOs and resolve.
@@ -48,9 +48,10 @@
 6. Github actions builds pyinstaller as linux executable, not windows. Need to explore how to make it a windows exe.
 7. When installing a game server, there's no way to specify which version of it.  The downloader assumes the user wants
    the most recent release.
+8. Some games, may not need to allow the user to add arguments.  Need to have a way to disable that.
 
 # Bugs
 
-1. Changing between games on the GAme Control Gui doesn't work.
+1. ~~Changing between games on the Game Manager Gui doesn't work.~~
 2. Argument table on New Games windows does not resize properly.
 3. Quick Start/Stop GUI doesn't index properly. If I click to start vrising... 7dtd starts. etc..
