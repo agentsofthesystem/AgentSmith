@@ -172,7 +172,7 @@ class GameManagerWidget(QWidget):
             self._current_game_name
         )
 
-        self._install_games_menu.update_menu()
+        self._install_games_menu.update_menu_list()
         self._current_arg_widget.update_table(game_arguments=game_arguments)
 
         self._timer.setInterval(self.REFRESH_INTERVAL)
@@ -339,12 +339,12 @@ class GameManagerWidget(QWidget):
             arg_dict[arg["game_arg"]] = arg["game_arg_value"]
 
         self._client.game.game_startup(game_name, input_args=arg_dict)
-        self._install_games_menu.update_menu()
+        self._install_games_menu.update_menu_list()
 
     def _shutdown_game(self, game_name):
         logger.info(f"Shutting down game: {game_name}")
         self._client.game.game_shutdown(game_name)
-        self._install_games_menu.update_menu()
+        self._install_games_menu.update_menu_list()
 
     def _restart_game(self, game_name):
         logger.info(f"Restarting game: {game_name}")
@@ -377,7 +377,7 @@ class GameManagerWidget(QWidget):
             else:
                 self._timer.start(1000)  # Turn it back on.
 
-            self._install_games_menu.update_menu()
+            self._install_games_menu.update_menu_list()
 
         else:
             message.setText(f"Error: Unable to uninstall game server...")

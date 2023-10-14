@@ -89,7 +89,7 @@ class SevenDaysToDieGame(BaseGame):
         command = f'START /MIN CMD.EXE /C "{full_path_startup_script}"'
         result = self._run_game(command, game_install_dir)
 
-        time.sleep(10)
+        time.sleep(2)
 
         process = _get_proc_by_name(self._game_executable)
 
@@ -161,7 +161,7 @@ class SevenDaysToDieGame(BaseGame):
         self._telnet.write(shutdown_command.encode("ascii") + b"\n")
 
         # Give server time to shutdown
-        time.sleep(10)
+        time.sleep(2)
 
         # Check forthe process
         process = _get_proc_by_name(self._game_executable)

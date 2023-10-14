@@ -211,4 +211,4 @@ class NewGameWidget(QWidget):
                 use_quotes=arg_object._use_quotes,
             )
 
-        self._install_games_menu.update_menu()
+        self._install_games_menu.update_menu_list()

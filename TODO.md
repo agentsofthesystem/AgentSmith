@@ -47,11 +47,11 @@
 5. Add mypy to github actions.
 6. Github actions builds pyinstaller as linux executable, not windows. Need to explore how to make it a windows exe.
 7. When installing a game server, there's no way to specify which version of it.  The downloader assumes the user wants
-   the most recent release.
+   the most recent release available on steam.
 8. Some games, may not need to allow the user to add arguments.  Need to have a way to disable that.
 
 # Bugs
 
 1. ~~Changing between games on the Game Manager Gui doesn't work.~~
 2. Argument table on New Games windows does not resize properly.
-3. Quick Start/Stop GUI doesn't index properly. If I click to start vrising... 7dtd starts. etc..
+3. ~~Quick Start/Stop GUI doesn't index properly. If I click to start vrising... 7dtd starts. etc..~~
