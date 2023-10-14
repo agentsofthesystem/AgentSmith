@@ -1,4 +1,4 @@
-# Game Keeper (Agent)
+# [Name of software (TBD)]
 
 ## About
 
@@ -10,9 +10,9 @@ server to the open internet or have to require one of us to setup a home VPN. I 
 that exists already so this tool might fill that vacuum.   
 
 I am creating a solution that is a sort of two-part solution.  The first part will be what runs on someone's local machine and has the
-ability to install steam apps, start/stop servers, and do other similar tasks.  There will also be a client and a minimal 
-graphical user interface.  The client and the agent, shall be able to communicate securely when performed outside of one's
-local network so not just anyone can interact with the agent.  
+ability to install game servers available via steam, start/stop servers, and do other similar tasks.  There will also be a 
+client and a minimal graphical user interface in the form of a system tray application.  The client and the agent, 
+shall be able to communicate securely when performed outside of one's local network so not just anyone can interact with the agent.  
 
 Part one (this repository) is a web api that executes commands on a machine, an agent.  The agent is supposed to be "dumb" 
 in the sense that it can perform tasks, but it's only a puppet and cannot think for itself.  At a minimum, giving this 
@@ -21,16 +21,19 @@ set ups the game server, and gives the other friend located elsewhere the client
 start/stop the server with the client, if needed.  Anyone, so inclined, can build additional automation around this 
 part of the solution, if desired.   
 
-For Part Two, I intend to make collaborative web application where my friends and I can control our servers via a web 
-interface, and have other additional abilities.  One day, perhaps, I'll make that available to others.  
+For Part Two (future work), I intend to make collaborative web application where my friends and I can control our servers 
+via a web browser interface, and have other additional capabilities.  One day, perhaps, I'll also make that available to others.  
+
+## A word about licensing
 
 Out of all my mates, I write software for fun and this is a personal project. Help is always welcome.  If you get use
 out of this tool and with to contribute back, please do.  You're welcome to use this software personally however you like.  
-However, I'm licensing it such that if you take this work and use it for personal gain, then at a minimum you must 
-provide any software changes you make back.  In either case, you must credit this software.
-
-I have identified work I intend to do for the future and could use help with in the "Future Work" section.  Please create
-an issue for ideas.  I also wanted to share, what I don't intend to do as well so that is also clear.
+However, I'm licensing with GPL v3, and that means if you take this work and distribute it for personal gain, then you are
+lawfully required to make available all of your software. That include changes to this code base plus your own work.  There
+is also an obligation to provide a reference to this codebase and its [license](./LICENSE).  My motivation to do this stems from the
+idea that I truly wish this tool to be a community tool.  Even if I wind up building something that goes on to make me money,
+on some level I want it to be free to use for anyone with the skill, time and desire.  Also, I may also want my name on 
+an open source tool that I created. Makes for good resume material! 
 
 # Getting Started
 
@@ -38,6 +41,9 @@ I've written instructions for every day use of this software as well as what a d
 [here](./docs/getting-started.md).
 
 # Future Work
+
+I have identified work I intend to do for the future and could use help with in the "Future Work" section.  Please create
+an issue for ideas.  I also wanted to share, what I don't intend to do as well so that is also clear.
 
 There will always be room for improvements, but here are some goals the author has to improve behavior and usability
 overall:

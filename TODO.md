@@ -1,4 +1,4 @@
-# TODO - Things to completed.
+# TODO - Things to complete.
 
 ## To get to version 0.0.1
 
@@ -9,7 +9,7 @@
 5. ~~Add ability to uninstall a game from game control widget.~~
 6. ~~Add ability for app/gui to work if used via pyinstaller.~~
 7. ~~Get 7DTD to work with this tool.~~
-8. Add open source license.
+8. ~~Add open source license.~~
 9. User Testing
 10. Search code for TODOs and resolve.
 11. ~~Remove code comments and random print statements. Except for client. Client and misc scripts can have print statements.~~
@@ -19,18 +19,24 @@
 15. ~~Implement Alembic revisions.~~
 16. Add default values to New Game Gui. 
 
-## To get to version 0.0.2
+## To get to version 0.1.0  (First minor release)
 
 1. Add github actions.
 2. ~~Modify ./application/api/vi/game.py so that it doesn't need an enum for supported games. Instead it should search modules dynamically.  Do not want devs to have to modify this file each time a new game is added!~~
 3. Finalize Documenation 
   - Add docs for how a dev can add a new game.
   - Add docs for user docs with vrising example to install/use game. 
+  - Add docs about app version schema.
 4. Turn off auto updates on Game Manager window when its closed.
 5. ~~Add github issue template.~~
 6. Add ability to designate which port the flask app runs on in settings.
 7. Add ability to designate where the database file is saved.
 8. Add a game update button, so someone can update a game server.  
+9. Upate the client such that it is a python package in and of itself.
+
+## To get to version 1.0.0 (First major release)
+1. Some sort of upgrade ability; eg if a new version of the app comes out, it'll show up in settings or user can
+   click "check for updates somewhere."
 
 # Nice to haves.
 
