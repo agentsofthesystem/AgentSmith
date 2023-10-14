@@ -63,7 +63,10 @@ class NewGameWidget(QWidget):
             arg_dict = {}
             arg_dict["game_arg"] = arg
             arg_dict["required"] = arg_obj._required
-            arg_dict["game_arg_value"] = ""  # Should be empty string
+            if arg_obj._value is None:
+                arg_dict["game_arg_value"] = ""  # Should be empty string
+            else:
+                arg_dict["game_arg_value"] = arg_obj._value  # Should be empty string
             arg_dict["file_mode"] = arg_obj._file_mode
             arg_dict["is_permanent"] = arg_obj._is_permanent
             args_list.append(arg_dict)
@@ -138,7 +141,7 @@ class NewGameWidget(QWidget):
         self._initialized = True
 
     def _text_changed(self, game_pretty_name):
-        logger.info("Curent Game changed to:", game_pretty_name)
+        logger.info(f"Curent Game changed to: {game_pretty_name}")
         old_inputs = self._current_inputs
         old_inputs.hide()
         self._current_args_dict = {}

@@ -176,7 +176,7 @@ class GameArgumentsWidget(QWidget):
             )
             arg_edit_widget.get_line_edit().setText(arg_value)
         else:
-            arg_edit_widget = QLineEdit(arg_value, self._table)
+            arg_edit_widget = QLineEdit(str(arg_value), self._table)
 
         arg_edit_widget.show()
 

@@ -17,7 +17,7 @@
 13. Clean up imports in all files.
 14. Clean up typing hints in all files.
 15. ~~Implement Alembic revisions.~~
-16. Add default values to New Game Gui. 
+16. ~~Add default values to New Game Gui.~~
 
 ## To get to version 0.1.0  (First minor release)
 
@@ -61,3 +61,4 @@
 1. ~~Changing between games on the Game Manager Gui doesn't work.~~
 2. Argument table on New Games windows does not resize properly.
 3. ~~Quick Start/Stop GUI doesn't index properly. If I click to start vrising... 7dtd starts. etc..~~
+4. ~~Changing between games on new game widget breaks the gui.~~
