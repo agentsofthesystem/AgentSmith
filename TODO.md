@@ -18,6 +18,7 @@
 14. Clean up typing hints in all files.
 15. ~~Implement Alembic revisions.~~
 16. ~~Add default values to New Game Gui.~~
+17. ~~Add Tokens / Authorization~~
 
 ## To get to version 0.1.0  (First minor release)
 
