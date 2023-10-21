@@ -35,6 +35,7 @@ class GuiApp:
         self._main_menu = QMenu()
         self._installed_games_menu = None
         self._game_manager_window = None
+        self._globals._global_clipboard = self._gui_app.clipboard()
 
     def _create_backend(self) -> Flask:
         config = DefaultConfig("python")

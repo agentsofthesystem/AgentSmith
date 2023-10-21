@@ -1,4 +1,5 @@
 from flask import Flask
+from PyQt5.QtGui import QClipboard
 
 from application.gui.intalled_games_menu import InstalledGameMenu
 from application.gui.widgets.add_argument_widget import AddArgumentWidget
@@ -25,3 +26,4 @@ class GuiGlobals:
         self._client: Client = None
         self._installed_games_menu: InstalledGameMenu = None
         self._add_arguments_widget: AddArgumentWidget = None
+        self._global_clipboard: QClipboard = None

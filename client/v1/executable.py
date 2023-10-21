@@ -3,8 +3,8 @@ from client.v1.urls import AppUrls
 
 
 class GenericExecutableClient(BaseClient):
-    def __init__(self, urls: AppUrls, verbose: bool) -> None:
-        super(GenericExecutableClient, self).__init__(urls, verbose)
+    def __init__(self, urls: AppUrls, verbose: bool, token: str = None) -> None:
+        super(GenericExecutableClient, self).__init__(urls, verbose, token)
 
     def launch_executable(self, exe_name, exe_path, input_args={}):
         post_url = self._urls.get_exe_launch_url()

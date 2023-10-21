@@ -85,16 +85,15 @@ def create_app(config=None):
 
     # Here just going to initialize some settings. TODO - Make into a function.
     with flask_app.app_context():
-        steam_setting_obj = Settings.query.filter_by(
-            setting_name=constants.STARTUP_STEAM_SETTING_NAME
-        ).first()
+        for setting_name, setting_value in constants.STARTUP_SETTINGS.items():
+            setting_obj = Settings.query.filter_by(setting_name=setting_name).first()
 
-        if steam_setting_obj is None:
-            new_setting = Settings()
-            new_setting.setting_name = constants.STARTUP_STEAM_SETTING_NAME
-            new_setting.setting_value = constants.STARTUP_STEAM_INSTALL_DIR
-            DATABASE.session.add(new_setting)
-            DATABASE.session.commit()
+            if setting_obj is None:
+                new_setting = Settings()
+                new_setting.setting_name = setting_name
+                new_setting.setting_value = setting_value
+                DATABASE.session.add(new_setting)
+                DATABASE.session.commit()
 
     logger.info(f"{flask_app.config['APP_NAME']} has been successfully created.")
 

@@ -3,8 +3,8 @@ from client.v1.urls import AppUrls
 
 
 class SteamGameClient(BaseClient):
-    def __init__(self, urls: AppUrls, verbose: bool) -> None:
-        super(SteamGameClient, self).__init__(urls, verbose)
+    def __init__(self, urls: AppUrls, verbose: bool, token: str = None) -> None:
+        super(SteamGameClient, self).__init__(urls, verbose, token)
 
     def install_steam_app(
         self,

@@ -18,6 +18,9 @@ class AppUrls:
     def get_health_url(self) -> str:
         return f"{self.base_url}/health"
 
+    def get_secure_health_url(self) -> str:
+        return f"{self.base_url}/health/secure"
+
     def get_settings_url(self) -> str:
         return f"{self.base_url}/settings"
 
@@ -101,12 +104,18 @@ class AppUrls:
 
     ###############################################################################
     ###############################################################################
-    ## Key/Access Related Urls
+    ## Token/Access Related Urls
     ###############################################################################
     ###############################################################################
 
-    def get_key_generation_url(self) -> str:
-        return f"{self.base_url}/key/generate"
+    def get_active_tokens(self) -> str:
+        return f"{self.base_url}/tokens"
 
-    def get_key_verification_url(self) -> str:
-        return f"{self.base_url}/key/verify"
+    def get_token_generation_url(self, token_name: str) -> str:
+        return f"{self.base_url}/token/generate?token_name={token_name}"
+
+    def get_token_verification_url(self, token_name: str) -> str:
+        return f"{self.base_url}/token/verify?token_name={token_name}"
+
+    def get_token_invalidation_url(self, token_name: str) -> str:
+        return f"{self.base_url}/token/invalidate?token_name={token_name}"

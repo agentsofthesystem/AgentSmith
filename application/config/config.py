@@ -9,7 +9,6 @@ class DefaultConfig:
     # App name and secret
     APP_NAME = "GAME_KEEPER"
     APP_PRETTY_NAME = "Game Keeper Agent"
-    SECRET_KEY = "abc123"
     DEPLOYMENT_TYPE = "docker_compose"  # also supports kubernetes
 
     # Flask specific configs
@@ -17,6 +16,7 @@ class DefaultConfig:
     ENV = "development"
     FLASK_RUN_HOST = "0.0.0.0"
     FLASK_RUN_PORT = "3000"
+    FLASK_FORCE_AUTH = True
 
     # Designate where the database file is stored based on platform.
     if platform.system() == "Windows":

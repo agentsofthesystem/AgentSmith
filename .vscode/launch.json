@@ -32,10 +32,10 @@
             "justMyCode": true
         },
         {
-            "name": "Python: Object Scanner",
+            "name": "Python: Any Test Script",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/scripts/object_scanner.py",
+            "program": "${workspaceFolder}/scripts/test_auth.py",
             "cwd": "${workspaceFolder}/scripts",
             "console": "integratedTerminal",
             "justMyCode": true

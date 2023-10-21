@@ -14,9 +14,10 @@ class RequestTypes(Enum):
 
 
 class BaseClient:
-    def __init__(self, urls: AppUrls, verbose: bool) -> None:
+    def __init__(self, urls: AppUrls, verbose: bool, token: str = None) -> None:
         self._urls = urls
         self._verbose = verbose
+        self._token = token
 
     def handle_response(self, response: requests.Response) -> None:
         if response.status_code == 200:
@@ -24,9 +25,18 @@ class BaseClient:
             if hasattr(response, "json") and self._verbose:
                 print("Application Returned Json:")
                 print(response.text)
+        elif response.status_code == 401:
+            print("Authorization Error: Request Made, but missing bearer token.")
+        elif response.status_code == 403:
+            print("Authorization Error: Token is not authorized.")
+        elif response.status_code == 500:
+            print("Error: 500 - Internal Server Error - It's not the client.")
+            if self._verbose:
+                print(response.content)
         else:
-            print(f"Error: Response Code: {response.status_code}")
-            print(f"    {response.content}")
+            print(f"Error: Other Response Code: {response.status_code}")
+            if self._verbose:
+                print(f"    {response.content}")
 
     def make_request(
         self,
@@ -45,14 +55,22 @@ class BaseClient:
         if self._verbose:
             logger.info(f"Request URL: {request_url}")
 
+        headers = {}  # Empty by default
+
+        if self._token:
+            headers = {
+                "Authorization": "Bearer " + self._token,
+                "Content-Type": "application/json",
+            }
+
         if request_type == RequestTypes.GET:
-            response = requests.get(request_url)
+            response = requests.get(request_url, headers=headers)
         elif request_type == RequestTypes.POST:
-            response = requests.post(request_url, json=payload)
+            response = requests.post(request_url, json=payload, headers=headers)
         elif request_type == RequestTypes.PATCH:
-            response = requests.patch(request_url, json=payload)
+            response = requests.patch(request_url, json=payload, headers=headers)
         elif request_type == RequestTypes.DELETE:
-            response = requests.delete(request_url)
+            response = requests.delete(request_url, headers=headers)
         else:
             print(
                 "BaseClient: make_request: Error! - Unsupported request type! Exiting..."

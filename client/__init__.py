@@ -10,7 +10,7 @@ from client.v1.steam import SteamGameClient
 
 
 class Client:
-    def __init__(self, hostname, port=None, verbose=False) -> None:
+    def __init__(self, hostname, port=None, verbose=False, token=None) -> None:
         self._host = hostname if port is None else f"{hostname}:{port}"
 
         if not validators.url(self._host):
@@ -20,8 +20,8 @@ class Client:
         urls = AppUrls(self._host)
         self._urls = urls
 
-        self.access = AccessClient(urls, verbose)
-        self.steam = SteamGameClient(urls, verbose)
-        self.exe = GenericExecutableClient(urls, verbose)
-        self.game = SupportedGameClient(urls, verbose)
-        self.app = BaseAppClient(urls, verbose)
+        self.access = AccessClient(urls, verbose, token=token)
+        self.steam = SteamGameClient(urls, verbose, token=token)
+        self.exe = GenericExecutableClient(urls, verbose, token=token)
+        self.game = SupportedGameClient(urls, verbose, token=token)
+        self.app = BaseAppClient(urls, verbose, token=token)

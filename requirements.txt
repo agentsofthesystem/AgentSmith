@@ -5,9 +5,11 @@ debugpy
 flask
 Flask-SQLAlchemy
 gunicorn
+oauthlib
 psutil
 pydocstyle
 pyinstaller
+pyjwt
 pyqt5
 pysteamcmd
 pytest

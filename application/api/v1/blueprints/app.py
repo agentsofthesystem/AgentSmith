@@ -5,6 +5,7 @@ from flask.views import MethodView
 
 from application.source.models.settings import Settings
 from application.common import logger
+from application.common.decorators import authorization_required
 from application.common.exceptions import InvalidUsage
 from application.extensions import DATABASE
 
@@ -15,6 +16,13 @@ app = Blueprint("app", __name__, url_prefix="/v1")
 def health():
     logger.info("App is alive!")
     return jsonify("Alive")
+
+
+@app.route("/health/secure", methods=["GET"])
+@authorization_required
+def health_secure():
+    logger.info("App is alive!")
+    return jsonify("Alive & Secure")
 
 
 class SettingsApi(MethodView):

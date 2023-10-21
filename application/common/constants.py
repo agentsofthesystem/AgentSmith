@@ -1,4 +1,6 @@
 import platform
+
+from datetime import datetime
 from enum import Enum
 
 
@@ -15,13 +17,16 @@ class FileModes(Enum):
 
 
 STARTUP_BATCH_FILE_NAME: str = "startup.bat"
+DEFAULT_SECRET = str(datetime.now())
 
-# Initial settings and values.
-STARTUP_STEAM_SETTING_NAME: str = "steam_install_dir"
-STARTUP_STEAM_INSTALL_DIR: str = (
-    r"C:\STEAM_TEST\steam" if platform.system() == "Windows" else "/opt/steam/steam_cmd"
-)
+STARTUP_SETTINGS: dict = {
+    "steam_install_dir": r"C:\STEAM_TEST\steam"
+    if platform.system() == "Windows"
+    else "/opt/steam/steam_cmd",
+    "application_secret": DEFAULT_SECRET,
+}
 
+LOCALHOST_IP_ADDR = "127.0.0.1"
 WAIT_FOR_BACKEND: int = 1
 
 _DeployTypes = DeployTypes
