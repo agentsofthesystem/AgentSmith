@@ -44,3 +44,4 @@ jobs:
       with:
         name: launch.exe
         path: ./dist/launch
+        retention-days: 2
