@@ -7,9 +7,9 @@ from application.common.constants import _DeployTypes
 
 class DefaultConfig:
     # App name and secret
-    APP_NAME = "GAME_KEEPER"
-    APP_PRETTY_NAME = "Game Keeper Agent"
-    DEPLOYMENT_TYPE = "docker_compose"  # also supports kubernetes
+    APP_NAME = "AgentSmith"
+    APP_PRETTY_NAME = "Agent Smith"
+    DEPLOYMENT_TYPE = "python"  # also supports kubernetes
 
     # Flask specific configs
     DEBUG = True

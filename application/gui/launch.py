@@ -1,4 +1,5 @@
 import os
+import time
 
 from flask import Flask
 from threading import Thread
@@ -89,6 +90,7 @@ class GuiApp:
         # If running the unified launch script, this will need to start up first.
         if with_server:
             self._spawn_server_on_thread()
+            time.sleep(2)  # Give server a chance to start before proceeding...
 
         # Instantiate this last always!
         self._installed_games_menu = InstalledGameMenu(
@@ -108,7 +110,7 @@ class GuiApp:
 
         # Adding an icon
         icon_path = os.path.join(
-            _get_application_path(), "gui", "resources", "keeper.png"
+            _get_application_path(), "gui", "resources", "agent-white.png"
         )
         logger.debug(f"Expecting Icon Path to be: {icon_path}")
         icon = QIcon(icon_path)
