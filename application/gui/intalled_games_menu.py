@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QMenu, QWidget, QLabel, QWidgetAction, QPushButton
 
 from application.common import toolbox, logger
 from application.source import games
-from client import Client
+from operator_client import Operator
 
 BACKGROUND_STR = "background-color: {color}; padding: 8 8 8 8px;"
 COLOR_RUNNING = "green"
@@ -12,7 +12,7 @@ COLOR_STOPPED = "red"
 
 
 class InstalledGameMenu(QMenu):
-    def __init__(self, parent: QWidget, client: Client) -> None:
+    def __init__(self, parent: QWidget, client: Operator) -> None:
         super(InstalledGameMenu, self).__init__("Quick Start/Stop", parent=parent)
 
         self._client = client

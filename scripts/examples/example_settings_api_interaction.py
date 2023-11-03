@@ -9,7 +9,7 @@ app_folder = os.path.dirname(scripts_folder)
 
 sys.path.append(app_folder)
 
-from client import Client
+from operator_client import Operator
 
 
 def main():
@@ -19,7 +19,7 @@ def main():
     setting_id_1 = None
     setting_id_2 = None
 
-    client = Client(hostname, port=port, verbose=True)
+    client = Operator(hostname, port=port, verbose=True)
 
     setting_1_value = client.app.get_setting_by_name("test_setting_1")
 

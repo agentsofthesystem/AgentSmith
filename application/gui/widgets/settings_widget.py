@@ -14,11 +14,11 @@ from application.common import constants, logger
 from application.gui.globals import GuiGlobals
 from application.gui.widgets.file_select_widget import FileSelectWidget
 from application.gui.widgets.tokens_widget import TokensWidget
-from client import Client
+from operator_client import Operator
 
 
 class SettingsWidget(QWidget):
-    def __init__(self, client: Client, globals: GuiGlobals, parent: QWidget = None):
+    def __init__(self, client: Operator, globals: GuiGlobals, parent: QWidget = None):
         super(QWidget, self).__init__(parent)
         self._layout = QVBoxLayout()
         self._client = client

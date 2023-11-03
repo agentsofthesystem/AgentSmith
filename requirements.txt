@@ -17,3 +17,5 @@ python-dotenv
 requests
 validators==0.20.0
 vdf==3.4
+
+operator @ git+https://github.com/agentsofthesystem/operator@main

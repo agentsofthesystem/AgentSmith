@@ -9,7 +9,7 @@ app_folder = os.path.dirname(parent_folder)
 
 sys.path.append(app_folder)
 
-from client import Client
+from operator_client import Operator
 
 
 def main():
@@ -19,7 +19,7 @@ def main():
     test_token = "CHANGE_ME"  # Change to a real token
 
     # Have to make sure that FLASK_FORCE_AUTH in config.py is set to True for this to work locally.
-    client = Client(hostname, port=port, verbose=True, token=test_token)
+    client = Operator(hostname, port=port, verbose=True, token=test_token)
 
     # This end point is always open. No auth.
     result = client.app.get_health()

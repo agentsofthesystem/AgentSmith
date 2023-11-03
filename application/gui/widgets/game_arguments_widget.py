@@ -17,7 +17,7 @@ from PyQt5.QtCore import Qt
 from application.common import logger
 from application.common.constants import FileModes
 from application.gui.widgets.file_select_widget import FileSelectWidget
-from client import Client
+from operator_client import Operator
 
 
 class GameArgumentsWidget(QWidget):
@@ -27,7 +27,7 @@ class GameArgumentsWidget(QWidget):
     ARG_ACTION_COL = 3
 
     def __init__(
-        self, client: Client, arg_data: dict, parent: QWidget, disable_cols: list = []
+        self, client: Operator, arg_data: dict, parent: QWidget, disable_cols: list = []
     ) -> None:
         super(QWidget, self).__init__(parent)
 

@@ -16,11 +16,11 @@ from PyQt5.QtCore import Qt
 
 from application.common.constants import FileModes
 from application.gui.widgets.file_select_widget import FileSelectWidget
-from client import Client
+from operator_client import Operator
 
 
 class AddArgumentWidget(QWidget):
-    def __init__(self, client: Client, parent: QWidget = None) -> None:
+    def __init__(self, client: Operator, parent: QWidget = None) -> None:
         super(QWidget, self).__init__(parent)
 
         self._parent = parent

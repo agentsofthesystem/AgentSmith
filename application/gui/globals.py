@@ -4,7 +4,7 @@ from PyQt5.QtGui import QClipboard
 from application.gui.intalled_games_menu import InstalledGameMenu
 from application.gui.widgets.add_argument_widget import AddArgumentWidget
 from application.gui.widgets.game_manager_widget import GameManagerWidget
-from client import Client
+from operator_client import Operator
 
 
 class GuiGlobals:
@@ -23,7 +23,7 @@ class GuiGlobals:
 
         # Objects
         self._FLASK_APP: Flask = None
-        self._client: Client = None
+        self._client: Operator = None
         self._installed_games_menu: InstalledGameMenu = None
         self._add_arguments_widget: AddArgumentWidget = None
         self._global_clipboard: QClipboard = None

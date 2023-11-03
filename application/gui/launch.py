@@ -16,7 +16,7 @@ from application.gui.intalled_games_menu import InstalledGameMenu
 from application.gui.widgets.add_argument_widget import AddArgumentWidget
 from application.gui.widgets.settings_widget import SettingsWidget
 from application.factory import create_app
-from client import Client
+from operator_client import Operator
 
 
 class GuiApp:
@@ -24,7 +24,7 @@ class GuiApp:
         # Globals
         self._globals = globals_obj
         self._globals._FLASK_APP = self._create_backend()
-        self._globals._client = Client(
+        self._globals._client = Operator(
             "http://" + self._globals._server_host,
             self._globals._server_port,
             verbose=False,

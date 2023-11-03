@@ -10,14 +10,14 @@ app_folder = os.path.dirname(scripts_folder)
 sys.path.append(app_folder)
 
 from application.common.constants import FileModes
-from client import Client
+from operator_client import Operator
 
 
 def main():
     hostname = "http://127.0.0.1"
     port = "3000"
 
-    client = Client(hostname, port=port, verbose=True)
+    client = Operator(hostname, port=port, verbose=True)
 
     arg_1_value = client.game.get_argument_by_name("vrising", "-test123")
 
