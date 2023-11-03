@@ -8,12 +8,12 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import QFont, QFontMetrics
 
 from application.common.constants import FileModes
-from client import Client
+from operator_client import Operator
 
 
 class FileSelectWidget(QWidget):
     def __init__(
-        self, client: Client, file_mode: FileModes, parent: QWidget = None
+        self, client: Operator, file_mode: FileModes, parent: QWidget = None
     ) -> None:
         super().__init__(parent)
 

@@ -9,14 +9,14 @@ app_folder = os.path.dirname(parent_folder)
 
 sys.path.append(app_folder)
 
-from client import Client
+from operator_client import Operator
 
 
 def main():
     hostname = "http://127.0.0.1"
     port = "3000"
 
-    client = Client(hostname, port=port, verbose=True)
+    client = Operator(hostname, port=port, verbose=True)
 
     game_name = "vrising"
 

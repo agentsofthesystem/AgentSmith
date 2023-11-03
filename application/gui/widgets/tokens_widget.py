@@ -11,13 +11,12 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QClipboard
 
-from application.common import constants, logger
-from application.gui.widgets.file_select_widget import FileSelectWidget
-from client import Client
+from application.common import logger
+from operator_client import Operator
 
 
 class TokensWidget(QWidget):
-    def __init__(self, client: Client, clipboard: QClipboard, parent: QWidget = None):
+    def __init__(self, client: Operator, clipboard: QClipboard, parent: QWidget = None):
         super(QWidget, self).__init__(parent)
         self._layout = QVBoxLayout()
         self._client = client

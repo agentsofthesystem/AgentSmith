@@ -19,18 +19,18 @@ from application.source import games
 from application.gui.widgets.add_argument_widget import AddArgumentWidget
 from application.gui.intalled_games_menu import InstalledGameMenu
 from application.gui.widgets.game_arguments_widget import GameArgumentsWidget
-from client import Client
+from operator_client import Operator
 
 
 class GameManagerWidget(QWidget):
     MILIS_PER_SECOND = 1000
     REFRESH_INTERVAL = 10 * MILIS_PER_SECOND
 
-    def __init__(self, client: Client, globals, parent: QWidget) -> None:
+    def __init__(self, client: Operator, globals, parent: QWidget) -> None:
         super(QWidget, self).__init__(parent)
 
         self._parent: QWidget = parent
-        self._client: Client = client
+        self._client: Operator = client
 
         # Complex types
         self._layout = QVBoxLayout()
