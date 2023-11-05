@@ -38,6 +38,7 @@ class SettingsApi(MethodView):
     def _get_all(self):
         return self.model.query
 
+    @authorization_required
     def get(self, setting_id=None, setting_name=None):
         page = request.args.get("page", 1, type=int)
         per_page = min(request.args.get("per_page", 10, type=int), 10000)
@@ -66,6 +67,7 @@ class SettingsApi(MethodView):
                 Settings.to_collection_dict(qry, page, per_page, "app.group_settings")
             )
 
+    @authorization_required
     def post(self):
         payload = request.json
 
@@ -88,6 +90,7 @@ class SettingsApi(MethodView):
 
         return jsonify({"setting_id": new_setting.setting_id})
 
+    @authorization_required
     def patch(self, setting_id=None, setting_name=None):
         if setting_id and setting_name is None:
             qry = self._get_setting(setting_id)

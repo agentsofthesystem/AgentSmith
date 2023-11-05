@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 from application.common import logger
+from application.common.decorators import authorization_required
 from application.common.exceptions import InvalidUsage
 from application.source.executable_manager import GenericExecutableManager
 
@@ -14,6 +15,7 @@ executable = Blueprint("executable", __name__, url_prefix="/v1")
 
 
 @executable.route("/exe/launch", methods=["POST"])
+@authorization_required
 def launch_executable():
     logger.info("Starting Generic Executable")
 
@@ -48,6 +50,7 @@ def launch_executable():
 
 
 @executable.route("/exe/kill", methods=["POST"])
+@authorization_required
 def kill_executable():
     logger.info("Killing Executable...")
 
@@ -79,12 +82,14 @@ def kill_executable():
 
 
 @executable.route("/exe/restart", methods=["POST"])
+@authorization_required
 def restart():
     logger.info("Executable has Restarted")
     return "Success"
 
 
 @executable.route("/exe/status", methods=["GET"])
+@authorization_required
 def executable_status():
     logger.info("Checking on executable status information.")
     exe_name = request.args.get("exe_name", None, str)
@@ -105,6 +110,7 @@ def executable_status():
 
 
 @executable.route("/exe/alive", methods=["GET"])
+@authorization_required
 def is_executable_alive():
     logger.info("Checking on executable heartbeat.")
     exe_name = request.args.get("exe_name", None, str)

@@ -1,5 +1,6 @@
 from flask import Blueprint, request
 from application.common import logger
+from application.common.decorators import authorization_required
 from application.common.exceptions import InvalidUsage
 from application.source.steam_manager import SteamManager
 
@@ -14,6 +15,7 @@ steam = Blueprint("steam", __name__, url_prefix="/v1")
 
 
 @steam.route("/steam/app/install", methods=["POST"])
+@authorization_required
 def steam_app_install():
     logger.info("Installing Steam Application")
 
@@ -55,12 +57,14 @@ def steam_app_install():
 
 
 @steam.route("/steam/app/remove", methods=["POST"])
+@authorization_required
 def steam_app_remove():
     logger.info("Steam Application has been removed")
     return "Success"
 
 
 @steam.route("/steam/app/update", methods=["POST"])
+@authorization_required
 def steam_app_update():
     logger.info("Steam Application has been updated")
     return "Success"
