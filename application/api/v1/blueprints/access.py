@@ -6,6 +6,7 @@ from oauthlib.oauth2 import RequestValidator
 
 from application.common import logger
 from application.common.authorization import _verify_bearer_token
+from application.common.decorators import authorization_required
 from application.common.exceptions import InvalidUsage
 from application.extensions import DATABASE
 from application.source.models.settings import Settings
@@ -110,6 +111,7 @@ def token_verify():
 
 
 @access.route("/token/invalidate", methods=["POST"])
+@authorization_required
 def token_invalidate():
     logger.info("Invalidating token...")
     token_to_invalidate = request.args.get("token_name", None, str)
@@ -138,6 +140,7 @@ def token_invalidate():
 
 
 @access.route("/tokens", methods=["GET"])
+@authorization_required
 def get_all_tokens():
     logger.info("Retrieving all active tokens...")
     tokens = Tokens.query.filter_by(token_active=True)

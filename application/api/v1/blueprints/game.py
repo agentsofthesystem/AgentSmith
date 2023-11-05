@@ -6,6 +6,7 @@ from flask.views import MethodView
 
 from application.common import logger, toolbox
 from application.common.constants import FileModes
+from application.common.decorators import authorization_required
 from application.common.exceptions import InvalidUsage
 from application.common.game_base import BaseGame
 from application.extensions import DATABASE
@@ -23,21 +24,25 @@ game = Blueprint("game", __name__, url_prefix="/v1")
 
 
 @game.route("/games", methods=["GET"])
+@authorization_required
 def get_all_games():
     return jsonify(toolbox.get_all_games())
 
 
 @game.route("/game/<string:game_name>", methods=["GET"])
+@authorization_required
 def get_game_by_name(game_name):
     return jsonify(toolbox.get_game_by_name(game_name))
 
 
 @game.route("/games/schema", methods=["GET"])
+@authorization_required
 def get_game_schema():
     return jsonify(toolbox.get_games_schema())
 
 
 @game.route("/game/startup/<string:game_name>", methods=["POST"])
+@authorization_required
 def game_startup(game_name):
     """
     Instead of hardcoding a bunch of if/elif, can dynamically import the game module,
@@ -75,6 +80,7 @@ def game_startup(game_name):
 
 
 @game.route("/game/shutdown/<string:game_name>", methods=["POST"])
+@authorization_required
 def game_shutdown(game_name):
     logger.info("Shutting down game server")
     game: BaseGame = toolbox._get_supported_game_object(game_name)
@@ -91,6 +97,7 @@ def game_shutdown(game_name):
 
 
 @game.route("/game/uninstall/<string:game_name>", methods=["POST"])
+@authorization_required
 def game_uninstall(game_name):
     game: BaseGame = toolbox._get_supported_game_object(game_name)
 
@@ -132,6 +139,7 @@ class GameArgumentsApi(MethodView):
     def _get_all(self):
         return self.model.query
 
+    @authorization_required
     def get(self, game_name=None, game_arg_id=None, argument_name=None):
         page = request.args.get("page", 1, type=int)
         per_page = min(request.args.get("per_page", 10, type=int), 10000)
@@ -163,6 +171,7 @@ class GameArgumentsApi(MethodView):
                 )
             )
 
+    @authorization_required
     def post(self):
         payload = request.json
 
@@ -223,6 +232,7 @@ class GameArgumentsApi(MethodView):
 
         return jsonify({"game_arg_id": new_argument.game_arg_id})
 
+    @authorization_required
     def patch(self, game_name=None, game_arg_id=None, argument_name=None):
         if game_arg_id and argument_name is None:
             qry = self._get_argument(game_arg_id)
@@ -245,6 +255,7 @@ class GameArgumentsApi(MethodView):
 
         return "Success"
 
+    @authorization_required
     def delete(self, game_arg_id, argument_name=None):
         qry = self._get_argument(game_arg_id)
         arg_obj: GameArguments = qry.first()
