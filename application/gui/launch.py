@@ -66,7 +66,7 @@ class GuiApp:
 
         if len(games["items"]) == 0:
             message = QMessageBox()
-            message.setText(f"Please install a game before using the Game Manager!")
+            message.setText("Please install a game before using the Game Manager!")
             message.exec()
             return
 

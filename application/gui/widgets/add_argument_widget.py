@@ -1,5 +1,3 @@
-import os
-
 from PyQt5.QtWidgets import (
     QWidget,
     QComboBox,
@@ -140,9 +138,9 @@ class AddArgumentWidget(QWidget):
 
         message = QMessageBox()
         if argument_id == -1:
-            message.setText(f"New Arg: There was an error creating the argument.")
+            message.setText("New Arg: There was an error creating the argument.")
         else:
-            message.setText(f"Success!")
+            message.setText("Success!")
             self.hide()
 
         message.exec()

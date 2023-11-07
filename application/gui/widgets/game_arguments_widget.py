@@ -100,8 +100,9 @@ class GameArgumentsWidget(QWidget):
             value_widget = None
 
             # TODO - This works... but its janky and can break.
-            # If someone disables required but not actions then c == 3 will equal the self._ARG_ACTIONS_COL but its
-            # hard coded to 4.  Change it to go back and hide the columns later.
+            # If someone disables required but not actions then c == 3 will equal the
+            # self._ARG_ACTIONS_COL but its hard coded to 4.  Change it to go back and hide the
+            # columns later.
             for c in range(0, num_cols):
                 if c == self.ARG_NAME_COL:
                     self._table.setItem(r, c, QTableWidgetItem(arg_name))
@@ -188,9 +189,9 @@ class GameArgumentsWidget(QWidget):
         message = QMessageBox()
 
         if self._client.game.delete_argument_by_id(arg_id):
-            message.setText(f"Argument Deleted.")
+            message.setText("Argument Deleted.")
         else:
-            message.setText(f"Error: Argument not deleted...")
+            message.setText("Error: Argument not deleted...")
         message.exec()
 
     def _update_argument(self, arg_id, arg_name):
@@ -207,5 +208,5 @@ class GameArgumentsWidget(QWidget):
         if self._client.game.update_argument_by_id(arg_id, new_arg_value):
             message.setText(f"Updated Argument: {arg_name} to: {new_arg_value}.")
         else:
-            message.setText(f"Error: Argument not updated...")
+            message.setText("Error: Argument not updated...")
         message.exec()

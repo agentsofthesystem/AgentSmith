@@ -2,11 +2,9 @@ from PyQt5.QtWidgets import (
     QWidget,
     QLabel,
     QLineEdit,
-    QPushButton,
     QHBoxLayout,
     QVBoxLayout,
     QTabWidget,
-    QMessageBox,
 )
 from PyQt5.QtCore import Qt
 

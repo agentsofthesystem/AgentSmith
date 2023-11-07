@@ -8,7 +8,6 @@ from PyQt5.QtWidgets import (
     QMessageBox,
     QFrame,
 )
-from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QClipboard
 
 from application.common import logger
@@ -116,7 +115,7 @@ class TokensWidget(QWidget):
 
         if token_name == "":
             message = QMessageBox()
-            message.setText(f"Error: Must supply an name for the token. Try again!")
+            message.setText("Error: Must supply an name for the token. Try again!")
             message.exec()
             return
 
@@ -140,7 +139,7 @@ class TokensWidget(QWidget):
 
         message = QMessageBox()
         message.setText(
-            f"Copy Token to safe location. Afterward you will no longer be able to see it."
+            "Copy Token to safe location. Afterward you will no longer be able to see it."
         )
         message.exec()
 
@@ -154,7 +153,7 @@ class TokensWidget(QWidget):
         self._clipboard.setText(text_for_cb, mode=self._clipboard.Clipboard)
 
         message = QMessageBox()
-        message.setText(f"Text is on clipboard. Paste as needed...")
+        message.setText("Text is on clipboard. Paste as needed...")
         message.exec()
 
         self._newly_generated_token.setText("")

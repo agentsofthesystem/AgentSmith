@@ -34,7 +34,8 @@ class DefaultConfig:
 
         if deploy_type not in configuration_options:
             logger.info(
-                f"Configuration: {deploy_type} is not a valid configuration type, which are: {configuration_options}"
+                f"Configuration: {deploy_type} is not a valid configuration type, "
+                f"which are: {configuration_options}"
             )
             raise RuntimeError
 

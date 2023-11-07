@@ -1,6 +1,5 @@
 import sqlalchemy.exc as exc
 
-from enum import Enum
 from flask import Blueprint, request, jsonify
 from flask.views import MethodView
 
@@ -10,7 +9,6 @@ from application.common.decorators import authorization_required
 from application.common.exceptions import InvalidUsage
 from application.common.game_base import BaseGame
 from application.extensions import DATABASE
-from application.source import games
 from application.source.models.games import Games
 from application.source.models.game_arguments import GameArguments
 
@@ -18,7 +16,7 @@ game = Blueprint("game", __name__, url_prefix="/v1")
 
 ###############################################################################
 ###############################################################################
-## Supported Game Related Endpoints
+# Supported Game Related Endpoints
 ###############################################################################
 ###############################################################################
 
@@ -234,6 +232,8 @@ class GameArgumentsApi(MethodView):
 
     @authorization_required
     def patch(self, game_name=None, game_arg_id=None, argument_name=None):
+        payload = request.json
+
         if game_arg_id and argument_name is None:
             qry = self._get_argument(game_arg_id)
         elif argument_name and game_arg_id is None:
@@ -244,8 +244,6 @@ class GameArgumentsApi(MethodView):
                 )
 
             qry = self._get_argument_by_name(game_name, argument_name)
-
-        payload = request.json
 
         if "game_arg_value" not in payload:
             raise InvalidUsage("Bad Request: Missing Argument Value", status_code=400)
@@ -268,7 +266,7 @@ class GameArgumentsApi(MethodView):
 
         if arg_obj.is_permanent:
             raise InvalidUsage(
-                f"Bad Request: Cannot Delete a permanent Argument!", status_code=400
+                "Bad Request: Cannot Delete a permanent Argument!", status_code=400
             )
 
         DATABASE.session.delete(arg_obj)

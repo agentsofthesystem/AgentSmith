@@ -3,7 +3,6 @@ from PyQt5.QtGui import QClipboard
 
 from application.gui.intalled_games_menu import InstalledGameMenu
 from application.gui.widgets.add_argument_widget import AddArgumentWidget
-from application.gui.widgets.game_manager_widget import GameManagerWidget
 from operator_client import Operator
 
 

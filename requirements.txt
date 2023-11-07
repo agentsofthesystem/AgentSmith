@@ -2,6 +2,7 @@ alembic
 black
 coverage
 debugpy
+flake8
 flask
 Flask-SQLAlchemy
 gunicorn

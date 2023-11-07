@@ -1,6 +1,6 @@
 import time
 
-from PyQt5.QtWidgets import QMenu, QWidget, QLabel, QWidgetAction, QPushButton
+from PyQt5.QtWidgets import QMenu, QWidget, QWidgetAction, QPushButton
 
 from application.common import toolbox, logger
 from application.source import games
@@ -20,7 +20,8 @@ class InstalledGameMenu(QMenu):
         self._buttons: dict = {}
         self._modules_dict = toolbox._find_conforming_modules(games)
 
-        # Must call update_menu_list as opposed to update_menu to avoid overloading built in function name!
+        # Must call update_menu_list as opposed to update_menu to avoid overloading built in
+        # function name!
         self.update_menu_list()
 
     def update_menu_list(self, delay_sec=0):
@@ -50,7 +51,8 @@ class InstalledGameMenu(QMenu):
             else:
                 button.setStyleSheet(BACKGROUND_STR.format(color=COLOR_STOPPED))
 
-            # There's a strange issue where passing arguments results in the same game name for any button clicked.
+            # There's a strange issue where passing arguments results in the same game name for any
+            # button clicked.
             # This dict saves the game name, and the callback can look up info later.
             self._buttons[game_pretty_name] = game_name
 
@@ -90,7 +92,8 @@ class InstalledGameMenu(QMenu):
         game_pid = game_info["game_pid"]
 
         logger.debug(
-            f"Installed Game Menu: Clicked on Game: {game_pretty_name}, Name: {game_name}, PID: {game_pid}"
+            f"Installed Game Menu: Clicked on Game: {game_pretty_name}, Name: {game_name}, "
+            f"PID: {game_pid}"
         )
 
         game_exe = self._get_executable_name(game_name)
@@ -99,8 +102,8 @@ class InstalledGameMenu(QMenu):
             # In this case, the game exe is found on the host, and the database is correct.
             self._client.game.game_shutdown(game_name)
         elif not self._is_running(game_pid) and self._executable_is_found(game_exe):
-            # Catch the situation where the game pid in the DB is None/False, but the game exe is still found
-            # on the host.
+            # Catch the situation where the game pid in the DB is None/False, but the game exe is
+            # still found on the host.
             self._client.game.game_shutdown(game_name)
         else:
             # Startup the game server on the host.
