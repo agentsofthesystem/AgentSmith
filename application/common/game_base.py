@@ -96,7 +96,8 @@ class BaseGame:
 
         if not game_qry.first():
             logger.debug(
-                f"BaseGame: _is_game_installed - Game with SteamID {self._game_steam_id} not installed."
+                f"BaseGame: _is_game_installed - Game with SteamID {self._game_steam_id} "
+                "not installed."
             )
             return False
 
@@ -109,21 +110,21 @@ class BaseGame:
                 logger.error(message)
                 raise InvalidUsage(message, status_code=400)
             elif self._game_executable is None:
-                message = f"BaseGame: User must supply an executable name to attr: _game_executable."
+                message = "BaseGame: User must supply an executable name to attr: _game_executable."
                 logger.error(message)
                 raise InvalidUsage(message, status_code=400)
             elif self._game_name is None:
-                message = f"BaseGame: User must supply a game name to attr: _game_name."
+                message = "BaseGame: User must supply a game name to attr: _game_name."
                 logger.error(message)
                 raise InvalidUsage(message, status_code=400)
             elif self._game_steam_id is None:
                 message = (
-                    f"BaseGame: User must supply a valid steam id attr: _game_steam_id."
+                    "BaseGame: User must supply a valid steam id attr: _game_steam_id."
                 )
                 logger.error(message)
                 raise InvalidUsage(message, status_code=400)
             elif not self._game_installed:
-                message = f"BaseGame: User must have previously installed the game."
+                message = "BaseGame: User must have previously installed the game."
                 logger.error(message)
                 raise InvalidUsage(message, status_code=400)
 

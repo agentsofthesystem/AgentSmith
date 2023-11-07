@@ -91,7 +91,8 @@ class VrisingGame(BaseGame):
         # Print the formatted jinja
         logger.debug(output_from_parsed_template)
 
-        # In theory, the software has already check that the game is installed, so no check/guard needed.
+        # In theory, the software has already check that the game is installed, so no check/guard
+        # needed.
         game_qry = Games.query.filter_by(game_steam_id=self._game_steam_id)
         game_obj = game_qry.first()
         game_install_dir = game_obj.game_install_dir

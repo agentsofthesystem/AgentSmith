@@ -308,8 +308,8 @@ class GameManagerWidget(QWidget):
 
         self._current_args_list = []
 
-        # This callback might be triggered in the situation where there never was a current game. Ie. The first
-        # game being installed.
+        # This callback might be triggered in the situation where there never was a current game.
+        # Ie. The first game being installed.
         if self._current_game_frame is None:
             self._current_game_frame = self._build_game_frame(game_pretty_name)
             self._layout.addWidget(self._current_game_frame)
@@ -380,5 +380,5 @@ class GameManagerWidget(QWidget):
             self._install_games_menu.update_menu_list()
 
         else:
-            message.setText(f"Error: Unable to uninstall game server...")
+            message.setText("Error: Unable to uninstall game server...")
         message.exec()

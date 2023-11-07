@@ -50,7 +50,8 @@ class SevenDaysToDieGame(BaseGame):
         # Run base class checks
         super().startup()
 
-        # In theory, the software has already check that the game is installed, so no check/guard needed.
+        # In theory, the software has already check that the game is installed, so no check/guard
+        # needed.
         game_qry = Games.query.filter_by(game_steam_id=self._game_steam_id)
         game_obj = game_qry.first()
         game_install_dir = game_obj.game_install_dir
@@ -115,7 +116,8 @@ class SevenDaysToDieGame(BaseGame):
 
         # Telnet client command is simply "shutdown"; default telnet port is localhost:8081
         # telnet client is built in to python.
-        # In theory, the software has already check that the game is installed, so no check/guard needed.
+        # In theory, the software has already check that the game is installed, so no check/guard
+        # needed.
         game_qry = Games.query.filter_by(game_steam_id=self._game_steam_id)
 
         # This refreshes the argument dictionary with the config file path in the database.

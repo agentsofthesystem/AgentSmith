@@ -170,7 +170,7 @@ class NewGameWidget(QWidget):
 
         if install_path == "":
             message = QMessageBox()
-            message.setText(f"Error: Must supply an install path. Try again!")
+            message.setText("Error: Must supply an install path. Try again!")
             message.exec()
             return
 
@@ -193,9 +193,11 @@ class NewGameWidget(QWidget):
             install_path,
         )
 
-        # Quick sleep. The client functions return while things are running in background non-blocking style.
+        # Quick sleep. The client functions return while things are running in background
+        # non-blocking style.
         # this is to ensure that the backend added the game record.
-        # TODO - Consider adding REST API for sole purpose of adding game instaed of doubling up with steam intall API.
+        # TODO - Consider adding REST API for sole purpose of adding game instaed of doubling up
+        # with steam intall API.
         time.sleep(constants.WAIT_FOR_BACKEND)
 
         # Add arguments after install

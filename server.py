@@ -49,9 +49,9 @@ class MainArgParse(object):
         self.port = self.app.config["FLASK_RUN_PORT"]
 
     def _add_subparser(self, psr):
-        sub = psr.add_subparsers(
-            dest="_subparser_name", metavar="sub_commands", help="this is help"
-        )
+        # sub = psr.add_subparsers(
+        #     dest="_subparser_name", metavar="sub_commands", help="this is help"
+        # )
 
         # Example
         # sub_command = sub.add_parser("sub_command")

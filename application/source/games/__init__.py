@@ -1,1 +1,2 @@
-from application.source import games
+# Intentially import here unused
+from application.source import games  # noqa: F401

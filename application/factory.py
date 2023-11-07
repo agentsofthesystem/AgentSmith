@@ -44,7 +44,7 @@ def _handle_migrations(flask_app: Flask):
 
 
 def create_app(config=None):
-    logger.info(f"Begin initialization.")
+    logger.info("Begin initialization.")
 
     if config is None:
         config = DefaultConfig("python")

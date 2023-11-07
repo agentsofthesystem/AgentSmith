@@ -37,8 +37,8 @@ class SteamManager:
         # If exists in DB this is the record
         game_qry = Games.query.filter_by(game_steam_id=steam_id)
 
-        # If the object exists, then the user has already attempted installation once. Do not make a new
-        # databse record again.
+        # If the object exists, then the user has already attempted installation once. Do not make
+        # a new databse record again.
         if not game_qry.first():
             modules_dict = toolbox._find_conforming_modules(games)
             correct_game_object = None
@@ -59,7 +59,8 @@ class SteamManager:
             new_game.game_name = correct_game_object._game_name
             DATABASE.session.add(new_game)
         else:
-            # If it exists, just update the timestamp so the user knows the last time this game was installed/updated.
+            # If it exists, just update the timestamp so the user knows the last time this game was
+            # installed/updated.
             time_now = datetime.now()
             update_dict = {"game_last_update": time_now}
             game_qry.update(update_dict)
