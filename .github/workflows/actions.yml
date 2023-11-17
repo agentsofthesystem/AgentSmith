@@ -52,17 +52,18 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Create Windows Executable
-      uses: sayyid5416/pyinstaller@v1
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v3
       with:
-        python_ver: '3.11'
-        spec: './package.py'
-        requirements: './requirements.txt'
-        upload_exe_with_name: 'AgentSmith'
+        python-version: "3.11"
 
-    # - name: Upload a Build Artifact
-    #   uses: actions/upload-artifact@v3.1.3
-    #   with:
-    #     name: launch.exe
-    #     path: ./dist/launch
-    #     retention-days: 1
+    - name: Run PyInstaller
+      run: |
+        python package.py
+
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3.1.3
+      with:
+        name: AgentSmith.exe
+        path: ./dist/launch
+        retention-days: 1
