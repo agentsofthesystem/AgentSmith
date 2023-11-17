@@ -5,9 +5,10 @@ name: Python application
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches:
+    - '*'         # matches every branch that doesn't contain a '/'
+    - '*/*'       # matches every branch containing a single '/'
+    - '**'        # matches every branch
 
 permissions:
   contents: read
@@ -48,7 +49,7 @@ jobs:
       with:
         python_ver: '3.11'
         spec: './package.py'
-        requirements: 'src/requirements.txt'
+        requirements: './requirements.txt'
         upload_exe_with_name: 'AgentSmith'
 
     # - name: Upload a Build Artifact
