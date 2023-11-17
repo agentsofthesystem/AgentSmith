@@ -70,5 +70,5 @@ jobs:
       uses: actions/upload-artifact@v3.1.3
       with:
         name: AgentSmith.exe
-        path: ./dist/launch
+        path: .\dist\agent-smith.exe
         retention-days: 1
