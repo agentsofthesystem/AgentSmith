@@ -14,9 +14,10 @@ permissions:
   contents: read
 
 jobs:
-  build:
 
-    runs-on: [ubuntu-latest, windows-latest]
+  linux_checks:
+
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
@@ -43,6 +44,13 @@ jobs:
       with:
         exclude: "tests/*,doc/*,scripts/*"
         max-line-length: "100"
+
+  windows_exe:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
 
     - name: Create Windows Executable
       uses: sayyid5416/pyinstaller@v1
