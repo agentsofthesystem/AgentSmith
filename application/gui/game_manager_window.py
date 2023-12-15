@@ -56,6 +56,23 @@ class GameManagerWindow(QMainWindow):
 
         self._initialized = True
 
+    def closeEvent(self, event):
+        self._game_manager_widget.stop_timer()
+        self._game_manager_widget.hide()
+
+    def showWindow(self):
+        # Wrapping the show method so the timer can be started, if it isn't already in
+        # addition to calling show()
+        self._game_manager_widget.start_timer(
+            override_interval=self._game_manager_widget.FAST_INTERVAL
+        )
+        self._game_manager_widget.show()
+        self.show()
+
+    def forTest(self):
+        self._game_manager_widget.show()
+        self.show()
+
     def add_widget_items(self):
         self._main_widget = QWidget(self)
 
