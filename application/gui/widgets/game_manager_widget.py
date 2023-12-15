@@ -25,6 +25,7 @@ from operator_client import Operator
 class GameManagerWidget(QWidget):
     MILIS_PER_SECOND = 1000
     REFRESH_INTERVAL = 10 * MILIS_PER_SECOND
+    FAST_INTERVAL = 1 * MILIS_PER_SECOND
 
     def __init__(self, client: Operator, globals, parent: QWidget) -> None:
         super(QWidget, self).__init__(parent)
@@ -83,7 +84,7 @@ class GameManagerWidget(QWidget):
         self.update_installed_games(game_data=game_data, initialize=True)
 
         # Go ahead a run the refresh in case it hasnt run yet.
-        self._refresh_on_timer()
+        # self._refresh_on_timer()
 
         # Current game frame gets created in update_installed_games
         self._layout.addWidget(self._current_game_frame)
@@ -94,17 +95,31 @@ class GameManagerWidget(QWidget):
 
         self.show()
 
+        self.start_timer(override_interval=self.FAST_INTERVAL)
+
         self._initialized = True
+
+    def stop_timer(self):
+        # Stop the timer
+        self._timer.stop()
+
+    def start_timer(self, override_interval=None):
+        if not self._timer.isActive():
+            if override_interval:
+                self._timer.start(override_interval)
+            else:
+                self._timer.setInterval(self.REFRESH_INTERVAL)
+                self._timer.start()
 
     def update_installed_games(
         self, game_data=None, initialize=False, skip_timer=False
     ):
+        # Do not want callback to trigger during this update.
+        self._combo_box.blockSignals(True)
+
         if game_data is None:
             game_data = self._client.game.get_games()
             game_data = game_data["items"]
-
-        if not self._timer.isActive() and not skip_timer:
-            self._timer.start(1000)
 
         self._combo_box.clear()
         self._installed_supported_games.clear()
@@ -118,17 +133,21 @@ class GameManagerWidget(QWidget):
 
         installed_supported_games = list(self._installed_supported_games.keys())
 
+        # Init routine uses this fucntion. Don't want to replace the widget the "first" time.
         if len(installed_supported_games) > 0:
-            self._current_game_frame = self._build_game_frame(
-                installed_supported_games[0]
-            )
+            new_game_frame = self._build_game_frame(installed_supported_games[0])
 
-            # Init routine uses this fucntion. Don't want to replace the widget the "first" time.
-            if not initialize:
+            if initialize:
+                self._current_game_frame = new_game_frame
+            else:
                 old_game_frame = self._current_game_frame
                 old_game_frame.hide()
+                self._current_game_frame = new_game_frame
                 self._layout.replaceWidget(old_game_frame, self._current_game_frame)
                 self.adjustSize()
+
+        # Re-enable callback
+        self._combo_box.blockSignals(False)
 
     def _refresh_on_timer(self):
         # Don't want to make request of API before window has been opened for the first time.
@@ -157,12 +176,14 @@ class GameManagerWidget(QWidget):
 
         # Game is running
         if is_game_pid and is_exe_found:
+            logger.debug("Game is Running, setting buttins accordingly")
             self._disable_btn(self._startup_btn)
             self._disable_btn(self._uninstall_btn)
             self._enable_btn(self._shutdown_btn)
             self._enable_btn(self._restart_btn)
         else:
             # Game is not running
+            logger.debug("Game is NOT Running, setting buttins accordingly")
             self._enable_btn(self._startup_btn)
             self._enable_btn(self._uninstall_btn)
             self._disable_btn(self._shutdown_btn)
@@ -209,9 +230,9 @@ class GameManagerWidget(QWidget):
         v_layout_info_labels.addWidget(QLabel("Game Pretty Name", game_frame))
         v_layout_info_labels.addWidget(QLabel("Game Exe Name", game_frame))
         v_layout_info_labels.addWidget(QLabel("Game Steam ID", game_frame))
-        v_layout_info_labels.addWidget(QLabel("Game Info URL", game_frame))
         v_layout_info_labels.addWidget(QLabel("Game PID", game_frame))
         v_layout_info_labels.addWidget(QLabel("Game Exe Found?", game_frame))
+        v_layout_info_labels.addWidget(QLabel("Game Info URL", game_frame))
 
         self._current_game_name = game_object._game_name  # not the pretty name
         self._current_game_exe = game_object._game_executable
@@ -301,7 +322,9 @@ class GameManagerWidget(QWidget):
         return game_frame
 
     def _text_changed(self, game_pretty_name):
+        logger.info("+++++++++++++++++++++++++++++++++++++++++++++")
         logger.info(f"Curent Game changed to: {game_pretty_name}")
+        logger.info("+++++++++++++++++++++++++++++++++++++++++++++")
 
         if game_pretty_name == "":
             return
@@ -311,9 +334,11 @@ class GameManagerWidget(QWidget):
         # This callback might be triggered in the situation where there never was a current game.
         # Ie. The first game being installed.
         if self._current_game_frame is None:
+            logger.debug("Setting first time game frame in game manager window.")
             self._current_game_frame = self._build_game_frame(game_pretty_name)
             self._layout.addWidget(self._current_game_frame)
         else:
+            logger.debug("Replacing old game frame in game manager window.")
             old_game_frame = self._current_game_frame
             self._current_game_frame = self._build_game_frame(game_pretty_name)
             old_game_frame.hide()
@@ -362,7 +387,7 @@ class GameManagerWidget(QWidget):
         logger.info(f"Uninstall game: {game_name}")
 
         # Stop the regular refresh from happening.
-        self._timer.stop()
+        self.stop_timer()
 
         message = QMessageBox()
         if self._client.game.uninstall(game_name):
@@ -375,7 +400,9 @@ class GameManagerWidget(QWidget):
                 self.hide()
                 self._parent.hide()
             else:
-                self._timer.start(1000)  # Turn it back on.
+                self.start_timer(
+                    override_interval=self.FAST_INTERVAL
+                )  # Turn timer back on
 
             self._install_games_menu.update_menu_list()
 
