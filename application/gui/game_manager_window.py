@@ -69,10 +69,6 @@ class GameManagerWindow(QMainWindow):
         self._game_manager_widget.show()
         self.show()
 
-    def forTest(self):
-        self._game_manager_widget.show()
-        self.show()
-
     def add_widget_items(self):
         self._main_widget = QWidget(self)
 
