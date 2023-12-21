@@ -83,9 +83,17 @@ def create_app(config=None):
 
     _handle_migrations(flask_app)
 
+    startup_settings: dict = {
+        constants.SETTING_NAME_STEAM_PATH: os.path.join(
+            flask_app.config["DEFAULT_INSTALL_PATH"], "steam"
+        ),
+        constants.SETTING_NAME_DEFAULT_PATH: flask_app.config["DEFAULT_INSTALL_PATH"],
+        constants.SETTING_NAME_APP_SECRET: flask_app.config["APP_DEFAULT_SECRET"],
+    }
+
     # Here just going to initialize some settings. TODO - Make into a function.
     with flask_app.app_context():
-        for setting_name, setting_value in constants.STARTUP_SETTINGS.items():
+        for setting_name, setting_value in startup_settings.items():
             setting_obj = Settings.query.filter_by(setting_name=setting_name).first()
 
             if setting_obj is None:

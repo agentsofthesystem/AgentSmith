@@ -1,3 +1,4 @@
+import os
 import time
 
 from PyQt5.QtWidgets import (
@@ -47,6 +48,14 @@ class NewGameWidget(QWidget):
             self._client, constants.FileModes.DIRECTORY, self
         )
 
+        self._default_install_dir: str = self._client.app.get_setting_by_name(
+            constants.SETTING_NAME_DEFAULT_PATH
+        )
+
+        self._defaults: dict = {
+            constants.SETTING_NAME_DEFAULT_PATH: self._default_install_dir
+        }
+
         self._initialized = False
 
     def _build_inputs(self, game_name):
@@ -56,6 +65,7 @@ class NewGameWidget(QWidget):
         input_frame_path_layout = QHBoxLayout()
 
         game_object: BaseGame = self._supported_games[game_name]
+        game_short_name = game_object._game_name
         required_args_dict = game_object._get_argument_dict()
         args_list = []
 
@@ -83,10 +93,20 @@ class NewGameWidget(QWidget):
         h_sep = QFrame()
         h_sep.setFrameShape(QFrame.HLine)
 
+        # Compute a default game installation directory.
+        game_install_path = os.path.join(
+            self._default_install_dir, constants.GAME_INSTALL_FOLDER, game_short_name
+        )
+
         # Add install path
         install_path_layout = QHBoxLayout()
         label = QLabel("Game Install Path: ")
-        text_edit = FileSelectWidget(self._client, constants.FileModes.DIRECTORY, self)
+        text_edit = FileSelectWidget(
+            self._client,
+            constants.FileModes.DIRECTORY,
+            self,
+            default_path=game_install_path,
+        )
         self._current_game_install_path = text_edit
         install_path_layout.addWidget(label)
         install_path_layout.addWidget(text_edit)
@@ -116,7 +136,7 @@ class NewGameWidget(QWidget):
 
         for module_name in modules_dict.keys():
             game_obj = toolbox._instantiate_object(
-                module_name, modules_dict[module_name]
+                module_name, modules_dict[module_name], self._defaults
             )
             self._supported_games[game_obj._game_pretty_name] = game_obj
             self._combo_box.addItem(game_obj._game_pretty_name)
@@ -165,7 +185,7 @@ class NewGameWidget(QWidget):
         )  # What the user actually input.
         install_path = self._current_game_install_path.get_line_edit().text()
         steam_install_dir = self._client.app.get_setting_by_name(
-            constants.STARTUP_STEAM_SETTING_NAME
+            constants.SETTING_NAME_STEAM_PATH
         )
 
         if install_path == "":
