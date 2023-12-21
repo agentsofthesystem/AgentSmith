@@ -322,9 +322,7 @@ class GameManagerWidget(QWidget):
         return game_frame
 
     def _text_changed(self, game_pretty_name):
-        logger.info("+++++++++++++++++++++++++++++++++++++++++++++")
-        logger.info(f"Curent Game changed to: {game_pretty_name}")
-        logger.info("+++++++++++++++++++++++++++++++++++++++++++++")
+        logger.debug(f"Curent Game changed to: {game_pretty_name}")
 
         if game_pretty_name == "":
             return
