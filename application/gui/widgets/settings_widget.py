@@ -32,8 +32,15 @@ class SettingsWidget(QWidget):
     def init_ui(self):
         self._layout.setAlignment(Qt.AlignTop)
 
-        steam_install_dir = self._client.app.get_setting_by_name("steam_install_dir")
-        application_secret = self._client.app.get_setting_by_name("application_secret")
+        steam_install_dir = self._client.app.get_setting_by_name(
+            constants.SETTING_NAME_STEAM_PATH
+        )
+        default_install_dir = self._client.app.get_setting_by_name(
+            constants.SETTING_NAME_DEFAULT_PATH
+        )
+        application_secret = self._client.app.get_setting_by_name(
+            constants.SETTING_NAME_APP_SECRET
+        )
         self._globals._steam_install_path = steam_install_dir
 
         self.tabs = QTabWidget()
@@ -43,6 +50,9 @@ class SettingsWidget(QWidget):
 
         tab1_layout = QVBoxLayout()
         tab1_layout.addLayout(self._create_steam_path_setting(steam_install_dir))
+        tab1_layout.addLayout(
+            self._create_default_install_path_setting(default_install_dir)
+        )
         tab1_layout.addLayout(self._create_app_secret_setting(application_secret))
         self.tab1.setLayout(tab1_layout)
 
@@ -72,6 +82,21 @@ class SettingsWidget(QWidget):
 
         return h_layout1
 
+    def _create_default_install_path_setting(
+        self, defaut_install_dir: str
+    ) -> QHBoxLayout:
+        h_layout1 = QHBoxLayout()
+        label1 = QLabel("Default Install Path: ")
+        text_edit1 = FileSelectWidget(self._client, constants.FileModes.DIRECTORY, self)
+        text_edit1.get_line_edit().setText(defaut_install_dir)
+        text_edit1.get_line_edit().textChanged.connect(
+            self._update_default_install_path
+        )
+        h_layout1.addWidget(label1)
+        h_layout1.addWidget(text_edit1)
+
+        return h_layout1
+
     def _create_app_secret_setting(self, application_secret: str) -> QHBoxLayout:
         h_layout2 = QHBoxLayout()
         label2 = QLabel("Application Secret: ")
@@ -87,8 +112,16 @@ class SettingsWidget(QWidget):
         logger.info(f"New Steam Install Path: {path}")
         # TODO - Check if this is a path and not something garbage.
         self._globals._steam_install_path = path
-        self._client.app.update_setting_by_name("steam_install_dir", path)
+        self._client.app.update_setting_by_name(constants.SETTING_NAME_STEAM_PATH, path)
+
+    def _update_default_install_path(self, path):
+        logger.info(f"New Default Install Path: {path}")
+        # TODO - Check if this is a path and not something garbage.
+        self._globals._default_install_path = path
+        self._client.app.update_setting_by_name(
+            constants.SETTING_NAME_DEFAULT_PATH, path
+        )
 
     def _update_app_secret(self, text):
         # TODO - Changing the app secret invalidates all existing tokens.
-        self._client.app.update_setting_by_name("application_secret", text)
+        self._client.app.update_setting_by_name(constants.SETTING_NAME_APP_SECRET, text)

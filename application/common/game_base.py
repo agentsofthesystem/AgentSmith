@@ -3,7 +3,7 @@ import time
 import shutil
 import subprocess
 
-from application.common import logger
+from application.common import logger, constants
 from application.common.game_argument import GameArgument
 from application.common.exceptions import InvalidUsage
 from application.extensions import DATABASE
@@ -14,7 +14,7 @@ from application.source.models.game_arguments import GameArguments
 class BaseGame:
     DEFAULT_WAIT_PERIOD = 5
 
-    def __init__(self) -> None:
+    def __init__(self, defaults_dict: dict = {}) -> None:
         self._game_args: dict = {}
         self._game_name: str = None
         self._game_pretty_name: str = None
@@ -22,6 +22,14 @@ class BaseGame:
         self._game_steam_id: str = None
         self._game_installed: bool = False
         self._game_info_url: str = ""
+
+        self._defaults = defaults_dict
+        self._game_default_install_dir = None
+
+        if constants.SETTING_NAME_DEFAULT_PATH in self._defaults:
+            self._game_default_install_dir = defaults_dict[
+                constants.SETTING_NAME_DEFAULT_PATH
+            ]
 
     @abc.abstractmethod
     def startup(self) -> None:

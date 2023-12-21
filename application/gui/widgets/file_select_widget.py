@@ -13,7 +13,11 @@ from operator_client import Operator
 
 class FileSelectWidget(QWidget):
     def __init__(
-        self, client: Operator, file_mode: FileModes, parent: QWidget = None
+        self,
+        client: Operator,
+        file_mode: FileModes,
+        parent: QWidget = None,
+        default_path=None,
     ) -> None:
         super().__init__(parent)
 
@@ -21,6 +25,7 @@ class FileSelectWidget(QWidget):
         self._client = client
         self._file_mode: FileModes = file_mode
         self._selected_path: str = ""
+        self._default_path = default_path
 
         self.init_ui()
 
@@ -49,6 +54,9 @@ class FileSelectWidget(QWidget):
         selector_layout.addWidget(self._browse_button)
 
         self._layout.addLayout(selector_layout)
+
+        if self._default_path:
+            self._path_line_edit.setText(self._default_path)
 
         self.setLayout(self._layout)
 

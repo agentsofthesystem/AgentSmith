@@ -4,7 +4,7 @@ from datetime import datetime
 from flask import Blueprint, current_app, request, jsonify
 from oauthlib.oauth2 import RequestValidator
 
-from application.common import logger
+from application.common import logger, constants
 from application.common.authorization import _verify_bearer_token
 from application.common.decorators import authorization_required
 from application.common.exceptions import InvalidUsage
@@ -56,7 +56,9 @@ def token_generate():
     if token_obj:
         raise InvalidUsage("Error: Token by that name already exists!", status_code=400)
 
-    secret_obj = Settings.query.filter_by(setting_name="application_secret").first()
+    secret_obj = Settings.query.filter_by(
+        setting_name=constants.SETTING_NAME_APP_SECRET
+    ).first()
     validator = TokenValidator(secret_obj.setting_value, current_app.config["APP_NAME"])
 
     computed_token = validator.generate_access_token(new_token_name)
