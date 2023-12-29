@@ -67,7 +67,7 @@ One must create a python virtual environment.  Therefore python3 must be present
 NOTE:
    - There is another script (python .\launch.py), and that can be used to run both the backend server and the front
      end GUI simultaneously.  Use this for final testing of features.
-   - The backend server operates on port 3000, and the frontend GUI is built to use that port by default.
+   - The backend server operates on port 5000, and the frontend GUI is built to use that port by default.
 
 **Warning**: If one is using a windows only environment, the second step where the python virtual environment is activated
 may require a windows policy to be enabled which allows powershell scripts to be run.  This is a windows security

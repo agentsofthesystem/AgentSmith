@@ -12,19 +12,6 @@ from application.extensions import DATABASE
 app = Blueprint("app", __name__, url_prefix="/v1")
 
 
-@app.route("/health", methods=["GET"])
-def health():
-    logger.info("App is alive!")
-    return jsonify("Alive")
-
-
-@app.route("/health/secure", methods=["GET"])
-@authorization_required
-def health_secure():
-    logger.info("App is alive!")
-    return jsonify("Alive & Secure")
-
-
 class SettingsApi(MethodView):
     def __init__(self, model):
         self.model = model

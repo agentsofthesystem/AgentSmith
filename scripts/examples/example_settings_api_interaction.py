@@ -14,7 +14,7 @@ from operator_client import Operator
 
 def main():
     hostname = "http://127.0.0.1"
-    port = "3000"
+    port = "5000"
 
     setting_id_1 = None
     setting_id_2 = None

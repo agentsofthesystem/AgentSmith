@@ -160,7 +160,18 @@ class SevenDaysToDieGame(BaseGame):
 
         # Open connection with timeout
         timeout = 5
-        self._telnet.open("localhost", int(telnet_port), timeout)
+
+        try:
+            self._telnet.open("localhost", int(telnet_port), timeout)
+        except ConnectionRefusedError as error:
+            logger.error(error)
+            logger.critical(
+                "Unable to shutdown 7DTD server because it's not actually running.."
+            )
+            update_dict = {"game_pid": None}
+            game_qry.update(update_dict)
+            DATABASE.session.commit()
+            return
 
         # If the password is anything but a blank string.
         if telnet_pass != "":
@@ -170,18 +181,18 @@ class SevenDaysToDieGame(BaseGame):
 
         self._telnet.write(shutdown_command.encode("ascii") + b"\n")
 
+        # Mark PID None regardless.
+        update_dict = {"game_pid": None}
+        game_qry.update(update_dict)
+        DATABASE.session.commit()
+
         # Give server time to shutdown
         time.sleep(2)
 
-        # Check forthe process
+        # Check for the process
         process = _get_proc_by_name(self._game_executable)
 
-        if process is None:
-            update_dict = {"game_pid": None}
-            game_qry.update(update_dict)
-            DATABASE.session.commit()
-
-        else:
+        if process:
             logger.critical(
                 "7Days To Die: Used telnet to shutdown the game but it did not do so..."
             )

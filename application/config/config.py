@@ -22,8 +22,9 @@ class DefaultConfig:
     DEBUG = True
     ENV = "development"
     FLASK_RUN_HOST = "0.0.0.0"
-    FLASK_RUN_PORT = "3000"
+    FLASK_RUN_PORT = "5000"
     FLASK_FORCE_AUTH = False  # Leave as False except in testing.
+    FLASK_DISABLE_AUTH = False
 
     # Designate where the database file is stored based on platform.
     if platform.system() == "Windows":
