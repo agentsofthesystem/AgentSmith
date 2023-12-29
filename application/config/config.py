@@ -9,25 +9,33 @@ class DefaultConfig:
     # App name and secret
     APP_NAME = "AgentSmith"
     APP_PRETTY_NAME = "Agent Smith"
-    DEPLOYMENT_TYPE = "python"  # also supports kubernetes
+    APP_DEFAULT_SECRET = "super secret!"
+    DEPLOYMENT_TYPE = "python"
+
+    if platform.system() == "Windows":
+        DEFAULT_INSTALL_PATH = f"C:\\{APP_NAME}"
+    else:
+        # TODO - Revisit this when linux support gets closer...
+        DEFAULT_INSTALL_PATH = f"/usr/local/share/{APP_NAME}"
 
     # Flask specific configs
     DEBUG = True
     ENV = "development"
     FLASK_RUN_HOST = "0.0.0.0"
-    FLASK_RUN_PORT = "3000"
+    FLASK_RUN_PORT = "5000"
     FLASK_FORCE_AUTH = False  # Leave as False except in testing.
+    FLASK_DISABLE_AUTH = False
 
     # Designate where the database file is stored based on platform.
     if platform.system() == "Windows":
-        base_folder = f"C:\\{APP_NAME}"
+        base_folder = DEFAULT_INSTALL_PATH
         if not os.path.exists(base_folder):
             os.makedirs(base_folder)
         SQLALCHEMY_DATABASE_URI = f"sqlite:///{base_folder}\\{APP_NAME}.db"
     else:
         # Linux
         # Right now, this is for testing since GitHub actions uses linux
-        SQLALCHEMY_DATABASE_URI = f"sqlite:///{APP_NAME}.db"
+        SQLALCHEMY_DATABASE_URI = f"sqlite:///{DEFAULT_INSTALL_PATH}/{APP_NAME}.db"
 
     def __init__(self, deploy_type):
         configuration_options = [el.value for el in _DeployTypes]

@@ -2,6 +2,7 @@ import jwt
 
 from flask.wrappers import Request
 
+from application.common import constants
 from application.source.models.settings import Settings
 from application.source.models.tokens import Tokens
 
@@ -32,7 +33,9 @@ def _verify_bearer_token(request: Request) -> int:
         return 403
 
     # Next decode this bad thing...
-    secret_obj = Settings.query.filter_by(setting_name="application_secret").first()
+    secret_obj = Settings.query.filter_by(
+        setting_name=constants.SETTING_NAME_APP_SECRET
+    ).first()
 
     try:
         decoded_token = jwt.decode(

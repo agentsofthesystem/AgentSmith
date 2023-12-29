@@ -17,8 +17,9 @@ class GuiGlobals:
         # Primitive types
         self._VERSION: str = "_alpha"
         self._server_host: str = "127.0.0.1"
-        self._server_port: str = "3000"
+        self._server_port: str = "5000"
         self._steam_install_path: str = "NOT_SET"
+        self._default_install_path: str = "NOT_SET"
 
         # Objects
         self._FLASK_APP: Flask = None

@@ -12,8 +12,8 @@ from application.source.models.games import Games
 
 
 class VrisingGame(BaseGame):
-    def __init__(self) -> None:
-        super(VrisingGame, self).__init__()
+    def __init__(self, defaults_dict: dict = {}) -> None:
+        super(VrisingGame, self).__init__(defaults_dict)
 
         self._game_name = "vrising"
         self._game_pretty_name = "V Rising"
@@ -23,11 +23,28 @@ class VrisingGame(BaseGame):
             "https://github.com/StunlockStudios/vrising-dedicated-server-instructions"
         )
 
+        if self._game_default_install_dir:
+            default_persistent_data_path = os.path.join(
+                self._game_default_install_dir,
+                constants.GAME_INSTALL_FOLDER,
+                self._game_name,
+            )
+            default_log_path = os.path.join(
+                self._game_default_install_dir,
+                constants.GAME_INSTALL_FOLDER,
+                self._game_name,
+                "logs",
+                "vrisinglog.txt",
+            )
+        else:
+            default_persistent_data_path = None
+            default_log_path = None
+
         # Add Args here, can update later.
         self._add_argument(
             GameArgument(
                 "-persistentDataPath",
-                value=None,
+                value=default_persistent_data_path,
                 required=True,
                 is_permanent=True,
                 file_mode=constants.FileModes.DIRECTORY.value,
@@ -36,7 +53,7 @@ class VrisingGame(BaseGame):
         self._add_argument(
             GameArgument(
                 "-serverName",
-                value=None,
+                value="Vrising World",
                 required=True,
                 use_quotes=True,
                 is_permanent=True,
@@ -45,7 +62,7 @@ class VrisingGame(BaseGame):
         self._add_argument(
             GameArgument(
                 "-saveName",
-                value=None,
+                value="AgentSave",
                 required=True,
                 use_quotes=True,
                 is_permanent=True,
@@ -54,7 +71,7 @@ class VrisingGame(BaseGame):
         self._add_argument(
             GameArgument(
                 "-logFile",
-                value=None,
+                value=default_log_path,
                 required=True,
                 use_quotes=True,
                 is_permanent=True,

@@ -13,7 +13,13 @@ def authorization_required(func):
     def decorated_view(*args, **kwargs):
         request_addr = request.remote_addr
         force_auth = current_app.config["FLASK_FORCE_AUTH"]
+        disable_auth = current_app.config["FLASK_DISABLE_AUTH"]
+
         logger.debug(f"Remote IP: {request.remote_addr}")
+
+        if disable_auth:
+            logger.debug("Authorization is disabled via configuration setting.")
+            return func(*args, **kwargs)
 
         if request_addr == LOCALHOST_IP_ADDR and not force_auth:
             logger.debug("Request is coming from Localhost, no need to do anything...")

@@ -12,12 +12,10 @@ from application.common.toolbox import _get_proc_by_name, get_resources_dir
 from application.extensions import DATABASE
 from application.source.models.games import Games
 
-# NOTE - This Game is not yet implemented.
-
 
 class SevenDaysToDieGame(BaseGame):
-    def __init__(self) -> None:
-        super(SevenDaysToDieGame, self).__init__()
+    def __init__(self, defaults_dict: dict = {}) -> None:
+        super(SevenDaysToDieGame, self).__init__(defaults_dict)
 
         self._game_name = "7dtd"
         self._game_pretty_name = "7 Days To Die"
@@ -29,6 +27,16 @@ class SevenDaysToDieGame(BaseGame):
 
         self._telnet = Telnet()
 
+        if self._game_default_install_dir:
+            default_config_file_path = os.path.join(
+                self._game_default_install_dir,
+                constants.GAME_INSTALL_FOLDER,
+                self._game_name,
+                "serverconfig.xml",
+            )
+        else:
+            default_config_file_path = None
+
         # Add Args here, can update later.
         self._add_argument(
             GameArgument(
@@ -38,7 +46,7 @@ class SevenDaysToDieGame(BaseGame):
         self._add_argument(
             GameArgument(
                 "ServerConfigFilePath",
-                value=None,
+                value=default_config_file_path,
                 required=True,
                 is_permanent=True,
                 file_mode=constants.FileModes.FILE.value,
@@ -152,7 +160,18 @@ class SevenDaysToDieGame(BaseGame):
 
         # Open connection with timeout
         timeout = 5
-        self._telnet.open("localhost", int(telnet_port), timeout)
+
+        try:
+            self._telnet.open("localhost", int(telnet_port), timeout)
+        except ConnectionRefusedError as error:
+            logger.error(error)
+            logger.critical(
+                "Unable to shutdown 7DTD server because it's not actually running.."
+            )
+            update_dict = {"game_pid": None}
+            game_qry.update(update_dict)
+            DATABASE.session.commit()
+            return
 
         # If the password is anything but a blank string.
         if telnet_pass != "":
@@ -162,18 +181,18 @@ class SevenDaysToDieGame(BaseGame):
 
         self._telnet.write(shutdown_command.encode("ascii") + b"\n")
 
+        # Mark PID None regardless.
+        update_dict = {"game_pid": None}
+        game_qry.update(update_dict)
+        DATABASE.session.commit()
+
         # Give server time to shutdown
         time.sleep(2)
 
-        # Check forthe process
+        # Check for the process
         process = _get_proc_by_name(self._game_executable)
 
-        if process is None:
-            update_dict = {"game_pid": None}
-            game_qry.update(update_dict)
-            DATABASE.session.commit()
-
-        else:
+        if process:
             logger.critical(
                 "7Days To Die: Used telnet to shutdown the game but it did not do so..."
             )

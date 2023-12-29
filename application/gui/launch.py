@@ -51,7 +51,7 @@ class GuiApp:
     def _spawn_server_on_thread(self):
         self._server_thread = Thread(
             target=lambda: self._globals._FLASK_APP.run(
-                host="0.0.0.0", port=3000, debug=True, use_reloader=False
+                host="0.0.0.0", port=5000, debug=True, use_reloader=False, threaded=True
             )
         )
         self._server_thread.daemon = True
@@ -74,7 +74,8 @@ class GuiApp:
             self._game_manager_window.init_ui()
         else:
             self._game_manager_window.update()
-        self._game_manager_window.show()
+
+        self._game_manager_window.showWindow()
 
     def _launch_new_game_window(self):
         if not self._game_install_window._initialized:

@@ -4,13 +4,10 @@ import importlib.util
 import psutil
 import sys
 
-from flask import request
-
 from application.common import logger
 from application.common.exceptions import InvalidUsage
 from application.common.game_base import BaseGame
 from application.source import games
-from application.source.models.games import Games
 
 
 @staticmethod
@@ -28,7 +25,11 @@ def _get_proc_by_name(process_name: str):
     current_procs = list((p for p in psutil.process_iter()))
 
     for proc in current_procs:
-        proc_name = proc.name()
+        try:
+            proc_name = proc.name()
+        except psutil.NoSuchProcess as error:
+            logger.error(error)
+            continue
 
         if proc_name == "" or proc_name == " ":
             continue
@@ -46,33 +47,6 @@ def get_resources_dir(this_file) -> str:
     current_folder = os.path.dirname(current_file)
     resources_folder = os.path.join(current_folder, "resources")
     return resources_folder
-
-
-@staticmethod
-def get_games_schema():
-    valid_cols = []
-
-    for column in Games.__table__.columns:
-        valid_cols.append(column.name)
-
-    return valid_cols
-
-
-@staticmethod
-def get_all_games():
-    page = request.args.get("page", 1, type=int)
-    per_page = min(
-        request.args.get("per_page", 10, type=int), 10000
-    )  # TODO Replace update limit
-    return Games.to_collection_dict(Games.query, page, per_page, "game.get_all_games")
-
-
-@staticmethod
-def get_game_by_name(game_name):
-    game_query = Games.query.filter_by(game_name=game_name)
-    return Games.to_collection_dict(
-        game_query, 1, 1, "game.get_game_by_name", game_name=game_name
-    )
 
 
 @staticmethod
@@ -108,11 +82,11 @@ def _find_conforming_modules(package) -> {}:
 
 
 @staticmethod
-def _instantiate_object(module_name, module):
+def _instantiate_object(module_name, module, defaults_dict={}):
     return_obj = None
     for item in inspect.getmembers(module, inspect.isclass):
         if item[1].__module__ == module_name:
-            return_obj = item[1]()
+            return_obj = item[1](defaults_dict)
     return return_obj
 
 
@@ -148,3 +122,18 @@ def _get_supported_game_object(game_name: str) -> BaseGame:
         raise InvalidUsage(message, status_code=400)
 
     return game
+
+
+@staticmethod
+def get_size(bytes, suffix="B"):
+    """
+    Scale bytes to its proper format
+    e.g:
+        1253656 => '1.20MB'
+        1253656678 => '1.17GB'
+    """
+    factor = 1024
+    for unit in ["", "K", "M", "G", "T", "P"]:
+        if bytes < factor:
+            return f"{bytes:.2f}{unit}{suffix}"
+        bytes /= factor
