@@ -7,7 +7,6 @@ flask
 Flask-SQLAlchemy
 gunicorn
 oauthlib
-platform
 psutil
 pydocstyle
 pyinstaller
