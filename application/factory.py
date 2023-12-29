@@ -4,22 +4,45 @@ from alembic import command
 from alembic.config import Config
 from flask import Flask
 
-from application.common import logger, constants
-from application.common.toolbox import _get_application_path
+from application.common import logger, constants, toolbox
 from application.config.config import DefaultConfig
 from application.debugger import init_debugger
 from application.extensions import DATABASE
 from application.api.v1.blueprints.access import access
 from application.api.v1.blueprints.app import app
+from application.api.v1.blueprints.architect import architect
 from application.api.v1.blueprints.executable import executable
 from application.api.v1.blueprints.game import game
 from application.api.v1.blueprints.steam import steam
+from application.source.models.games import Games
 from application.source.models.settings import Settings
 
-CURRENT_FOLDER = _get_application_path()
+CURRENT_FOLDER = toolbox._get_application_path()
 STATIC_FOLDER = os.path.join(CURRENT_FOLDER, "static")
 TEMPLATE_FOLDER = os.path.join(CURRENT_FOLDER, "templates")
 ALEMBIC_FOLDER = os.path.join(CURRENT_FOLDER, "source", "alembic")
+
+
+def _startup_checks():
+    # Make sure game state is accurage.
+    installed_games = Games.query.all()
+
+    # Keep track of the number of updates.
+    num_updates = 0
+
+    for this_game in installed_games:
+        # The DB has a PID for the game.
+        if this_game.game_pid:
+            # Check that the game is actually running. If not, delete the PID.
+            game_object = toolbox._get_supported_game_object(this_game.game_name)
+            if not toolbox._get_proc_by_name(game_object._game_executable):
+                game_qry = Games.query.filter_by(game_id=this_game.game_id)
+                game_qry.update({"game_pid": None})
+                num_updates += 1
+
+    # Only update database if needed.
+    if num_updates > 0:
+        DATABASE.session.commit()
 
 
 def _handle_migrations(flask_app: Flask):
@@ -70,6 +93,7 @@ def create_app(config=None):
     # Register all blueprints
     flask_app.register_blueprint(access)
     flask_app.register_blueprint(app)
+    flask_app.register_blueprint(architect)
     flask_app.register_blueprint(executable)
     flask_app.register_blueprint(game)
     flask_app.register_blueprint(steam)
@@ -91,8 +115,8 @@ def create_app(config=None):
         constants.SETTING_NAME_APP_SECRET: flask_app.config["APP_DEFAULT_SECRET"],
     }
 
-    # Here just going to initialize some settings. TODO - Make into a function.
     with flask_app.app_context():
+        # Here just going to initialize some settings. TODO - Make into a function.
         for setting_name, setting_value in startup_settings.items():
             setting_obj = Settings.query.filter_by(setting_name=setting_name).first()
 
@@ -102,6 +126,9 @@ def create_app(config=None):
                 new_setting.setting_value = setting_value
                 DATABASE.session.add(new_setting)
                 DATABASE.session.commit()
+
+        # Run other startup checks.
+        _startup_checks()
 
     logger.info(f"{flask_app.config['APP_NAME']} has been successfully created.")
 

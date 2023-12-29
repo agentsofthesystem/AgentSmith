@@ -17,7 +17,7 @@
                 "run",
                 "--no-debugger",
                 "--no-reload",
-                "--port=3000"
+                "--port=5000"
             ],
             "jinja": true,
             "justMyCode": false

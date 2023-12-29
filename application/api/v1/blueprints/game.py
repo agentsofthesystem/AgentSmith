@@ -3,6 +3,7 @@ import sqlalchemy.exc as exc
 from flask import Blueprint, request, jsonify
 from flask.views import MethodView
 
+from application.api.controllers import games as games_controller
 from application.common import logger, toolbox
 from application.common.constants import FileModes
 from application.common.decorators import authorization_required
@@ -24,19 +25,25 @@ game = Blueprint("game", __name__, url_prefix="/v1")
 @game.route("/games", methods=["GET"])
 @authorization_required
 def get_all_games():
-    return jsonify(toolbox.get_all_games())
+    return jsonify(games_controller.get_all_games())
 
 
 @game.route("/game/<string:game_name>", methods=["GET"])
 @authorization_required
 def get_game_by_name(game_name):
-    return jsonify(toolbox.get_game_by_name(game_name))
+    return jsonify(games_controller.get_game_by_name(game_name))
 
 
 @game.route("/games/schema", methods=["GET"])
 @authorization_required
 def get_game_schema():
-    return jsonify(toolbox.get_games_schema())
+    return jsonify(games_controller.get_games_schema())
+
+
+@game.route("/game/status/<string:game_name>", methods=["GET"])
+@authorization_required
+def get_game_server_status(game_name):
+    return jsonify(games_controller.get_game_server_status(game_name))
 
 
 @game.route("/game/startup/<string:game_name>", methods=["POST"])
