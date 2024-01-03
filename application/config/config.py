@@ -19,8 +19,8 @@ class DefaultConfig:
         DEFAULT_INSTALL_PATH = f"/usr/local/share/{APP_NAME}"
 
     # Flask specific configs
-    DEBUG = True
-    ENV = "development"
+    DEBUG = False
+    ENV = "production"
     FLASK_RUN_HOST = "0.0.0.0"
     FLASK_RUN_PORT = "5000"
     FLASK_FORCE_AUTH = False  # Leave as False except in testing.
