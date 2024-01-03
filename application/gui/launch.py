@@ -56,7 +56,7 @@ class GuiApp:
                 debug=False,
                 use_reloader=False,
                 threaded=True,
-                use_evalex=False
+                use_evalex=False,
             )
         )
         self._server_thread.daemon = True
