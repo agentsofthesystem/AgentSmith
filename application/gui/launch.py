@@ -51,7 +51,12 @@ class GuiApp:
     def _spawn_server_on_thread(self):
         self._server_thread = Thread(
             target=lambda: self._globals._FLASK_APP.run(
-                host="0.0.0.0", port=5000, debug=True, use_reloader=False, threaded=True
+                host="0.0.0.0",
+                port=5000,
+                debug=False,
+                use_reloader=False,
+                threaded=True,
+                use_evalex=False
             )
         )
         self._server_thread.daemon = True
