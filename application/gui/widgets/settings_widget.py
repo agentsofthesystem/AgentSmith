@@ -12,6 +12,7 @@ from application.common import constants, logger
 from application.gui.globals import GuiGlobals
 from application.gui.widgets.file_select_widget import FileSelectWidget
 from application.gui.widgets.tokens_widget import TokensWidget
+from application.source.nginx_manager import NginxManager
 from operator_client import Operator
 
 
@@ -26,6 +27,7 @@ class SettingsWidget(QWidget):
         self._token_widget = TokensWidget(
             self._client, self._globals._global_clipboard, self
         )
+        self._nginx_manager: NginxManager = self._globals._nginx_manager
 
         self.setWindowTitle("App Settings")
 
@@ -41,27 +43,34 @@ class SettingsWidget(QWidget):
         application_secret = self._client.app.get_setting_by_name(
             constants.SETTING_NAME_APP_SECRET
         )
+
+        # nginx_proxy_port = self._client.app.get_setting_by_name(
+        #     constants.SETTING_NGINX_PROXY_PORT
+        # )
+
         self._globals._steam_install_path = steam_install_dir
 
         self.tabs = QTabWidget()
 
         self.tab1 = QWidget()
         self.tab2 = QWidget()
+        self.tab3 = QWidget()
 
         tab1_layout = QVBoxLayout()
         tab1_layout.addLayout(self._create_steam_path_setting(steam_install_dir))
         tab1_layout.addLayout(
             self._create_default_install_path_setting(default_install_dir)
         )
-        tab1_layout.addLayout(self._create_app_secret_setting(application_secret))
         self.tab1.setLayout(tab1_layout)
 
         tab2_layout = QVBoxLayout()
         tab2_layout.addWidget(self._token_widget)
+        tab2_layout.addLayout(self._create_app_secret_setting(application_secret))
         self.tab2.setLayout(tab2_layout)
 
-        self.tabs.addTab(self.tab1, "Settings")
+        self.tabs.addTab(self.tab1, "Paths")
         self.tabs.addTab(self.tab2, "Tokens")
+        self.tabs.addTab(self.tab3, "Nginx")
 
         self._layout.addWidget(self.tabs)
 
@@ -124,4 +133,6 @@ class SettingsWidget(QWidget):
 
     def _update_app_secret(self, text):
         # TODO - Changing the app secret invalidates all existing tokens.
+        # Need to add a save button and then prompt the user that changing the secrent
+        # invalidates all other existing tokens.  If they "save" then delete all of them.
         self._client.app.update_setting_by_name(constants.SETTING_NAME_APP_SECRET, text)

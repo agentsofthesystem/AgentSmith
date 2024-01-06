@@ -11,7 +11,6 @@ from application.extensions import DATABASE
 from application.api.v1.blueprints.access import access
 from application.api.v1.blueprints.app import app
 from application.api.v1.blueprints.architect import architect
-from application.api.v1.blueprints.executable import executable
 from application.api.v1.blueprints.game import game
 from application.api.v1.blueprints.steam import steam
 from application.source.models.games import Games
@@ -94,7 +93,6 @@ def create_app(config=None):
     flask_app.register_blueprint(access)
     flask_app.register_blueprint(app)
     flask_app.register_blueprint(architect)
-    flask_app.register_blueprint(executable)
     flask_app.register_blueprint(game)
     flask_app.register_blueprint(steam)
 
@@ -113,6 +111,7 @@ def create_app(config=None):
         ),
         constants.SETTING_NAME_DEFAULT_PATH: flask_app.config["DEFAULT_INSTALL_PATH"],
         constants.SETTING_NAME_APP_SECRET: flask_app.config["APP_DEFAULT_SECRET"],
+        constants.SETTING_NGINX_PROXY_PORT: flask_app.config["NGINX_DEFAULT_PORT"],
     }
 
     with flask_app.app_context():

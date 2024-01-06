@@ -5,7 +5,7 @@ a = Analysis(
     ['agent-smith.py'],
     pathex=[],
     binaries=[],
-    datas=[('./application/gui/resources/agent-white.png', './application/gui/resources'), ('./application/source/games/*.py', './application/source/games'), ('./application/source/games/resources/*', './application/source/games/resources'), ('./application/source/alembic/alembic.ini', './application/source/alembic'), ('./application/source/alembic/env.py', './application/source/alembic'), ('./application/source/alembic/script.py.mako', './application/source/alembic'), ('./application/source/alembic/versions/*.py', './application/source/alembic/versions')],
+    datas=[('./application/config/nginx/*', './application/config/nginx'), ('./application/gui/resources/agent-white.png', 'u./application/gui/resources'), ('./application/gui/resources/agent-green.png', './application/gui/resources'), ('./application/source/games/*.py', './application/source/games'), ('./application/source/games/resources/*', './application/source/games/resources'), ('./application/source/alembic/alembic.ini', './application/source/alembic'), ('./application/source/alembic/env.py', './application/source/alembic'), ('./application/source/alembic/script.py.mako', './application/source/alembic'), ('./application/source/alembic/versions/*.py', './application/source/alembic/versions')],
     hiddenimports=['xml.etree.ElementTree', 'telnetlib'],
     hookspath=[],
     hooksconfig={},

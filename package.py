@@ -15,7 +15,9 @@ def main():
             "agent-smith.py",
             "--onefile",
             "--icon=./application/gui/resources/agent-black.ico",
-            f"--add-data=./application/gui/resources/agent-white.png{sep}./application/gui/resources",  # noqa: E501
+            f"--add-data=./application/config/nginx/*{sep}./application/config/nginx",  # noqa: E501
+            f"--add-data=./application/gui/resources/agent-white.png{sep}u./application/gui/resources",  # noqa: E501
+            f"--add-data=./application/gui/resources/agent-green.png{sep}./application/gui/resources",  # noqa: E501
             f"--add-data=./application/source/games/*.py{sep}./application/source/games",
             f"--add-data=./application/source/games/resources/*{sep}./application/source/games/resources",  # noqa: E501
             f"--add-data=./application/source/alembic/alembic.ini{sep}./application/source/alembic",
