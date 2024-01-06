@@ -26,6 +26,9 @@ class DefaultConfig:
     FLASK_FORCE_AUTH = False  # Leave as False except in testing.
     FLASK_DISABLE_AUTH = False
 
+    # NGINX Settings
+    NGINX_DEFAULT_PORT = "5312"
+
     # Designate where the database file is stored based on platform.
     if platform.system() == "Windows":
         base_folder = DEFAULT_INSTALL_PATH
