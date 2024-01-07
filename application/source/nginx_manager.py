@@ -27,12 +27,12 @@ class NginxManager:
 
         self._platform = platform.system()
 
-    def nginx_is_found(self, exe_name: str) -> bool:
-        return True if _get_proc_by_name(exe_name) else False
+    def is_running(self) -> bool:
+        return True if _get_proc_by_name(self._exe_name) else False
 
-    def nginx_status(self, exe_name: str):
+    def nginx_status(self):
         process_info = None
-        process = _get_proc_by_name(exe_name)
+        process = _get_proc_by_name(self._exe_name)
 
         if process:
             process_info = process.as_dict()
@@ -41,6 +41,8 @@ class NginxManager:
         return process_info
 
     def startup(self) -> None:
+        if self.is_running():
+            self._stop_nginx()
         self._spawn_nginx()
 
     def shtudown(self) -> None:
@@ -124,7 +126,9 @@ class NginxManager:
     @timeit
     def _download_nginx_server(self):
         file_name = constants.NGINX_STABLE_RELEASE_WIN.split("/")[-1]
-        nginx_folder_path = os.path.join(_get_application_path(), "nginx")
+
+        # This is where nginx down be downloaded and run from.
+        nginx_folder_path = os.path.join(constants.DEFAULT_INSTALL_PATH, "nginx")
         nginx_save_path = os.path.join(nginx_folder_path, file_name)
 
         if not os.path.exists(nginx_folder_path):
@@ -147,17 +151,16 @@ class NginxManager:
         )
 
         nginx_folder = os.path.join(
-            _get_application_path(), "nginx", constants.NGINX_VERSION
+            constants.DEFAULT_INSTALL_PATH, "nginx", constants.NGINX_VERSION
         )
         nginx_conf_folder = os.path.join(
-            _get_application_path(), "nginx", constants.NGINX_VERSION, "conf"
+            constants.DEFAULT_INSTALL_PATH, "nginx", constants.NGINX_VERSION, "conf"
         )
         nginx_conf_full_path = os.path.join(nginx_conf_folder, "nginx.conf")
 
         nginx_config_conf_folder = os.path.join(
             _get_application_path(), "config", "nginx"
         )
-        # nginx_conf_template_full_path = os.path.join(nginx_config_conf_folder, "nginx.conf.j2")
 
         # Create a formatted nginx conf file.
         env = Environment(loader=FileSystemLoader(nginx_config_conf_folder))

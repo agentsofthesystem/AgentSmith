@@ -1,3 +1,5 @@
+import platform
+
 from datetime import datetime
 from enum import Enum
 
@@ -14,10 +16,19 @@ class FileModes(Enum):
     DIRECTORY = 2
 
 
+APP_NAME = "AgentSmith"
+
+if platform.system() == "Windows":
+    DEFAULT_INSTALL_PATH = f"C:\\{APP_NAME}"
+else:
+    # TODO - Revisit this when linux support gets closer...
+    DEFAULT_INSTALL_PATH = f"/usr/local/share/{APP_NAME}"
+
 SETTING_NAME_STEAM_PATH: str = "steam_install_dir"
 SETTING_NAME_DEFAULT_PATH: str = "default_install_dir"
 SETTING_NAME_APP_SECRET: str = "application_secret"
 SETTING_NGINX_PROXY_PORT: str = "nginx_proxy_port"
+SETTING_NGINX_ENABLE: str = "nginx_enable"
 
 
 STARTUP_BATCH_FILE_NAME: str = "startup.bat"

@@ -17,5 +17,5 @@ build/
 dist/
 launch.spec
 
-# Nginx folder
+# Nginx folder - Gets downloaded at runtime.
 application/nginx

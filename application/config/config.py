@@ -2,21 +2,14 @@ import os
 import platform
 
 from application.common import logger
-from application.common.constants import _DeployTypes
+from application.common.constants import _DeployTypes, DEFAULT_INSTALL_PATH, APP_NAME
 
 
 class DefaultConfig:
     # App name and secret
-    APP_NAME = "AgentSmith"
     APP_PRETTY_NAME = "Agent Smith"
     APP_DEFAULT_SECRET = "super secret!"
     DEPLOYMENT_TYPE = "python"
-
-    if platform.system() == "Windows":
-        DEFAULT_INSTALL_PATH = f"C:\\{APP_NAME}"
-    else:
-        # TODO - Revisit this when linux support gets closer...
-        DEFAULT_INSTALL_PATH = f"/usr/local/share/{APP_NAME}"
 
     # Flask specific configs
     DEBUG = False
@@ -28,6 +21,7 @@ class DefaultConfig:
 
     # NGINX Settings
     NGINX_DEFAULT_PORT = "5312"
+    NGINX_DEFAULT_ENABLED = True
 
     # Designate where the database file is stored based on platform.
     if platform.system() == "Windows":
