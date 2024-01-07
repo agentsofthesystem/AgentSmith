@@ -6,6 +6,7 @@ import subprocess
 import zipfile
 
 from jinja2 import Environment, FileSystemLoader
+from OpenSSL import crypto
 from threading import Thread
 
 from application.common import logger, constants
@@ -39,6 +40,45 @@ class NginxManager:
             pass
 
         return process_info
+
+    def key_pair_exists(self) -> bool:
+        key_file_exists = os.path.exists(constants.SSL_KEY_FILE)
+        cert_file_exists = os.path.exists(constants.SSL_CERT_FILE)
+        return key_file_exists and cert_file_exists
+
+    def remove_ssl_key_pair(self) -> None:
+        if os.path.exists(constants.SSL_KEY_FILE):
+            os.remove(constants.SSL_KEY_FILE)
+        if os.path.exists(constants.SSL_CERT_FILE):
+            os.remove(constants.SSL_CERT_FILE)
+
+    def generate_ssl_certificate(self) -> None:
+        validityEndInSeconds = 365 * 24 * 60 * 60  # One Year
+
+        if not os.path.exists(constants.SSL_FOLDER):
+            os.makedirs(constants.SSL_FOLDER, exist_ok=True)
+
+        # create a key pair
+        pub_key = crypto.PKey()
+        pub_key.generate_key(crypto.TYPE_RSA, 4096)
+        # create a self-signed cert
+
+        cert = crypto.X509()
+
+        cert.gmtime_adj_notBefore(0)
+        cert.gmtime_adj_notAfter(validityEndInSeconds)
+        cert.set_issuer(cert.get_subject())
+
+        cert.set_pubkey(pub_key)
+
+        cert.sign(pub_key, "sha512")
+
+        with open(constants.SSL_CERT_FILE, "wt") as f:
+            f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert).decode("utf-8"))
+        with open(constants.SSL_KEY_FILE, "wt") as f:
+            f.write(
+                crypto.dump_privatekey(crypto.FILETYPE_PEM, pub_key).decode("utf-8")
+            )
 
     def startup(self) -> None:
         if self.is_running():
@@ -162,11 +202,16 @@ class NginxManager:
             _get_application_path(), "config", "nginx"
         )
 
+        pub_key_file = constants.SSL_CERT_FILE.replace("\\", "/")
+        private_key_file = constants.SSL_KEY_FILE.replace("\\", "/")
+
         # Create a formatted nginx conf file.
         env = Environment(loader=FileSystemLoader(nginx_config_conf_folder))
         template = env.get_template("nginx.conf.j2")
         output_from_parsed_template = template.render(
             NGINX_PROXY_PORT=nginx_proxy_port,
+            NGINX_PUBLIC_KEY=pub_key_file,
+            NGINX_PRIVATE_KEY=private_key_file,
         )
 
         if os.path.exists(nginx_conf_full_path):

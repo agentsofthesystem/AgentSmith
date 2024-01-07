@@ -108,15 +108,12 @@ class GuiApp:
                 constants.SETTING_NGINX_ENABLE
             )
 
-            logger.info("*********************************")
-            logger.info(f"Nginx Enable is: {nginx_enable}")
-            logger.info("*********************************")
-
+            # DB Stores as string so quick conversion to boolean.
             nginx_enable = True if nginx_enable == "1" else False
 
-            logger.info("*********************************")
-            logger.info(f"Nginx Enable is: {nginx_enable}")
-            logger.info("*********************************")
+            # Generate SSL key pair if non-existant.
+            if not self._globals._nginx_manager.key_pair_exists():
+                self._globals._nginx_manager.generate_ssl_certificate()
 
             # Launch Reverse Proxy Server if enabled.
             if nginx_enable:
