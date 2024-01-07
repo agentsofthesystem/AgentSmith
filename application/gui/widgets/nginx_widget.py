@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QClipboard
 
-from application.common import logger, constants
+from application.common import constants
 from application.source.nginx_manager import NginxManager
 
 from operator_client import Operator
@@ -126,7 +126,11 @@ class NginxWidget(QWidget):
             )
 
     def _handle_regen_button(self):
-        logger.debug("Regenerating SSL Certificate")
+        if self._nginx_manager.key_pair_exists():
+            self._nginx_manager.remove_ssl_key_pair()
 
-    def _update(self):
-        pass
+        self._nginx_manager.generate_ssl_certificate()
+
+        message = QMessageBox()
+        message.setText("Nginx SSL Self Sign Cert Regenerated.")
+        message.exec()

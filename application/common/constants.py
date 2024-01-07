@@ -20,6 +20,9 @@ APP_NAME = "AgentSmith"
 
 if platform.system() == "Windows":
     DEFAULT_INSTALL_PATH = f"C:\\{APP_NAME}"
+    SSL_FOLDER = f"C:\\{APP_NAME}\\ssl"
+    SSL_KEY_FILE = f"C:\\{APP_NAME}\\ssl\\private.key"
+    SSL_CERT_FILE = f"C:\\{APP_NAME}\\ssl\\selfsigned.crt"
 else:
     # TODO - Revisit this when linux support gets closer...
     DEFAULT_INSTALL_PATH = f"/usr/local/share/{APP_NAME}"

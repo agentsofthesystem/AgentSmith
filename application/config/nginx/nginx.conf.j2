@@ -1,18 +1,38 @@
+# Helpful info: https://www.upguard.com/blog/10-tips-for-securing-your-nginx-deployment
 
 worker_processes  1;
 
 events {
-    worker_connections  1024;
+    worker_connections  64;
 }
 
+# Handle Number of Connection = worker_processes * worker_connections;
+
 http {
+
+    # Limit the number of connetions to 10 per IP.
+    limit_conn_zone $binary_remote_addr   zone=perip:10m;
+
     include       mime.types;
     default_type  application/octet-stream;
     keepalive_timeout  65;
 
+    # Do not show the nginx version in responses.
+    server_tokens off;
+
     server {
-        listen       {{NGINX_PROXY_PORT}};
+        listen      {{NGINX_PROXY_PORT}};
+        server_name localhost;
+        return 301 https://$server_name$request_uri;
+        limit_conn  perip 10;
+    }
+
+    server {
+        listen       443 ssl;
         server_name  localhost;
+        ssl_certificate      {{NGINX_PUBLIC_KEY}};
+        ssl_certificate_key  {{NGINX_PRIVATE_KEY}};
+        limit_conn  perip 10;
 
         location / {
             proxy_pass http://localhost:5000/;
