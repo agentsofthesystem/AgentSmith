@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QAction, QSystemTrayIcon, QMenu, QApplication, QMess
 from threading import Thread
 
 from application.config.config import DefaultConfig
-from application.common import logger
+from application.common import logger, constants
 from application.common.decorators import timeit
 from application.common.toolbox import _get_application_path
 from application.gui.globals import GuiGlobals
@@ -104,8 +104,23 @@ class GuiApp:
             # Launch Flask Server
             self._spawn_server_on_thread()
 
-            # Launch Reverse Proxy Server
-            self._globals._nginx_manager.startup()
+            nginx_enable = self._globals._client.app.get_setting_by_name(
+                constants.SETTING_NGINX_ENABLE
+            )
+
+            logger.info("*********************************")
+            logger.info(f"Nginx Enable is: {nginx_enable}")
+            logger.info("*********************************")
+
+            nginx_enable = True if nginx_enable == "1" else False
+
+            logger.info("*********************************")
+            logger.info(f"Nginx Enable is: {nginx_enable}")
+            logger.info("*********************************")
+
+            # Launch Reverse Proxy Server if enabled.
+            if nginx_enable:
+                self._globals._nginx_manager.startup()
 
             # Give server a chance to start before proceeding...
             time.sleep(1)

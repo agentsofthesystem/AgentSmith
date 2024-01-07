@@ -1,7 +1,7 @@
 import jwt
 
 from datetime import datetime
-from flask import Blueprint, current_app, request, jsonify
+from flask import Blueprint, request, jsonify
 from oauthlib.oauth2 import RequestValidator
 
 from application.common import logger, constants
@@ -59,7 +59,7 @@ def token_generate():
     secret_obj = Settings.query.filter_by(
         setting_name=constants.SETTING_NAME_APP_SECRET
     ).first()
-    validator = TokenValidator(secret_obj.setting_value, current_app.config["APP_NAME"])
+    validator = TokenValidator(secret_obj.setting_value, constants.APP_NAME)
 
     computed_token = validator.generate_access_token(new_token_name)
 
