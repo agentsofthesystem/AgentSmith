@@ -1,5 +1,6 @@
 import os
 import platform
+import uuid
 
 from application.common import logger
 from application.common.constants import _DeployTypes, DEFAULT_INSTALL_PATH, APP_NAME
@@ -8,7 +9,7 @@ from application.common.constants import _DeployTypes, DEFAULT_INSTALL_PATH, APP
 class DefaultConfig:
     # App name and secret
     APP_PRETTY_NAME = "Agent Smith"
-    APP_DEFAULT_SECRET = "super secret!"
+    APP_DEFAULT_SECRET = str(uuid.uuid4())
     DEPLOYMENT_TYPE = "python"
 
     # Flask specific configs
@@ -20,6 +21,7 @@ class DefaultConfig:
     FLASK_DISABLE_AUTH = False
 
     # NGINX Settings
+    NGINX_DEFAULT_HOSTNAME = "localhost"
     NGINX_DEFAULT_PORT = "5312"
     NGINX_DEFAULT_ENABLED = True
 
