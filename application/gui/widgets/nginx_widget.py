@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import QClipboard
 
 from application.common import constants
+from application.gui.widgets.nginx_cert_viewer_widget import NginxCertViewer
 from application.source.nginx_manager import NginxManager
 
 from operator_client import Operator
@@ -33,8 +34,12 @@ class NginxWidget(QWidget):
         self._initialized = False
 
         self._nginx_enable_checkbox: QCheckBox = None
+        self._nginx_hostname: QLineEdit = None
         self._nginx_port: QLineEdit = None
         self._regenerate_certificate: QPushButton = None
+        self._view_public_cert: QPushButton = None
+
+        self._viewer_window = NginxCertViewer(self._clipboard, self._nginx_manager)
 
         self.init_ui()
 
@@ -66,21 +71,38 @@ class NginxWidget(QWidget):
         nginx_proxy_port = self._client.app.get_setting_by_name(
             constants.SETTING_NGINX_PROXY_PORT
         )
+        nginx_proxy_hostname = self._client.app.get_setting_by_name(
+            constants.SETTING_NGINX_PROXY_HOSTNAME
+        )
+
         h2_layout = QHBoxLayout()
+        label = QLabel("Nginx Hostname: ")
+        self._nginx_hostname = QLineEdit(nginx_proxy_hostname)
+
+        self._nginx_hostname.textChanged.connect(self._handle_nginx_hostname_edit)
+        h2_layout.addWidget(label)
+        h2_layout.addWidget(self._nginx_hostname)
+
+        h3_layout = QHBoxLayout()
         label = QLabel("Nginx Port: ")
         self._nginx_port = QLineEdit(nginx_proxy_port)
 
         self._nginx_port.textChanged.connect(self._handle_nginx_port_edit)
-        h2_layout.addWidget(label)
-        h2_layout.addWidget(self._nginx_port)
+        h3_layout.addWidget(label)
+        h3_layout.addWidget(self._nginx_port)
 
         self._regenerate_certificate = QPushButton("Reset SSL Certificate")
         self._regenerate_certificate.clicked.connect(self._handle_regen_button)
 
+        self._view_public_cert = QPushButton("View Public Key CRT File")
+        self._view_public_cert.clicked.connect(self._handle_view_cert_button)
+
         v_control_layout.addLayout(h_layout)
         v_control_layout.addLayout(h2_layout)
+        v_control_layout.addLayout(h3_layout)
 
         v_control_layout.addWidget(self._regenerate_certificate)
+        v_control_layout.addWidget(self._view_public_cert)
 
         # Don't let someone edit the settings when nginx is running.
         if self._nginx_manager.is_running():
@@ -111,6 +133,19 @@ class NginxWidget(QWidget):
             self._nginx_manager.shtudown()
             self._enable_controls()
 
+    def _handle_nginx_hostname_edit(self, text):
+        if "http://" in text or "https://" in text:  # covers http and https
+            message = QMessageBox()
+            message.setText(
+                "Enter only the DNS hostname and leave off http:// or https://"
+            )
+            message.exec()
+            return
+
+        self._client.app.update_setting_by_name(
+            constants.SETTING_NGINX_PROXY_HOSTNAME, text
+        )
+
     def _handle_nginx_port_edit(self, text):
         num_chars = len(text)
 
@@ -134,3 +169,7 @@ class NginxWidget(QWidget):
         message = QMessageBox()
         message.setText("Nginx SSL Self Sign Cert Regenerated.")
         message.exec()
+
+    def _handle_view_cert_button(self):
+        self._viewer_window.update_text_box()
+        self._viewer_window.showWindow()

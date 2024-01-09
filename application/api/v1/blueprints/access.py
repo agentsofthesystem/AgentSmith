@@ -59,6 +59,7 @@ def token_generate():
     secret_obj = Settings.query.filter_by(
         setting_name=constants.SETTING_NAME_APP_SECRET
     ).first()
+
     validator = TokenValidator(secret_obj.setting_value, constants.APP_NAME)
 
     computed_token = validator.generate_access_token(new_token_name)

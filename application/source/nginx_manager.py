@@ -41,6 +41,13 @@ class NginxManager:
 
         return process_info
 
+    def get_public_key_content(self) -> str:
+        if os.path.exists(constants.SSL_CERT_FILE):
+            with open(constants.SSL_CERT_FILE, "r") as f:
+                return f.read()
+        else:
+            return None
+
     def key_pair_exists(self) -> bool:
         key_file_exists = os.path.exists(constants.SSL_KEY_FILE)
         cert_file_exists = os.path.exists(constants.SSL_CERT_FILE)
@@ -186,6 +193,10 @@ class NginxManager:
     def _spawn_nginx(self):
         self._download_nginx_server()
 
+        nginx_proxy_hostname = self._client.app.get_setting_by_name(
+            constants.SETTING_NGINX_PROXY_HOSTNAME
+        )
+
         nginx_proxy_port = self._client.app.get_setting_by_name(
             constants.SETTING_NGINX_PROXY_PORT
         )
@@ -209,6 +220,7 @@ class NginxManager:
         env = Environment(loader=FileSystemLoader(nginx_config_conf_folder))
         template = env.get_template("nginx.conf.j2")
         output_from_parsed_template = template.render(
+            NGINX_PROXY_HOSTNAME=nginx_proxy_hostname,
             NGINX_PROXY_PORT=nginx_proxy_port,
             NGINX_PUBLIC_KEY=pub_key_file,
             NGINX_PRIVATE_KEY=private_key_file,

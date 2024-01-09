@@ -112,6 +112,9 @@ def create_app(config=None):
         constants.SETTING_NAME_DEFAULT_PATH: constants.DEFAULT_INSTALL_PATH,
         constants.SETTING_NAME_APP_SECRET: flask_app.config["APP_DEFAULT_SECRET"],
         constants.SETTING_NGINX_PROXY_PORT: flask_app.config["NGINX_DEFAULT_PORT"],
+        constants.SETTING_NGINX_PROXY_HOSTNAME: flask_app.config[
+            "NGINX_DEFAULT_HOSTNAME"
+        ],
         constants.SETTING_NGINX_ENABLE: flask_app.config["NGINX_DEFAULT_ENABLED"],
     }
 

@@ -45,9 +45,9 @@ class SettingsWidget(QWidget):
         default_install_dir = self._client.app.get_setting_by_name(
             constants.SETTING_NAME_DEFAULT_PATH
         )
-        application_secret = self._client.app.get_setting_by_name(
-            constants.SETTING_NAME_APP_SECRET
-        )
+        # application_secret = self._client.app.get_setting_by_name(
+        #    constants.SETTING_NAME_APP_SECRET
+        # )
 
         self._globals._steam_install_path = steam_install_dir
 
@@ -66,7 +66,10 @@ class SettingsWidget(QWidget):
 
         tab2_layout = QVBoxLayout()
         tab2_layout.addWidget(self._token_widget)
-        tab2_layout.addLayout(self._create_app_secret_setting(application_secret))
+
+        # TODO - Disabling for now. Add back in later if needed.
+        # tab2_layout.addLayout(self._create_app_secret_setting(application_secret))
+
         self.tab2.setLayout(tab2_layout)
 
         tab3_layout = QVBoxLayout()

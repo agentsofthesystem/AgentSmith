@@ -31,6 +31,7 @@ SETTING_NAME_STEAM_PATH: str = "steam_install_dir"
 SETTING_NAME_DEFAULT_PATH: str = "default_install_dir"
 SETTING_NAME_APP_SECRET: str = "application_secret"
 SETTING_NGINX_PROXY_PORT: str = "nginx_proxy_port"
+SETTING_NGINX_PROXY_HOSTNAME: str = "nginx_proxy_hostname"
 SETTING_NGINX_ENABLE: str = "nginx_enable"
 
 
