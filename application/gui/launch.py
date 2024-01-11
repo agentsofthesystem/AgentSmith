@@ -56,7 +56,8 @@ class GuiApp:
     def _spawn_server_on_thread(self):
         self._server_thread = Thread(
             target=lambda: self._globals._FLASK_APP.run(
-                host="127.0.0.1",  # Only accept connections via localhost.
+                # host="127.0.0.1",  # Only accept connections via localhost.
+                host="0.0.0.0",  # Only accept connections via localhost.
                 port=5000,
                 debug=False,
                 use_reloader=False,

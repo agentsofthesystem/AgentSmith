@@ -21,18 +21,17 @@ http {
     server_tokens off;
 
     server {
-        listen      {{NGINX_PROXY_PORT}};
-        server_name {{NGINX_PROXY_HOSTNAME}};
-        return 301 https://$server_name$request_uri;
-        limit_conn  perip 10;
-    }
 
-    server {
-        listen       443 ssl;
+        listen      {{NGINX_PROXY_PORT}} ssl;
+        listen [::]:{{NGINX_PROXY_PORT}} ssl;
+
+        limit_conn  perip 10;
+
         server_name  {{NGINX_PROXY_HOSTNAME}};
+
         ssl_certificate      {{NGINX_PUBLIC_KEY}};
         ssl_certificate_key  {{NGINX_PRIVATE_KEY}};
-        limit_conn  perip 10;
+        ssl_protocols       TLSv1.2 TLSv1.3;
 
         location / {
             proxy_pass http://localhost:5000/;
@@ -40,11 +39,13 @@ http {
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-Host $host;
             proxy_set_header X-Forwarded-Port $server_port;
-        }
 
-        if ($host != {{NGINX_ALLOWED_DOMAIN}}) {
-            return 404;
+            # Look into using this for dropping connectiosn for hosts that don't fit the correct
+            # domain name.
+            #
+            # if ($host != {{NGINX_ALLOWED_DOMAIN}}) {
+            #    return 404;
+            # }
         }
-
     }
 }
