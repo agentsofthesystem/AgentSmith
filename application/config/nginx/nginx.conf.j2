@@ -40,12 +40,16 @@ http {
             proxy_set_header X-Forwarded-Host $host;
             proxy_set_header X-Forwarded-Port $server_port;
 
-            # Look into using this for dropping connectiosn for hosts that don't fit the correct
-            # domain name.
-            #
-            # if ($host != {{NGINX_ALLOWED_DOMAIN}}) {
-            #    return 404;
-            # }
+            # Strictly server requestors using the correct hostname. Bots using IP Addresses
+            # not allowed!
+            if ($host != {{NGINX_PROXY_HOSTNAME}}) {
+                return 404;
+            }
+        }
+
+        # Always drop this route.
+        location /console {
+            return 404;
         }
     }
 }
