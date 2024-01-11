@@ -112,10 +112,12 @@ class NginxWidget(QWidget):
 
     def _enable_controls(self):
         self._nginx_port.setDisabled(False)
+        self._nginx_hostname.setDisabled(False)
         self._regenerate_certificate.setDisabled(False)
 
     def _disable_controls(self):
         self._nginx_port.setDisabled(True)
+        self._nginx_hostname.setDisabled(True)
         self._regenerate_certificate.setDisabled(True)
 
     def _handle_nginx_enable_checkbox(self):

@@ -16,6 +16,9 @@ from application.common.toolbox import _get_proc_by_name, _get_application_path
 
 from operator_client import Operator
 
+# References:
+# https://nachtimwald.com/2019/11/14/python-self-signed-cert-gen/
+
 
 class NginxManager:
     def __init__(self, client: Operator) -> None:
@@ -60,6 +63,10 @@ class NginxManager:
             os.remove(constants.SSL_CERT_FILE)
 
     def generate_ssl_certificate(self) -> None:
+        nginx_proxy_hostname = self._client.app.get_setting_by_name(
+            constants.SETTING_NGINX_PROXY_HOSTNAME
+        )
+
         validityEndInSeconds = 365 * 24 * 60 * 60  # One Year
 
         if not os.path.exists(constants.SSL_FOLDER):
@@ -72,9 +79,36 @@ class NginxManager:
 
         cert = crypto.X509()
 
+        # This is so the client requesting the set hostname will match to subject.
+        cert.get_subject().CN = nginx_proxy_hostname
+        cert.set_serial_number(0)
         cert.gmtime_adj_notBefore(0)
         cert.gmtime_adj_notAfter(validityEndInSeconds)
         cert.set_issuer(cert.get_subject())
+
+        # Really setting to version 3 based on index starting at 0.
+        cert.set_version(2)
+
+        # If Subject altnerative name is not set to the hostname desired, the python requests
+        # package will throw an sslError based on hostname mismatch.
+        # Also - Add localhost so testing as localhost works.
+        cert.add_extensions(
+            [
+                crypto.X509Extension(
+                    b"subjectAltName",
+                    False,
+                    ",".join(
+                        [
+                            "DNS:%s" % nginx_proxy_hostname,
+                            "DNS:*.%s" % nginx_proxy_hostname,
+                            "DNS:localhost",
+                            "DNS:*.localhost",
+                        ]
+                    ).encode(),
+                ),
+                crypto.X509Extension(b"basicConstraints", True, b"CA:false"),
+            ]
+        )
 
         cert.set_pubkey(pub_key)
 
