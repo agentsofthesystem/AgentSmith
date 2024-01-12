@@ -3,6 +3,12 @@
 
 The following are instructions for developers.
 
+## The obvious...
+
+Why oh why did you pick windows!?!? - Well... the author wanted to target windows first because, in truth,
+most people using this tool are likely to be gaming on a windows machine.  The author has tons of linux
+experience and recognizes that Linux/Dockerized platforms are entirely relevant and in the future.
+
 ## Pre-requisites
 
 This software was developed on Windows 10. The chosen software language is Python 3, which can be installed
@@ -23,12 +29,17 @@ feel free to figure out what's different and make a change yourself ;).
 The [Gitflow Workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow)
 is used and is enforced.
 
-## Development Environment Setup
+All features get stacked up in the develop branch and then, after testing, released to the main branch.
+GitHub Actions automate DevOps Continuous Integration checks along the way.  On the main branch, however,
+a packaged release of Agent Smith is generated and attached to the release section.
 
-### Ubuntu Linux
+## Development Environment Preparation
+
+### Ubuntu/Debian Based Linux
 
 Please note that development on linux is experimental for now.  In the future, it will be supported
-but not until a later release.
+but not until a later release.  And when that time comes, Ubuntu/Debian will likely be the first
+distro supported.
 
 1. sudo apt update
 2. sudo apt install python3 python3-venv python3-pip lib32gcc-s1
@@ -47,6 +58,11 @@ NOTE:
 3. Open a powershell and test that one can run the "python" command to verify python is installed.
 4. install git for windows from here: https://git-scm.com/download/win
 
+## Docker
+
+The backend flask server could be containerized and the PyQT GUI could just simply communicate with
+a container, but this has yet to be developed.
+
 # Development Environment
 
 ## Stand Alone & Development
@@ -59,15 +75,16 @@ One must create a python virtual environment.  Therefore python3 must be present
    - windows:  .\venv\bin\Activate.ps1
 3. pip install -U pip
 4. pip install -r requirements.txt
-5. Run the backend server: python .\server.py
-6. Run the frontend GUI: python .\gui.py
-7. cd scripts
-8. python (your-script.py)
+5. pip install -r test-requirements.txt
+6. Run the backend server: python .\server.py
+7. Run the frontend GUI: python .\gui.py
 
 NOTE:
-   - There is another script (python .\launch.py), and that can be used to run both the backend server and the front
+   - There is another script (python .\agent-smith.py), and that can be used to run both the backend server and the front
      end GUI simultaneously.  Use this for final testing of features.
    - The backend server operates on port 5000, and the frontend GUI is built to use that port by default.
+     That port should never change. Nginx is used to expose ports and that's where changes are made to
+     port numbers.
 
 **Warning**: If one is using a windows only environment, the second step where the python virtual environment is activated
 may require a windows policy to be enabled which allows powershell scripts to be run.  This is a windows security
@@ -79,15 +96,6 @@ to set this up properly.
 This software uses the coverage and pytest python packages for a testing framework.  All tests are in the "tests" folder,
 and are split up by unit tests and functional tests.  Any unit test is a simple test of a singular function or independent
 object.  A functional test is
-
-# Secrets File
-
-Create a file called ".env" and inside of it the following secrets must be added.
-
-1. SECRET_KEY - This is the application secret.
-
-NOTE:
-   - This is only used for development.  In production this would be unused or implemented via alternative feature.
 
 # Software Development Process
 
