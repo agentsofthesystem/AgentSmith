@@ -16,3 +16,6 @@ steamcmd.tar.gz
 build/
 dist/
 launch.spec
+
+# Nginx folder - Gets downloaded at runtime.
+application/nginx

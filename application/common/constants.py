@@ -1,3 +1,5 @@
+import platform
+
 from datetime import datetime
 from enum import Enum
 
@@ -14,15 +16,31 @@ class FileModes(Enum):
     DIRECTORY = 2
 
 
+APP_NAME = "AgentSmith"
+
+if platform.system() == "Windows":
+    DEFAULT_INSTALL_PATH = f"C:\\{APP_NAME}"
+    SSL_FOLDER = f"C:\\{APP_NAME}\\ssl"
+    SSL_KEY_FILE = f"C:\\{APP_NAME}\\ssl\\private.key"
+    SSL_CERT_FILE = f"C:\\{APP_NAME}\\ssl\\selfsigned.crt"
+else:
+    # TODO - Revisit this when linux support gets closer...
+    DEFAULT_INSTALL_PATH = f"/usr/local/share/{APP_NAME}"
+
 SETTING_NAME_STEAM_PATH: str = "steam_install_dir"
 SETTING_NAME_DEFAULT_PATH: str = "default_install_dir"
 SETTING_NAME_APP_SECRET: str = "application_secret"
+SETTING_NGINX_PROXY_PORT: str = "nginx_proxy_port"
+SETTING_NGINX_PROXY_HOSTNAME: str = "nginx_proxy_hostname"
+SETTING_NGINX_ENABLE: str = "nginx_enable"
 
-NUM_SERVER_PROCESSES: int = 2
 
 STARTUP_BATCH_FILE_NAME: str = "startup.bat"
 DEFAULT_SECRET = str(datetime.now())
 GAME_INSTALL_FOLDER = "games"
+
+NGINX_VERSION = "nginx-1.24.0"
+NGINX_STABLE_RELEASE_WIN = f"https://nginx.org/download/{NGINX_VERSION}.zip"
 
 LOCALHOST_IP_ADDR = "127.0.0.1"
 WAIT_FOR_BACKEND: int = 1

@@ -1,5 +1,6 @@
 from flask import request, current_app
 from functools import wraps
+from time import time
 
 from application.common import logger
 from application.common.constants import LOCALHOST_IP_ADDR
@@ -43,3 +44,18 @@ def authorization_required(func):
             return "Internal Error", 500
 
     return decorated_view
+
+
+def timeit(f):
+    @wraps(f)
+    def wrap(*args, **kw):
+        ts = time()
+        result = f(*args, **kw)
+        te = time()
+        logger.debug(
+            "Function: :%r args:[%r, %r] took: %2.4f sec"
+            % (f.__name__, args, kw, te - ts)
+        )
+        return result
+
+    return wrap

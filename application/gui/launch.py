@@ -2,12 +2,13 @@ import os
 import time
 
 from flask import Flask
-from threading import Thread
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction, QSystemTrayIcon, QMenu, QApplication, QMessageBox
+from threading import Thread
 
 from application.config.config import DefaultConfig
-from application.common import logger
+from application.common import logger, constants
+from application.common.decorators import timeit
 from application.common.toolbox import _get_application_path
 from application.gui.globals import GuiGlobals
 from application.gui.game_install_window import GameInstallWindow
@@ -15,6 +16,7 @@ from application.gui.game_manager_window import GameManagerWindow
 from application.gui.intalled_games_menu import InstalledGameMenu
 from application.gui.widgets.add_argument_widget import AddArgumentWidget
 from application.gui.widgets.settings_widget import SettingsWidget
+from application.source.nginx_manager import NginxManager
 from application.factory import create_app
 from operator_client import Operator
 
@@ -29,6 +31,7 @@ class GuiApp:
             self._globals._server_port,
             verbose=False,
         )
+        self._globals._nginx_manager = NginxManager(self._globals._client)
 
         # Declare variables
         self._gui_app = QApplication([])
@@ -38,6 +41,7 @@ class GuiApp:
         self._game_manager_window = None
         self._globals._global_clipboard = self._gui_app.clipboard()
 
+    @timeit
     def _create_backend(self) -> Flask:
         config = DefaultConfig("python")
         config.obtain_environment_variables()
@@ -48,10 +52,11 @@ class GuiApp:
 
         return app
 
+    @timeit
     def _spawn_server_on_thread(self):
         self._server_thread = Thread(
             target=lambda: self._globals._FLASK_APP.run(
-                host="0.0.0.0",
+                host="127.0.0.1",  # Only accept connections via localhost.
                 port=5000,
                 debug=False,
                 use_reloader=False,
@@ -64,6 +69,7 @@ class GuiApp:
         self._server_thread.start()
 
     def quit_gui(self):
+        self._globals._nginx_manager.shtudown()
         self._gui_app.quit()
 
     def _launch_game_manager_window(self):
@@ -92,11 +98,29 @@ class GuiApp:
             self._settings_widget.init_ui()
         self._settings_widget.show()
 
-    def initialize(self, with_server=False, testing_mode=False):
+    def initialize(self, with_server=False):
         # If running the unified launch script, this will need to start up first.
         if with_server:
+            # Launch Flask Server
             self._spawn_server_on_thread()
-            time.sleep(2)  # Give server a chance to start before proceeding...
+
+            nginx_enable = self._globals._client.app.get_setting_by_name(
+                constants.SETTING_NGINX_ENABLE
+            )
+
+            # DB Stores as string so quick conversion to boolean.
+            nginx_enable = True if nginx_enable == "1" else False
+
+            # Generate SSL key pair if non-existant.
+            if not self._globals._nginx_manager.key_pair_exists():
+                self._globals._nginx_manager.generate_ssl_certificate()
+
+            # Launch Reverse Proxy Server if enabled.
+            if nginx_enable:
+                self._globals._nginx_manager.startup()
+
+            # Give server a chance to start before proceeding...
+            time.sleep(1)
 
         # Instantiate this last always!
         self._installed_games_menu = InstalledGameMenu(
@@ -116,7 +140,7 @@ class GuiApp:
 
         # Adding an icon
         icon_path = os.path.join(
-            _get_application_path(), "gui", "resources", "agent-white.png"
+            _get_application_path(), "gui", "resources", "agent-green.png"
         )
         logger.debug(f"Expecting Icon Path to be: {icon_path}")
         icon = QIcon(icon_path)
@@ -153,8 +177,5 @@ class GuiApp:
         self._main_menu.addAction(quit)
 
         tray.setContextMenu(self._main_menu)
-
-        if testing_mode:
-            self._launch_game_manager()
 
         self._gui_app.exec_()

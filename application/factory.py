@@ -11,7 +11,6 @@ from application.extensions import DATABASE
 from application.api.v1.blueprints.access import access
 from application.api.v1.blueprints.app import app
 from application.api.v1.blueprints.architect import architect
-from application.api.v1.blueprints.executable import executable
 from application.api.v1.blueprints.game import game
 from application.api.v1.blueprints.steam import steam
 from application.source.models.games import Games
@@ -74,7 +73,7 @@ def create_app(config=None):
         logger.critical("WARNING. Missing Configuration. Initializing with default...")
 
     flask_app = Flask(
-        config.APP_NAME,
+        constants.APP_NAME,
         instance_relative_config=False,
         static_folder=STATIC_FOLDER,
         static_url_path="/static",
@@ -94,7 +93,6 @@ def create_app(config=None):
     flask_app.register_blueprint(access)
     flask_app.register_blueprint(app)
     flask_app.register_blueprint(architect)
-    flask_app.register_blueprint(executable)
     flask_app.register_blueprint(game)
     flask_app.register_blueprint(steam)
 
@@ -109,10 +107,15 @@ def create_app(config=None):
 
     startup_settings: dict = {
         constants.SETTING_NAME_STEAM_PATH: os.path.join(
-            flask_app.config["DEFAULT_INSTALL_PATH"], "steam"
+            constants.DEFAULT_INSTALL_PATH, "steam"
         ),
-        constants.SETTING_NAME_DEFAULT_PATH: flask_app.config["DEFAULT_INSTALL_PATH"],
+        constants.SETTING_NAME_DEFAULT_PATH: constants.DEFAULT_INSTALL_PATH,
         constants.SETTING_NAME_APP_SECRET: flask_app.config["APP_DEFAULT_SECRET"],
+        constants.SETTING_NGINX_PROXY_PORT: flask_app.config["NGINX_DEFAULT_PORT"],
+        constants.SETTING_NGINX_PROXY_HOSTNAME: flask_app.config[
+            "NGINX_DEFAULT_HOSTNAME"
+        ],
+        constants.SETTING_NGINX_ENABLE: flask_app.config["NGINX_DEFAULT_ENABLED"],
     }
 
     with flask_app.app_context():
@@ -130,6 +133,6 @@ def create_app(config=None):
         # Run other startup checks.
         _startup_checks()
 
-    logger.info(f"{flask_app.config['APP_NAME']} has been successfully created.")
+    logger.info(f"{constants.APP_NAME} has been successfully created.")
 
     return flask_app

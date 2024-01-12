@@ -1,0 +1,55 @@
+# Helpful info: https://www.upguard.com/blog/10-tips-for-securing-your-nginx-deployment
+
+worker_processes  1;
+
+events {
+    worker_connections  64;
+}
+
+# Handle Number of Connection = worker_processes * worker_connections;
+
+http {
+
+    # Limit the number of connetions to 10 per IP.
+    limit_conn_zone $binary_remote_addr   zone=perip:10m;
+
+    include       mime.types;
+    default_type  application/octet-stream;
+    keepalive_timeout  65;
+
+    # Do not show the nginx version in responses.
+    server_tokens off;
+
+    server {
+
+        listen      {{NGINX_PROXY_PORT}} ssl;
+        listen [::]:{{NGINX_PROXY_PORT}} ssl;
+
+        limit_conn  perip 10;
+
+        server_name  {{NGINX_PROXY_HOSTNAME}};
+
+        ssl_certificate      {{NGINX_PUBLIC_KEY}};
+        ssl_certificate_key  {{NGINX_PRIVATE_KEY}};
+        ssl_protocols       TLSv1.2 TLSv1.3;
+
+        location / {
+            proxy_pass http://localhost:5000/;
+            proxy_buffering off;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-Host $host;
+            proxy_set_header X-Forwarded-Port $server_port;
+
+            # Strictly server requestors using the correct hostname. Bots using IP Addresses
+            # not allowed!
+            if ($host != {{NGINX_PROXY_HOSTNAME}}) {
+                return 404;
+            }
+        }
+
+        # Always drop this route.
+        location /console {
+            return 404;
+        }
+    }
+}
