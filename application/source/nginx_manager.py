@@ -89,6 +89,18 @@ class NginxManager:
         # Really setting to version 3 based on index starting at 0.
         cert.set_version(2)
 
+        # The SAN must have some extra info added if the hostname is an IP address, so need to
+        # check and act accoringly.
+        san_dns_list = [
+            "DNS:localhost",
+            "DNS:*.localhost",
+        ]
+        if self._is_string_ip_address(nginx_proxy_hostname):
+            san_dns_list.append(f"IP:{nginx_proxy_hostname}")
+        else:
+            san_dns_list.append(f"DNS:{nginx_proxy_hostname}")
+            san_dns_list.append(f"DNS:*.{nginx_proxy_hostname}")
+
         # If Subject altnerative name is not set to the hostname desired, the python requests
         # package will throw an sslError based on hostname mismatch.
         # Also - Add localhost so testing as localhost works.
@@ -97,14 +109,7 @@ class NginxManager:
                 crypto.X509Extension(
                     b"subjectAltName",
                     False,
-                    ",".join(
-                        [
-                            "DNS:%s" % nginx_proxy_hostname,
-                            "DNS:*.%s" % nginx_proxy_hostname,
-                            "DNS:localhost",
-                            "DNS:*.localhost",
-                        ]
-                    ).encode(),
+                    ",".join(san_dns_list).encode(),
                 ),
                 crypto.X509Extension(b"basicConstraints", True, b"CA:false"),
             ]
@@ -129,6 +134,18 @@ class NginxManager:
     def shtudown(self) -> None:
         if self._stop_nginx():
             self._exe_thread.join()
+
+    def _is_string_ip_address(self, s) -> bool:
+        a = s.split('.')
+        if len(a) != 4:
+            return False
+        for x in a:
+            if not x.isdigit():
+                return False
+            i = int(x)
+            if i < 0 or i > 255:
+                return False
+        return True
 
     @staticmethod
     def _print_command(list_list: list):
