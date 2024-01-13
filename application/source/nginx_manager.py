@@ -136,7 +136,7 @@ class NginxManager:
             self._exe_thread.join()
 
     def _is_string_ip_address(self, s) -> bool:
-        a = s.split('.')
+        a = s.split(".")
         if len(a) != 4:
             return False
         for x in a:
