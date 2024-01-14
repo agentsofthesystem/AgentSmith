@@ -34,11 +34,15 @@ http {
         ssl_protocols       TLSv1.2 TLSv1.3;
 
         location / {
+
             proxy_pass http://localhost:5000/;
             proxy_buffering off;
+
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-Host $host;
             proxy_set_header X-Forwarded-Port $server_port;
+
+
 
             # Strictly server requestors using the correct hostname. Bots using IP Addresses
             # not allowed!
