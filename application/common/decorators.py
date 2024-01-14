@@ -12,11 +12,31 @@ def authorization_required(func):
 
     @wraps(func)
     def decorated_view(*args, **kwargs):
-        request_addr = request.remote_addr
+        # Extract headers & Confirm
+        request_headers = request.headers
         force_auth = current_app.config["FLASK_FORCE_AUTH"]
         disable_auth = current_app.config["FLASK_DISABLE_AUTH"]
 
-        logger.debug(f"Remote IP: {request.remote_addr}")
+        # If NGINX is in the loop, then X-Forwarded-Host will be populated in the request header
+        # That is the desired IP address to use to determine whether or not to enforce
+        # authentication.
+        if "X-Forwarded-Host" in request_headers:
+            request_addr = request_headers["X-Forwarded-Host"]
+
+            # Someone, in theory, could fake this and provide 127.0.0.1 as the X-Forwarded-Host,
+            # check for that.
+            if "127.0.0.1" == request_addr:
+                logger.error(
+                    "Authorization: Invalid attempt to pass 127.0.0.1 for X-Forwarded-Host"
+                )
+                return "Error: Bad Request", 400
+
+            logger.debug("Using X-Forwarded-Host for IP address.")
+        else:
+            request_addr = request.remote_addr
+            logger.debug("Using request.remote_addr for IP address.")
+
+        logger.debug(f"Remote IP: {request_addr}")
 
         if disable_auth:
             logger.debug("Authorization is disabled via configuration setting.")
