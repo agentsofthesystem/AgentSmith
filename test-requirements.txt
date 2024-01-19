@@ -1,1 +1,5 @@
 # TODO - Split requirements.txt file up.
+black
+coverage
+flake8
+pytest

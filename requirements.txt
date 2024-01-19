@@ -1,8 +1,5 @@
 alembic
-black
-coverage
 debugpy
-flake8
 flask
 Flask-SQLAlchemy
 gunicorn
@@ -14,7 +11,6 @@ pyjwt
 pyopenssl
 pyqt5
 pysteamcmd
-pytest
 python-dotenv
 requests
 validators==0.20.0

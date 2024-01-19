@@ -14,7 +14,7 @@ def compute_checksums():
         os.remove(checksum_file)
 
     with open(checksum_file, "w") as f:
-        f.write(f"agent-smith.exe\n\n")
+        f.write("agent-smith.exe\n\n")
         f.write(f"MD5: {md5_sum}\n")
         f.write(f"SHA1: {sha1_sum}\n")
         f.write(f"SHA256: {sha256_sum}\n")
