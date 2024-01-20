@@ -123,14 +123,18 @@ class PalworldGame(BaseGame):
             game_install_dir, constants.STARTUP_BATCH_FILE_NAME
         )
 
+        full_path_game_ini_config_folder = os.path.join(
+            game_install_dir, "Pal", "Saved", "Config", "WindowsServer"
+        )
+
         full_path_game_ini_config = os.path.join(
-            game_install_dir,
-            "Pal",
-            "Saved",
-            "Config",
-            "WindowsServer",
+            full_path_game_ini_config_folder,
             "PalWorldSettings.ini",
         )
+
+        # The first time you run this, the config folder doesn't exist, so it has to be created.
+        if not os.path.exists(full_path_game_ini_config_folder):
+            os.makedirs(full_path_game_ini_config_folder, exist_ok=True)
 
         # If file exists, remove it.
         if os.path.exists(full_path_startup_script):
