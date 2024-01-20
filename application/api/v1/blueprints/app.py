@@ -3,7 +3,7 @@ import sqlalchemy.exc as exc
 from flask import Blueprint, jsonify, request
 from flask.views import MethodView
 
-from application.source.models.settings import Settings
+from application.models.settings import Settings
 from application.common import logger
 from application.common.decorators import authorization_required
 from application.common.exceptions import InvalidUsage

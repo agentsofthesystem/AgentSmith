@@ -20,7 +20,7 @@ from application.common.game_base import BaseGame
 from application.gui.globals import GuiGlobals
 from application.gui.widgets.file_select_widget import FileSelectWidget
 from application.gui.widgets.game_arguments_widget import GameArgumentsWidget
-from application.source import games
+from application import games
 
 
 class NewGameWidget(QWidget):

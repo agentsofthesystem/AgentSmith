@@ -9,8 +9,8 @@ from application.common.authorization import _verify_bearer_token
 from application.common.decorators import authorization_required
 from application.common.exceptions import InvalidUsage
 from application.extensions import DATABASE
-from application.source.models.settings import Settings
-from application.source.models.tokens import Tokens
+from application.models.settings import Settings
+from application.models.tokens import Tokens
 
 access = Blueprint("access", __name__, url_prefix="/v1")
 

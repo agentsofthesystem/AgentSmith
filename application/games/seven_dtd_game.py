@@ -10,7 +10,7 @@ from application.common.game_argument import GameArgument
 from application.common.game_base import BaseGame
 from application.common.toolbox import _get_proc_by_name, get_resources_dir
 from application.extensions import DATABASE
-from application.source.models.games import Games
+from application.models.games import Games
 
 
 class SevenDaysToDieGame(BaseGame):

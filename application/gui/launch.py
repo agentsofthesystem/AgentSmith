@@ -16,7 +16,7 @@ from application.gui.game_manager_window import GameManagerWindow
 from application.gui.intalled_games_menu import InstalledGameMenu
 from application.gui.widgets.add_argument_widget import AddArgumentWidget
 from application.gui.widgets.settings_widget import SettingsWidget
-from application.source.nginx_manager import NginxManager
+from application.managers.nginx_manager import NginxManager
 from application.factory import create_app
 from operator_client import Operator
 

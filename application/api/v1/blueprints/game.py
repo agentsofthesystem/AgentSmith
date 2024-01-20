@@ -10,8 +10,8 @@ from application.common.decorators import authorization_required
 from application.common.exceptions import InvalidUsage
 from application.common.game_base import BaseGame
 from application.extensions import DATABASE
-from application.source.models.games import Games
-from application.source.models.game_arguments import GameArguments
+from application.models.games import Games
+from application.models.game_arguments import GameArguments
 
 game = Blueprint("game", __name__, url_prefix="/v1")
 

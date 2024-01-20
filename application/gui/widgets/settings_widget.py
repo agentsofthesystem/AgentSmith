@@ -13,7 +13,7 @@ from application.gui.globals import GuiGlobals
 from application.gui.widgets.file_select_widget import FileSelectWidget
 from application.gui.widgets.nginx_widget import NginxWidget
 from application.gui.widgets.tokens_widget import TokensWidget
-from application.source.nginx_manager import NginxManager
+from application.managers.nginx_manager import NginxManager
 from operator_client import Operator
 
 

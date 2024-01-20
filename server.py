@@ -43,6 +43,9 @@ class MainArgParse(object):
         config = DefaultConfig("python")
         config.obtain_environment_variables()
 
+        config.DEBUG = True
+        config.ENV = "development"
+
         self.app = create_app(config=config)
 
         self.host_setting = self.app.config["FLASK_RUN_HOST"]

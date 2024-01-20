@@ -7,7 +7,7 @@ import sys
 from application.common import logger
 from application.common.exceptions import InvalidUsage
 from application.common.game_base import BaseGame
-from application.source import games
+from application import games
 
 
 @staticmethod

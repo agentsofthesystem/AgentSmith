@@ -18,12 +18,12 @@ def main():
             f"--add-data=./application/config/nginx/*{sep}./application/config/nginx",  # noqa: E501
             f"--add-data=./application/gui/resources/agent-white.png{sep}u./application/gui/resources",  # noqa: E501
             f"--add-data=./application/gui/resources/agent-green.png{sep}./application/gui/resources",  # noqa: E501
-            f"--add-data=./application/source/games/*.py{sep}./application/source/games",
-            f"--add-data=./application/source/games/resources/*{sep}./application/source/games/resources",  # noqa: E501
-            f"--add-data=./application/source/alembic/alembic.ini{sep}./application/source/alembic",
-            f"--add-data=./application/source/alembic/env.py{sep}./application/source/alembic",
-            f"--add-data=./application/source/alembic/script.py.mako{sep}./application/source/alembic",  # noqa: E501
-            f"--add-data=./application/source/alembic/versions/*.py{sep}./application/source/alembic/versions",  # noqa: E501
+            f"--add-data=./application/games/*.py{sep}./application/games",
+            f"--add-data=./application/games/resources/*{sep}./application/games/resources",  # noqa: E501
+            f"--add-data=./application/alembic/alembic.ini{sep}./application/alembic",
+            f"--add-data=./application/alembic/env.py{sep}./application/alembic",
+            f"--add-data=./application/alembic/script.py.mako{sep}./application/alembic",  # noqa: E501
+            f"--add-data=./application/alembic/versions/*.py{sep}./application/alembic/versions",  # noqa: E501
             "--hidden-import=xml.etree.ElementTree",
             "--hidden-import=telnetlib",
             "--clean",

@@ -5,8 +5,8 @@ from datetime import datetime
 from pysteamcmd.steamcmd import Steamcmd
 from sqlalchemy import exc
 
-from application.source import games
-from application.source.models.games import Games
+from application import games
+from application.models.games import Games
 from application.common import logger, toolbox
 from application.common.exceptions import InvalidUsage
 from application.extensions import DATABASE
@@ -51,6 +51,8 @@ class SteamManager:
                     correct_game_object = game_obj
                     del game_obj
                     break
+
+            # TODO - Catch the None case. What happens if the game object is not found?
 
             new_game = Games()
             new_game.game_steam_id = int(steam_id)

@@ -13,13 +13,13 @@ from application.api.v1.blueprints.app import app
 from application.api.v1.blueprints.architect import architect
 from application.api.v1.blueprints.game import game
 from application.api.v1.blueprints.steam import steam
-from application.source.models.games import Games
-from application.source.models.settings import Settings
+from application.models.games import Games
+from application.models.settings import Settings
 
 CURRENT_FOLDER = toolbox._get_application_path()
 STATIC_FOLDER = os.path.join(CURRENT_FOLDER, "static")
 TEMPLATE_FOLDER = os.path.join(CURRENT_FOLDER, "templates")
-ALEMBIC_FOLDER = os.path.join(CURRENT_FOLDER, "source", "alembic")
+ALEMBIC_FOLDER = os.path.join(CURRENT_FOLDER, "alembic")
 
 
 def _startup_checks():

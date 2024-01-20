@@ -7,8 +7,8 @@ from application.common import logger, constants
 from application.common.game_argument import GameArgument
 from application.common.exceptions import InvalidUsage
 from application.extensions import DATABASE
-from application.source.models.games import Games
-from application.source.models.game_arguments import GameArguments
+from application.models.games import Games
+from application.models.game_arguments import GameArguments
 
 
 class BaseGame:
