@@ -7,7 +7,7 @@ from sqlalchemy import exc
 
 from application import games
 from application.models.games import Games
-from application.common import logger, toolbox
+from application.common import logger, toolbox, constants
 from application.common.exceptions import InvalidUsage
 from application.extensions import DATABASE
 
@@ -19,7 +19,7 @@ class SteamManager:
 
         toolbox.recursive_chmod(steam_install_dir)
 
-        self._steam = Steamcmd(steam_install_dir)
+        self._steam = Steamcmd(steam_install_dir, constants.DEFAULT_INSTALL_PATH)
 
         self._steam.install(force=True)
 
@@ -52,7 +52,11 @@ class SteamManager:
                     del game_obj
                     break
 
-            # TODO - Catch the None case. What happens if the game object is not found?
+            # Raise error if correct_game_object is not found.
+            if correct_game_object is None:
+                raise InvalidUsage(
+                    "Unable to get game object that matches steam id.", status_code=500
+                )
 
             new_game = Games()
             new_game.game_steam_id = int(steam_id)
@@ -82,6 +86,24 @@ class SteamManager:
             user=user,
             password=password,
             validate=True,
+        )
+
+    def udpate_steam_app(
+        self, steam_id, installation_dir, user="anonymous", password=None
+    ):
+        return self._update_gamefiles(
+            gameid=steam_id,
+            game_install_dir=installation_dir,
+            user=user,
+            password=password,
+            validate=True,
+        )
+
+    def _update_gamefiles(
+        self, gameid, game_install_dir, user="anonymous", password=None, validate=False
+    ):
+        return self._install_gamefiles(
+            gameid, game_install_dir, user=user, password=password, validate=validate
         )
 
     def _install_gamefiles(

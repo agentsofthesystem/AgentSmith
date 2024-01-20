@@ -36,7 +36,12 @@ def steam_app_install():
         raise InvalidUsage(message, status_code=400)
 
     steam_id = payload["steam_id"]
-    steam_mgr = SteamManager(payload["steam_install_path"])
+
+    try:
+        steam_mgr = SteamManager(payload["steam_install_path"])
+    except Exception as error:
+        logger.critical(error)
+        return "Error", 500
 
     steam_mgr.install_steam_app(
         steam_id,
@@ -56,15 +61,54 @@ def steam_app_install():
     return "Success"
 
 
+@steam.route("/steam/app/update", methods=["POST"])
+@authorization_required
+def steam_app_update():
+    logger.info("Updating Steam Application")
+
+    payload = request.json
+
+    required_data = [
+        "steam_install_path",
+        "steam_id",
+        "install_dir",
+        "user",
+        "password",
+    ]
+
+    if not set(required_data).issubset(set(list(payload.keys()))):
+        message = "Error: Missing Required Data"
+        logger.error(message)
+        logger.info(payload.keys())
+        raise InvalidUsage(message, status_code=400)
+
+    steam_id = payload["steam_id"]
+
+    try:
+        steam_mgr = SteamManager(payload["steam_install_path"])
+    except Exception as error:
+        logger.critical(error)
+        return "Error", 500
+
+    steam_mgr.udpate_steam_app(
+        steam_id,
+        payload["install_dir"],
+        payload["user"],
+        payload["password"],
+    )
+
+    payload.pop("steam_install_path")
+    payload.pop("steam_id")
+    payload.pop("install_dir")
+    payload.pop("user")
+    payload.pop("password")
+
+    logger.info("Steam Application has been updated")
+    return "Success"
+
+
 @steam.route("/steam/app/remove", methods=["POST"])
 @authorization_required
 def steam_app_remove():
     logger.info("Steam Application has been removed")
-    return "Success"
-
-
-@steam.route("/steam/app/update", methods=["POST"])
-@authorization_required
-def steam_app_update():
-    logger.info("Steam Application has been updated")
     return "Success"
