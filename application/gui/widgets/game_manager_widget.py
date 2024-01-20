@@ -401,13 +401,6 @@ class GameManagerWidget(QWidget):
         steam_id = game_info["items"][0]["game_steam_id"]
         install_path = game_info["items"][0]["game_install_dir"]
 
-        logger.info("*************************")
-        logger.info(game_info)
-        logger.info(steam_install_dir)
-        logger.info(steam_id)
-        logger.info(install_path)
-        logger.info("*************************")
-
         self._client.steam.update_steam_app(steam_install_dir, steam_id, install_path)
 
     def _uninstall_game(self, game_name):
