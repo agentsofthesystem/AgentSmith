@@ -15,7 +15,7 @@ from PyQt5.QtCore import Qt, QTimer
 
 from application.common import toolbox, logger
 from application.common.game_base import BaseGame
-from application.source import games
+from application import games
 from application.gui.widgets.add_argument_widget import AddArgumentWidget
 from application.gui.intalled_games_menu import InstalledGameMenu
 from application.gui.widgets.game_arguments_widget import GameArgumentsWidget

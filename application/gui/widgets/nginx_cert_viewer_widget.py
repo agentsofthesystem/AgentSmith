@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QClipboard
 
-from application.source.nginx_manager import NginxManager
+from application.managers.nginx_manager import NginxManager
 
 
 class NginxCertViewer(QMainWindow):

@@ -3,7 +3,7 @@ import time
 from PyQt5.QtWidgets import QMenu, QWidget, QWidgetAction, QPushButton
 
 from application.common import toolbox, logger
-from application.source import games
+from application import games
 from operator_client import Operator
 
 BACKGROUND_STR = "background-color: {color}; padding: 8 8 8 8px;"

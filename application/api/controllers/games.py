@@ -1,7 +1,7 @@
 from flask import request
 
 from application.common import toolbox
-from application.source.models.games import Games
+from application.models.games import Games
 
 
 @staticmethod

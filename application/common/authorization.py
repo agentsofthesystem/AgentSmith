@@ -3,8 +3,8 @@ import jwt
 from flask.wrappers import Request
 
 from application.common import constants
-from application.source.models.settings import Settings
-from application.source.models.tokens import Tokens
+from application.models.settings import Settings
+from application.models.tokens import Tokens
 
 
 def _verify_bearer_token(request: Request) -> int:

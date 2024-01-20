@@ -3,7 +3,7 @@ from PyQt5.QtGui import QClipboard
 
 from application.gui.intalled_games_menu import InstalledGameMenu
 from application.gui.widgets.add_argument_widget import AddArgumentWidget
-from application.source.nginx_manager import NginxManager
+from application.managers.nginx_manager import NginxManager
 from operator_client import Operator
 
 

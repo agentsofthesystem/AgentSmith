@@ -12,7 +12,7 @@ from PyQt5.QtGui import QClipboard
 
 from application.common import constants
 from application.gui.widgets.nginx_cert_viewer_widget import NginxCertViewer
-from application.source.nginx_manager import NginxManager
+from application.managers.nginx_manager import NginxManager
 
 from operator_client import Operator
 
