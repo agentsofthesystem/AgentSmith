@@ -13,9 +13,9 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt, QTimer
 
-from application.common import toolbox, logger
-from application.common.game_base import BaseGame
 from application import games
+from application.common import constants, toolbox, logger
+from application.common.game_base import BaseGame
 from application.gui.widgets.add_argument_widget import AddArgumentWidget
 from application.gui.intalled_games_menu import InstalledGameMenu
 from application.gui.widgets.game_arguments_widget import GameArgumentsWidget
@@ -56,6 +56,7 @@ class GameManagerWidget(QWidget):
         self._shutdown_btn: QPushButton = None
         self._restart_btn: QPushButton = None
         self._uninstall_btn: QPushButton = None
+        self._update_btn: QPushButton = None
         self._add_arg_btn: QPushButton = None
         self._game_pid_label: QLabel = None
         self._game_exe_found_label: QLabel = None
@@ -179,6 +180,7 @@ class GameManagerWidget(QWidget):
             logger.debug("Game is Running, setting buttins accordingly")
             self._disable_btn(self._startup_btn)
             self._disable_btn(self._uninstall_btn)
+            self._disable_btn(self._update_btn)
             self._enable_btn(self._shutdown_btn)
             self._enable_btn(self._restart_btn)
         else:
@@ -186,6 +188,7 @@ class GameManagerWidget(QWidget):
             logger.debug("Game is NOT Running, setting buttins accordingly")
             self._enable_btn(self._startup_btn)
             self._enable_btn(self._uninstall_btn)
+            self._enable_btn(self._update_btn)
             self._disable_btn(self._shutdown_btn)
             self._disable_btn(self._restart_btn)
 
@@ -302,6 +305,12 @@ class GameManagerWidget(QWidget):
         self._restart_btn.clicked.connect(
             lambda: self._restart_game(self._current_game_name)
         )
+
+        self._update_btn = QPushButton("Update")
+        self._update_btn.clicked.connect(
+            lambda: self._update_game(self._current_game_name)
+        )
+
         self._uninstall_btn = QPushButton("Uninstall")
         self._uninstall_btn.clicked.connect(
             lambda: self._uninstall_game(self._current_game_name)
@@ -310,6 +319,7 @@ class GameManagerWidget(QWidget):
         game_control_h_layout.addWidget(self._startup_btn)
         game_control_h_layout.addWidget(self._shutdown_btn)
         game_control_h_layout.addWidget(self._restart_btn)
+        game_control_h_layout.addWidget(self._update_btn)
         game_control_h_layout.addWidget(self._uninstall_btn)
         game_frame_main_layout.addLayout(game_control_h_layout)
 
@@ -380,6 +390,25 @@ class GameManagerWidget(QWidget):
             arg_dict[arg["game_arg"]] = arg["game_arg_value"]
 
         self._client.game.game_startup(game_name, input_args=arg_dict)
+
+    def _update_game(self, game_name):
+        logger.info(f"Updating game: {game_name}")
+        steam_install_dir = self._client.app.get_setting_by_name(
+            constants.SETTING_NAME_STEAM_PATH
+        )
+        game_info = self._client.game.get_game_by_name(game_name)
+
+        steam_id = game_info["items"][0]["game_steam_id"]
+        install_path = game_info["items"][0]["game_install_dir"]
+
+        logger.info("*************************")
+        logger.info(game_info)
+        logger.info(steam_install_dir)
+        logger.info(steam_id)
+        logger.info(install_path)
+        logger.info("*************************")
+
+        self._client.steam.update_steam_app(steam_install_dir, steam_id, install_path)
 
     def _uninstall_game(self, game_name):
         logger.info(f"Uninstall game: {game_name}")

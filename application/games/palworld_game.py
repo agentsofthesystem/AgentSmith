@@ -89,10 +89,6 @@ class PalworldGame(BaseGame):
 
         arguments = self._get_argument_dict()
 
-        logger.debug("************************************")
-        logger.debug(arguments)
-        logger.debug("************************************")
-
         # Create a formatted batch file.
         env = Environment(loader=FileSystemLoader(get_resources_dir(__file__)))
 
@@ -102,8 +98,6 @@ class PalworldGame(BaseGame):
             GAME_NAME=self._game_name,
             GAME_COMMAND=command,
         )
-
-        # server_port = arguments['-serverPort']
 
         ini_template = env.get_template("DefaultPalWorldSettings.ini.j2")
         output_from_parsed_ini_template = ini_template.render(

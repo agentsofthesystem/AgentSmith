@@ -10,11 +10,11 @@ pyinstaller
 pyjwt
 pyopenssl
 pyqt5
-pysteamcmd
 python-dotenv
 requests
 validators==0.20.0
 vdf==3.4
 
-# TODO - Eventually this should be a specific version.
+# TODO - Eventually these should be a specific version.
+pysteamcmd @ git+https://github.com/agentsofthesystem/pysteamcmd.git@main
 operator @ git+https://github.com/agentsofthesystem/operator@main
