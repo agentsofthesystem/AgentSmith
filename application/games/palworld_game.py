@@ -89,10 +89,6 @@ class PalworldGame(BaseGame):
 
         arguments = self._get_argument_dict()
 
-        logger.debug("************************************")
-        logger.debug(arguments)
-        logger.debug("************************************")
-
         # Create a formatted batch file.
         env = Environment(loader=FileSystemLoader(get_resources_dir(__file__)))
 
@@ -102,8 +98,6 @@ class PalworldGame(BaseGame):
             GAME_NAME=self._game_name,
             GAME_COMMAND=command,
         )
-
-        # server_port = arguments['-serverPort']
 
         ini_template = env.get_template("DefaultPalWorldSettings.ini.j2")
         output_from_parsed_ini_template = ini_template.render(
@@ -129,14 +123,18 @@ class PalworldGame(BaseGame):
             game_install_dir, constants.STARTUP_BATCH_FILE_NAME
         )
 
+        full_path_game_ini_config_folder = os.path.join(
+            game_install_dir, "Pal", "Saved", "Config", "WindowsServer"
+        )
+
         full_path_game_ini_config = os.path.join(
-            game_install_dir,
-            "Pal",
-            "Saved",
-            "Config",
-            "WindowsServer",
+            full_path_game_ini_config_folder,
             "PalWorldSettings.ini",
         )
+
+        # The first time you run this, the config folder doesn't exist, so it has to be created.
+        if not os.path.exists(full_path_game_ini_config_folder):
+            os.makedirs(full_path_game_ini_config_folder, exist_ok=True)
 
         # If file exists, remove it.
         if os.path.exists(full_path_startup_script):
