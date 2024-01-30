@@ -16,13 +16,19 @@ class GameStates(Enum):
     NOT_STATE = "NO_STATE"
     INSTALLING = "installing"
     INSTALLED = "installed"
+    INSTALL_FAILED = "install_failed"
     UPDATING = "updating"
     UPDATED = "updated"
+    UPDATE_FAILED = "update_failed"
     STARTING = "starting"
     STARTED = "started"
+    STARTUP_FAILED = "startup_failed"
     STOPPING = "stopping"
     STOPPED = "stopped"
+    SHUTDOWN_FAILED = "shutdown_failed"
     RESTARTING = "restarting"
+    UNINSTALLING = "uninstalling"
+    UNINSTALL_FAILED = "uninstall_failed"
 
 
 class FileModes(Enum):

@@ -1,4 +1,5 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, current_app
+
 from application.common import logger
 from application.common.decorators import authorization_required
 from application.common.exceptions import InvalidUsage
@@ -43,12 +44,13 @@ def steam_app_install():
         logger.critical(error)
         return "Error", 500
 
-    steam_mgr.install_steam_app(
-        steam_id,
-        payload["install_dir"],
-        payload["user"],
-        payload["password"],
-    )
+    with current_app.app_context():
+        steam_mgr.install_steam_app(
+            steam_id,
+            payload["install_dir"],
+            payload["user"],
+            payload["password"],
+        )
 
     payload.pop("steam_install_path")
     payload.pop("steam_id")

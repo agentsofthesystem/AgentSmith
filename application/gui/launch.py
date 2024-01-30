@@ -40,7 +40,6 @@ class GuiApp:
         self._installed_games_menu = None
         self._game_manager_window = None
         self._globals._global_clipboard = self._gui_app.clipboard()
-        self._socketio = self._globals._socketio
 
     @timeit
     def _create_backend(self) -> Flask:
