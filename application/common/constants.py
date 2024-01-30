@@ -3,6 +3,8 @@ import platform
 from datetime import datetime
 from enum import Enum
 
+APP_NAME = "AgentSmith"
+
 
 class DeployTypes(Enum):
     DOCKER_COMPOSE = "docker_compose"
@@ -10,13 +12,24 @@ class DeployTypes(Enum):
     PYTHON = "python"
 
 
+class GameStates(Enum):
+    NOT_STATE = "NO_STATE"
+    INSTALLING = "installing"
+    INSTALLED = "installed"
+    UPDATING = "updating"
+    UPDATED = "updated"
+    STARTING = "starting"
+    STARTED = "started"
+    STOPPING = "stopping"
+    STOPPED = "stopped"
+    RESTARTING = "restarting"
+
+
 class FileModes(Enum):
     NOT_A_FILE = 0
     FILE = 1
     DIRECTORY = 2
 
-
-APP_NAME = "AgentSmith"
 
 if platform.system() == "Windows":
     DEFAULT_INSTALL_PATH = f"C:\\{APP_NAME}"
@@ -27,6 +40,7 @@ else:
     # TODO - Revisit this when linux support gets closer...
     DEFAULT_INSTALL_PATH = f"/usr/local/share/{APP_NAME}"
 
+# Settings
 SETTING_NAME_STEAM_PATH: str = "steam_install_dir"
 SETTING_NAME_DEFAULT_PATH: str = "default_install_dir"
 SETTING_NAME_APP_SECRET: str = "application_secret"
@@ -34,15 +48,17 @@ SETTING_NGINX_PROXY_PORT: str = "nginx_proxy_port"
 SETTING_NGINX_PROXY_HOSTNAME: str = "nginx_proxy_hostname"
 SETTING_NGINX_ENABLE: str = "nginx_enable"
 
-
-STARTUP_BATCH_FILE_NAME: str = "startup.bat"
-DEFAULT_SECRET = str(datetime.now())
-GAME_INSTALL_FOLDER = "games"
-
+# Nginx
 NGINX_VERSION = "nginx-1.24.0"
 NGINX_STABLE_RELEASE_WIN = f"https://nginx.org/download/{NGINX_VERSION}.zip"
 
+# Other / Misc
+STARTUP_BATCH_FILE_NAME: str = "startup.bat"
+DEFAULT_SECRET = str(datetime.now())
+GAME_INSTALL_FOLDER = "games"
 LOCALHOST_IP_ADDR = "127.0.0.1"
 WAIT_FOR_BACKEND: int = 1
+FLASK_SERVER_PORT: int = 5000
+
 
 _DeployTypes = DeployTypes

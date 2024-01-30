@@ -58,7 +58,7 @@ def steam_app_install():
 
     logger.info("Steam Application has been installed")
 
-    return "Success"
+    return "Success", 200
 
 
 @steam.route("/steam/app/update", methods=["POST"])
@@ -90,7 +90,7 @@ def steam_app_update():
         logger.critical(error)
         return "Error", 500
 
-    steam_mgr.udpate_steam_app(
+    steam_mgr.update_steam_app(
         steam_id,
         payload["install_dir"],
         payload["user"],
@@ -104,7 +104,7 @@ def steam_app_update():
     payload.pop("password")
 
     logger.info("Steam Application has been updated")
-    return "Success"
+    return "Success", 200
 
 
 @steam.route("/steam/app/remove", methods=["POST"])
