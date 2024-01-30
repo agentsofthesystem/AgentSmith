@@ -188,6 +188,20 @@ class NewGameWidget(QWidget):
             constants.SETTING_NAME_STEAM_PATH
         )
 
+        # Check if game already exists
+        game_data = self._client.game.get_game_by_name(game_name)
+        is_game_present = True if len(game_data["items"]) > 0 else False
+
+        # If the game server is already installed, then let the user know.
+        if is_game_present:
+            message = QMessageBox()
+            message.setText(
+                "Error: That game was already installed! "
+                "Multiple Same Server installs not yet supported."
+            )
+            message.exec()
+            return
+
         if install_path == "":
             message = QMessageBox()
             message.setText("Error: Must supply an install path. Try again!")

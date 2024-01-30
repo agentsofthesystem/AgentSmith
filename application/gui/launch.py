@@ -40,6 +40,7 @@ class GuiApp:
         self._installed_games_menu = None
         self._game_manager_window = None
         self._globals._global_clipboard = self._gui_app.clipboard()
+        self._socketio = self._globals._socketio
 
     @timeit
     def _create_backend(self) -> Flask:
@@ -57,7 +58,7 @@ class GuiApp:
         self._server_thread = Thread(
             target=lambda: self._globals._FLASK_APP.run(
                 host="127.0.0.1",  # Only accept connections via localhost.
-                port=5000,
+                port=constants.FLASK_SERVER_PORT,
                 debug=False,
                 use_reloader=False,
                 threaded=True,

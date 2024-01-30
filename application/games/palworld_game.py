@@ -19,18 +19,7 @@ class PalworldGame(BaseGame):
         self._game_pretty_name = "Palworld"
         self._game_executable = "PalServer.exe"
         self._game_steam_id = "2394010"
-        self._game_info_url = (
-            "https://www.gtxgaming.co.uk/palworld-dedicated-server-setup-guide/"
-        )
-
-        # if self._game_default_install_dir:
-        #     default_persistent_data_path = os.path.join(
-        #         self._game_default_install_dir,
-        #         constants.GAME_INSTALL_FOLDER,
-        #         self._game_name,
-        #     )
-        # else:
-        #     default_persistent_data_path = None
+        self._game_info_url = "https://tech.palworldgame.com/dedicated-server-guide"
 
         # Add Args here, can update later.
         self._add_argument(

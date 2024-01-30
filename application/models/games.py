@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from application.extensions import DATABASE
+from application.common.constants import GameStates
 from application.common.pagination import PaginatedApi
 
 
@@ -21,6 +22,9 @@ class Games(PaginatedApi, DATABASE.Model):
     )
     game_last_update = DATABASE.Column(
         DATABASE.DateTime, default=datetime.utcnow, nullable=False
+    )
+    game_state = DATABASE.Column(
+        DATABASE.String(25), default=GameStates.NOT_STATE.value, nullable=False
     )
 
     def to_dict(self):
