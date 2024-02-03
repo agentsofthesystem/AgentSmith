@@ -21,6 +21,9 @@ class GuiGlobals:
         self._server_port: str = "5000"
         self._steam_install_path: str = "NOT_SET"
         self._default_install_path: str = "NOT_SET"
+        self._init_settings_data: dict = {}
+        self._init_tokens_data: dict = {}
+        self._init_games_data: dict = {}
 
         # Objects
         self._FLASK_APP: Flask = None
@@ -29,3 +32,16 @@ class GuiGlobals:
         self._add_arguments_widget: AddArgumentWidget = None
         self._global_clipboard: QClipboard = None
         self._nginx_manager: NginxManager = None
+
+    def set_initialization_data(self, input_data: {}):
+        settings = input_data["settings"]
+        tokens = input_data["tokens"]
+        games = input_data["games"]
+
+        settings_dict = {}
+        for item in settings:
+            settings_dict[item["setting_name"]] = item["setting_value"]
+
+        self._init_settings_data = settings_dict
+        self._init_games_data = games
+        self._init_tokens_data = tokens

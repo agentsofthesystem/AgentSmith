@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import QClipboard
 
 from application.common import constants
+from application.common.decorators import timeit
 from application.gui.widgets.nginx_cert_viewer_widget import NginxCertViewer
 from application.managers.nginx_manager import NginxManager
 
@@ -18,12 +19,14 @@ from operator_client import Operator
 
 
 class NginxWidget(QWidget):
+    @timeit
     def __init__(
         self,
         client: Operator,
         clipboard: QClipboard,
         nginx_manager: NginxManager,
         parent: QWidget = None,
+        init_data=None,
     ):
         super(QWidget, self).__init__(parent)
 
@@ -31,6 +34,7 @@ class NginxWidget(QWidget):
         self._client = client
         self._clipboard = clipboard
         self._nginx_manager = nginx_manager
+        self._init_data = init_data
         self._initialized = False
 
         self._nginx_enable_checkbox: QCheckBox = None
@@ -58,8 +62,9 @@ class NginxWidget(QWidget):
         label = QLabel("Nginx On/Off")
         self._nginx_enable_checkbox = QCheckBox()
 
-        # TODO - SEt this on off based on current state.
-        if self._nginx_manager.is_running():
+        is_running = self._nginx_manager.is_running()
+
+        if is_running:
             self._nginx_enable_checkbox.setChecked(True)
 
         self._nginx_enable_checkbox.toggled.connect(self._handle_nginx_enable_checkbox)
@@ -68,12 +73,18 @@ class NginxWidget(QWidget):
         h_layout.addWidget(self._nginx_enable_checkbox)
 
         # Port / Host / Other Settings
-        nginx_proxy_port = self._client.app.get_setting_by_name(
-            constants.SETTING_NGINX_PROXY_PORT
-        )
-        nginx_proxy_hostname = self._client.app.get_setting_by_name(
-            constants.SETTING_NGINX_PROXY_HOSTNAME
-        )
+        if self._init_data:
+            nginx_proxy_port = self._init_data[constants.SETTING_NGINX_PROXY_PORT]
+            nginx_proxy_hostname = self._init_data[
+                constants.SETTING_NGINX_PROXY_HOSTNAME
+            ]
+        else:
+            nginx_proxy_port = self._client.app.get_setting_by_name(
+                constants.SETTING_NGINX_PROXY_PORT
+            )
+            nginx_proxy_hostname = self._client.app.get_setting_by_name(
+                constants.SETTING_NGINX_PROXY_HOSTNAME
+            )
 
         h2_layout = QHBoxLayout()
         label = QLabel("Nginx Hostname: ")
@@ -105,7 +116,7 @@ class NginxWidget(QWidget):
         v_control_layout.addWidget(self._view_public_cert)
 
         # Don't let someone edit the settings when nginx is running.
-        if self._nginx_manager.is_running():
+        if is_running:
             self._disable_controls()
 
         return v_control_layout
@@ -132,7 +143,7 @@ class NginxWidget(QWidget):
                 self._nginx_manager.startup()
                 self._disable_controls()
         else:
-            self._nginx_manager.shtudown()
+            self._nginx_manager.shutdown()
             self._enable_controls()
 
     def _handle_nginx_hostname_edit(self, text):

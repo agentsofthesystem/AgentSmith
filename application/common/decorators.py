@@ -3,7 +3,7 @@ from functools import wraps
 from time import time
 
 from application.common import logger
-from application.common.constants import LOCALHOST_IP_ADDR
+from application.common.constants import LOCALHOST_IP_ADDR, ENABLE_TIMEIT_PRINTS
 from application.common.authorization import _verify_bearer_token
 
 
@@ -72,10 +72,11 @@ def timeit(f):
         ts = time()
         result = f(*args, **kw)
         te = time()
-        logger.debug(
-            "Function: :%r args:[%r, %r] took: %2.4f sec"
-            % (f.__name__, args, kw, te - ts)
-        )
+        if ENABLE_TIMEIT_PRINTS:
+            logger.debug(
+                "Function: :%r args:[%r, %r] took: %2.4f sec"
+                % (f.__name__, args, kw, te - ts)
+            )
         return result
 
     return wrap

@@ -62,10 +62,13 @@ class NginxManager:
         if os.path.exists(constants.SSL_CERT_FILE):
             os.remove(constants.SSL_CERT_FILE)
 
-    def generate_ssl_certificate(self) -> None:
-        nginx_proxy_hostname = self._client.app.get_setting_by_name(
-            constants.SETTING_NGINX_PROXY_HOSTNAME
-        )
+    def generate_ssl_certificate(self, initialize=None) -> None:
+        if initialize:
+            nginx_proxy_hostname = initialize[constants.SETTING_NGINX_PROXY_HOSTNAME]
+        else:
+            nginx_proxy_hostname = self._client.app.get_setting_by_name(
+                constants.SETTING_NGINX_PROXY_HOSTNAME
+            )
 
         validityEndInSeconds = 365 * 24 * 60 * 60  # One Year
 
@@ -126,12 +129,12 @@ class NginxManager:
                 crypto.dump_privatekey(crypto.FILETYPE_PEM, pub_key).decode("utf-8")
             )
 
-    def startup(self) -> None:
+    def startup(self, initialize=None) -> None:
         if self.is_running():
             self._stop_nginx()
-        self._spawn_nginx()
+        self._spawn_nginx(initialize=initialize)
 
-    def shtudown(self) -> None:
+    def shutdown(self) -> None:
         if self._stop_nginx():
             self._exe_thread.join()
 
@@ -241,16 +244,20 @@ class NginxManager:
                 zip_ref.extractall(nginx_folder_path)
 
     @timeit
-    def _spawn_nginx(self):
+    def _spawn_nginx(self, initialize=None):
         self._download_nginx_server()
 
-        nginx_proxy_hostname = self._client.app.get_setting_by_name(
-            constants.SETTING_NGINX_PROXY_HOSTNAME
-        )
+        if initialize:
+            nginx_proxy_hostname = initialize[constants.SETTING_NGINX_PROXY_HOSTNAME]
+            nginx_proxy_port = initialize[constants.SETTING_NGINX_PROXY_PORT]
+        else:
+            nginx_proxy_hostname = self._client.app.get_setting_by_name(
+                constants.SETTING_NGINX_PROXY_HOSTNAME
+            )
 
-        nginx_proxy_port = self._client.app.get_setting_by_name(
-            constants.SETTING_NGINX_PROXY_PORT
-        )
+            nginx_proxy_port = self._client.app.get_setting_by_name(
+                constants.SETTING_NGINX_PROXY_PORT
+            )
 
         nginx_folder = os.path.join(
             constants.DEFAULT_INSTALL_PATH, "nginx", constants.NGINX_VERSION
