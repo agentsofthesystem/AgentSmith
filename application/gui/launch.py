@@ -4,6 +4,7 @@ import time
 from flask import Flask
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction, QSystemTrayIcon, QMenu, QApplication, QMessageBox
+from PyQt5.QtCore import QTimer
 from threading import Thread
 
 from application.config.config import DefaultConfig
@@ -22,6 +23,8 @@ from operator_client import Operator
 
 
 class GuiApp:
+    REFRESH_INTERVAL = 10 * constants.MILIS_PER_SECOND
+
     def __init__(self, globals_obj: GuiGlobals) -> None:
         # Globals
         self._globals = globals_obj
@@ -40,6 +43,10 @@ class GuiApp:
         self._installed_games_menu = None
         self._game_manager_window = None
         self._globals._global_clipboard = self._gui_app.clipboard()
+
+        # Time to update this class widget
+        self._timer: QTimer = QTimer()
+        self._timer.timeout.connect(self._refresh_on_timer)
 
     @timeit
     def _create_backend(self) -> Flask:
@@ -97,6 +104,11 @@ class GuiApp:
         if not self._settings_widget._initialized:
             self._settings_widget.init_ui()
         self._settings_widget.show()
+
+    def _refresh_on_timer(self):
+        # Refresh the quick actions menu to capture any potential game state changes.
+        logger.debug("System Tray App: Updating Quick Action Menu.")
+        self._installed_games_menu.update_menu_list()
 
     def initialize(self, with_server=False):
         # If running the unified launch script, this will need to start up first.
@@ -177,5 +189,8 @@ class GuiApp:
         self._main_menu.addAction(quit)
 
         tray.setContextMenu(self._main_menu)
+
+        self._timer.setInterval(self.REFRESH_INTERVAL)
+        self._timer.start()
 
         self._gui_app.exec_()

@@ -23,9 +23,8 @@ from operator_client import Operator
 
 
 class GameManagerWidget(QWidget):
-    MILIS_PER_SECOND = 1000
-    REFRESH_INTERVAL = 10 * MILIS_PER_SECOND
-    FAST_INTERVAL = 1 * MILIS_PER_SECOND
+    REFRESH_INTERVAL = 10 * constants.MILIS_PER_SECOND
+    FAST_INTERVAL = 1 * constants.MILIS_PER_SECOND
 
     def __init__(self, client: Operator, globals, parent: QWidget) -> None:
         super(QWidget, self).__init__(parent)
