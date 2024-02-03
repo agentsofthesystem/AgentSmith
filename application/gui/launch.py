@@ -211,7 +211,7 @@ class GuiApp:
 
         tray.setContextMenu(self._main_menu)
 
-        # self._timer.setInterval(self.REFRESH_INTERVAL)
-        # self._timer.start()
+        self._timer.setInterval(self.REFRESH_INTERVAL)
+        self._timer.start()
 
         self._gui_app.exec_()
