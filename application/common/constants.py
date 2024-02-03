@@ -67,5 +67,7 @@ WAIT_FOR_BACKEND: int = 1
 FLASK_SERVER_PORT: int = 5000
 MILIS_PER_SECOND = 1000
 
+# Controls not meant to be hooked up to GUI. Just for dev/debug:
+ENABLE_TIMEIT_PRINTS = False
 
 _DeployTypes = DeployTypes

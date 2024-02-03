@@ -48,9 +48,9 @@ class NewGameWidget(QWidget):
             self._client, constants.FileModes.DIRECTORY, self
         )
 
-        self._default_install_dir: str = self._client.app.get_setting_by_name(
+        self._default_install_dir: str = self._globals._init_settings_data[
             constants.SETTING_NAME_DEFAULT_PATH
-        )
+        ]
 
         self._defaults: dict = {
             constants.SETTING_NAME_DEFAULT_PATH: self._default_install_dir

@@ -7,6 +7,7 @@ import sys
 from application import games
 from application.common import logger
 from application.common.constants import GameStates
+from application.common.decorators import timeit
 from application.common.exceptions import InvalidUsage
 from application.common.game_base import BaseGame
 from application.extensions import DATABASE
@@ -53,6 +54,7 @@ def get_resources_dir(this_file) -> str:
 
 
 @staticmethod
+@timeit
 def _find_conforming_modules(package) -> {}:
     package_location = package.__path__
 
@@ -85,6 +87,7 @@ def _find_conforming_modules(package) -> {}:
 
 
 @staticmethod
+@timeit
 def _instantiate_object(module_name, module, defaults_dict={}):
     return_obj = None
     for item in inspect.getmembers(module, inspect.isclass):

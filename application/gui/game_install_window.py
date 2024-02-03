@@ -7,11 +7,13 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QIcon
 
+from application.common.decorators import timeit
 from application.gui.globals import GuiGlobals
 from application.gui.widgets.new_game_widget import NewGameWidget
 
 
 class GameInstallWindow(QMainWindow):
+    @timeit
     def __init__(self, globals: GuiGlobals):
         super().__init__()
         self.title = "Install New Game Server"
