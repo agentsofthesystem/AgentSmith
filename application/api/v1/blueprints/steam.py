@@ -1,4 +1,4 @@
-from flask import Blueprint, request, current_app
+from flask import Blueprint, request, jsonify
 
 from application.common import logger
 from application.common.decorators import authorization_required
@@ -44,13 +44,12 @@ def steam_app_install():
         logger.critical(error)
         return "Error", 500
 
-    with current_app.app_context():
-        steam_mgr.install_steam_app(
-            steam_id,
-            payload["install_dir"],
-            payload["user"],
-            payload["password"],
-        )
+    install_thread = steam_mgr.install_steam_app(
+        steam_id,
+        payload["install_dir"],
+        payload["user"],
+        payload["password"],
+    )
 
     payload.pop("steam_install_path")
     payload.pop("steam_id")
@@ -60,7 +59,13 @@ def steam_app_install():
 
     logger.info("Steam Application has been installed")
 
-    return "Success", 200
+    return jsonify(
+        {
+            "thread_name": install_thread.name,
+            "thread_ident": install_thread.native_id,
+            "activity": "install",
+        }
+    )
 
 
 @steam.route("/steam/app/update", methods=["POST"])
@@ -92,7 +97,7 @@ def steam_app_update():
         logger.critical(error)
         return "Error", 500
 
-    steam_mgr.update_steam_app(
+    update_thread = steam_mgr.update_steam_app(
         steam_id,
         payload["install_dir"],
         payload["user"],
@@ -106,11 +111,19 @@ def steam_app_update():
     payload.pop("password")
 
     logger.info("Steam Application has been updated")
-    return "Success", 200
+
+    return jsonify(
+        {
+            "thread_name": update_thread.name,
+            "thread_ident": update_thread.native_id,
+            "activity": "install",
+        }
+    )
 
 
+# TODO - Implement this functionality.
 @steam.route("/steam/app/remove", methods=["POST"])
 @authorization_required
 def steam_app_remove():
-    logger.info("Steam Application has been removed")
+    logger.info("Remote uninstalls of game servers Not Yet Implemented")
     return "Success"

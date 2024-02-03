@@ -84,15 +84,16 @@ class GameManagerWidget(QWidget):
         # Get first game in supported games.
         self.update_installed_games(game_data=game_data, initialize=True)
 
-        # Go ahead a run the refresh in case it hasnt run yet.
-        # self._refresh_on_timer()
-
         # Current game frame gets created in update_installed_games
         self._layout.addWidget(self._current_game_frame)
 
         self._combo_box.currentTextChanged.connect(self._text_changed)
 
         self.setLayout(self._layout)
+
+        # Initially show all buttons disabled until the logic has a chance to determine the server
+        # state and show the appropriate set of buttons.
+        self._disable_all_btns()
 
         self.show()
 
@@ -209,6 +210,13 @@ class GameManagerWidget(QWidget):
         btn.setStyleSheet("text-decoration: line-through;")
         btn.setEnabled(False)
 
+    def _disable_all_btns(self):
+        self._disable_btn(self._startup_btn)
+        self._disable_btn(self._uninstall_btn)
+        self._disable_btn(self._update_btn)
+        self._disable_btn(self._shutdown_btn)
+        self._disable_btn(self._restart_btn)
+
     def _build_game_frame(self, game_name):
         if len(self._installed_supported_games.keys()) == 0:
             self.update_installed_games()
@@ -287,7 +295,7 @@ class GameManagerWidget(QWidget):
         )
 
         # Game controls
-        game_control_label = QLabel("Game Controls:", game_frame)
+        game_control_label = QLabel("Game Server Controls:", game_frame)
         game_control_label.setStyleSheet("text-decoration: underline;")
         game_frame_main_layout.addWidget(game_control_label)
 
@@ -393,6 +401,15 @@ class GameManagerWidget(QWidget):
 
     def _update_game(self, game_name):
         logger.info(f"Updating game: {game_name}")
+
+        message = QMessageBox(self)
+        message.setWindowTitle("Updating ... ")
+        message.setText(
+            "Updating the game server. You will be notified when the process is finished. "
+            "Please click okay to continue..."
+        )
+        message.exec()
+
         steam_install_dir = self._client.app.get_setting_by_name(
             constants.SETTING_NAME_STEAM_PATH
         )
@@ -401,10 +418,32 @@ class GameManagerWidget(QWidget):
         steam_id = game_info["items"][0]["game_steam_id"]
         install_path = game_info["items"][0]["game_install_dir"]
 
-        self._client.steam.update_steam_app(steam_install_dir, steam_id, install_path)
+        thread_ident = self._client.steam.update_steam_app(
+            steam_install_dir, steam_id, install_path
+        )
+        thread_alive = self._client.app.is_thread_alive(thread_ident)
+
+        logger.debug(f"Update Thread Ident: {thread_ident}, Alive: {thread_alive}")
+
+        while thread_alive:
+            logger.debug("Waiting for update to finish....")
+            thread_alive = self._client.app.is_thread_alive(thread_ident)
+            time.sleep(1)
+
+        message = QMessageBox(self)
+        message.setWindowTitle("Complete")
+        message.setText("Game Server Update is now complete!")
+        message.exec()
 
     def _uninstall_game(self, game_name):
         logger.info(f"Uninstall game: {game_name}")
+
+        qm = QMessageBox()
+        response = qm.question(self, "", "Are you sure?", qm.Yes | qm.No)
+
+        if response == qm.No:
+            logger.debug("_uninstall_game: User opted not to uninstall the game.")
+            return
 
         # Stop the regular refresh from happening.
         self.stop_timer()

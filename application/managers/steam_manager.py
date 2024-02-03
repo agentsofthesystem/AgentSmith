@@ -1,8 +1,6 @@
 import os
 import subprocess
 
-from flask import current_app, Flask
-
 from datetime import datetime
 from pysteamcmd.steamcmd import Steamcmd
 from sqlalchemy import exc
@@ -31,14 +29,11 @@ class SteamManager:
         self._steamcmd_exe = self._steam.steamcmd_exe
         self._steam_install_dir = steam_install_dir
 
-        self._install_thread = None
-
     def _run_install_on_thread(
-        self, current_app, steam_id, installation_dir, user, password
-    ):
-        self._install_thread = Thread(
+        self, steam_id, installation_dir, user, password
+    ) -> Thread:
+        sm_thread = Thread(
             target=lambda: self._install_gamefiles(
-                current_app,
                 gameid=steam_id,
                 game_install_dir=installation_dir,
                 user=user,
@@ -46,13 +41,15 @@ class SteamManager:
                 validate=True,
             )
         )
-        self._install_thread.daemon = True
+        sm_thread.daemon = True
 
-        self._install_thread.start()
+        sm_thread.start()
+
+        return sm_thread
 
     def install_steam_app(
         self, steam_id, installation_dir, user="anonymous", password=None
-    ):
+    ) -> Thread:
         if not os.path.exists(installation_dir):
             os.makedirs(installation_dir, mode=0o777, exist_ok=True)
 
@@ -102,16 +99,12 @@ class SteamManager:
             logger.critical(message)
             raise InvalidUsage(message, status_code=500)
 
-        self._run_install_on_thread(
-            current_app, steam_id, installation_dir, user, password
-        )
+        return self._run_install_on_thread(steam_id, installation_dir, user, password)
 
     def update_steam_app(
         self, steam_id, installation_dir, user="anonymous", password=None
-    ):
-        self._run_install_on_thread(
-            current_app, steam_id, installation_dir, user, password
-        )
+    ) -> Thread:
+        return self._run_install_on_thread(steam_id, installation_dir, user, password)
 
     def _update_gamefiles(
         self, gameid, game_install_dir, user="anonymous", password=None, validate=False
@@ -122,7 +115,6 @@ class SteamManager:
 
     def _install_gamefiles(
         self,
-        current_app: Flask,
         gameid,
         game_install_dir,
         user="anonymous",
@@ -178,21 +170,12 @@ class SteamManager:
 
         success_msg = f"Success! App '{gameid}' fully installed."
 
-        game_data_dict = {"game_steam_id": gameid, "game_install_dir": game_install_dir}
-
-        with current_app.app_context():
-            if success_msg in stdout:
-                logger.info("The game server successfully installed.")
-                logger.debug(stdout)
-                install_sucesss = True
-                toolbox.update_game_state(
-                    game_data_dict, constants.GameStates.INSTALLED
-                )
-            else:
-                logger.error("Error: The game server did not install properly.")
-                install_sucesss = False
-                toolbox.update_game_state(
-                    game_data_dict, constants.GameStates.INSTALL_FAILED
-                )
+        if success_msg in stdout:
+            logger.info("The game server successfully installed.")
+            logger.debug(stdout)
+            install_sucesss = True
+        else:
+            logger.error("Error: The game server did not install properly.")
+            install_sucesss = False
 
         return install_sucesss
