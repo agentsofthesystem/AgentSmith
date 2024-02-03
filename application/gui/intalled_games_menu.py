@@ -28,7 +28,7 @@ class InstalledGameMenu(QMenu):
         self.update_menu_list(initialize=True)
 
     @timeit
-    def update_menu_list(self, initialize=True, delay_sec=0):
+    def update_menu_list(self, initialize=False, delay_sec=0):
         if delay_sec > 0:
             time.sleep(delay_sec)
 
