@@ -63,6 +63,9 @@ class GameManagerWindow(QMainWindow):
     def showWindow(self):
         # Wrapping the show method so the timer can be started, if it isn't already in
         # addition to calling show()
+
+        self._game_manager_widget._disable_all_btns()
+
         self._game_manager_widget.start_timer(
             override_interval=self._game_manager_widget.FAST_INTERVAL
         )

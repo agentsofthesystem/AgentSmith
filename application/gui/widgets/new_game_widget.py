@@ -202,6 +202,14 @@ class NewGameWidget(QWidget):
             message.exec()
             return
 
+        message = QMessageBox(self)
+        message.setWindowTitle("Installing ... ")
+        message.setText(
+            f"Installing {game_pretty_name}. You will be notified when the process is finished. "
+            "Please click okay to continue..."
+        )
+        message.exec()
+
         if install_path == "":
             message = QMessageBox()
             message.setText("Error: Must supply an install path. Try again!")
@@ -221,18 +229,19 @@ class NewGameWidget(QWidget):
 
             input_dict[arg] = line_edit.text()
 
-        self._client.steam.install_steam_app(
+        thread_ident = self._client.steam.install_steam_app(
             steam_install_dir,
             steam_id,
             install_path,
         )
+        thread_alive = self._client.app.is_thread_alive(thread_ident)
 
-        # Quick sleep. The client functions return while things are running in background
-        # non-blocking style.
-        # this is to ensure that the backend added the game record.
-        # TODO - Consider adding REST API for sole purpose of adding game instaed of doubling up
-        # with steam intall API.
-        time.sleep(constants.WAIT_FOR_BACKEND)
+        logger.debug(f"Install Thread Ident: {thread_ident}, Alive: {thread_alive}")
+
+        while thread_alive:
+            logger.debug("Waiting for installation to finish....")
+            thread_alive = self._client.app.is_thread_alive(thread_ident)
+            time.sleep(1)
 
         # Add arguments after install
         for arg_name, arg_val in input_dict.items():
@@ -251,3 +260,8 @@ class NewGameWidget(QWidget):
             )
 
         self._install_games_menu.update_menu_list()
+
+        message = QMessageBox(self)
+        message.setWindowTitle("Complete")
+        message.setText(f"Installation of {game_pretty_name}, complete!")
+        message.exec()
