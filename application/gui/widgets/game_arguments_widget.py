@@ -50,7 +50,7 @@ class GameArgumentsWidget(QWidget):
             QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents
         )
 
-        self.update_table()
+        self.update_arguments_table()
 
         self.setLayout(self._table_layout)
 
@@ -59,7 +59,17 @@ class GameArgumentsWidget(QWidget):
     def get_args_dict(self) -> dict:
         return self._args_dict
 
-    def update_table(self, game_arguments=None):
+    def disable_scroll_bars(self):
+        self.disable_horizontal_scroll()
+        self.disable_vertical_scroll()
+
+    def disable_horizontal_scroll(self):
+        self._table.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+    def disable_vertical_scroll(self):
+        self._table.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+    def update_arguments_table(self, game_arguments=None):
         # Allow argument data to be updated by external caller.
         if game_arguments:
             self._arg_data = game_arguments
@@ -99,7 +109,7 @@ class GameArgumentsWidget(QWidget):
             # Value widget for the given row
             value_widget = None
 
-            # TODO - This works... but its janky and can break.
+            # TODO - This works... but its not built very well and can break.
             # If someone disables required but not actions then c == 3 will equal the
             # self._ARG_ACTIONS_COL but its hard coded to 4.  Change it to go back and hide the
             # columns later.
@@ -136,6 +146,7 @@ class GameArgumentsWidget(QWidget):
                     c, QHeaderView.ResizeToContents
                 )
 
+        self._table.horizontalHeader().setStretchLastSection(True)
         self._table.resizeRowsToContents()
         self._table.resizeColumnsToContents()
         self.adjustSize()
