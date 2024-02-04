@@ -86,6 +86,7 @@ class NewGameWidget(QWidget):
         self._arg_widget = GameArgumentsWidget(
             self._client, args_list, input_frame, disable_cols=disabled_cols
         )
+        self._arg_widget.disable_horizontal_scroll()
 
         input_frame_main_layout.addWidget(self._arg_widget)
 
@@ -124,6 +125,7 @@ class NewGameWidget(QWidget):
         input_frame.setLayout(input_frame_main_layout)
         input_frame.setFrameStyle(QFrame.StyledPanel | QFrame.Plain)
         input_frame.setLineWidth(1)
+        input_frame.adjustSize()
 
         return input_frame
 
@@ -156,6 +158,9 @@ class NewGameWidget(QWidget):
 
         self.setLayout(self._layout)
 
+        self.adjustSize()
+        self.parentWidget().adjustSize()
+
         self.show()
 
         self._initialized = True
@@ -171,6 +176,7 @@ class NewGameWidget(QWidget):
         self._current_inputs = self._build_inputs(game_pretty_name)
         self._layout.replaceWidget(old_inputs, self._current_inputs)
         self.adjustSize()
+        self.parentWidget().adjustSize()
 
     def _install_game(self, game_pretty_name):
         logger.info(f"Installing Game Name: {game_pretty_name}")

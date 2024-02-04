@@ -197,7 +197,7 @@ class GameManagerWidget(QWidget):
         )
 
         self._install_games_menu.update_menu_list()
-        self._current_arg_widget.update_table(game_arguments=game_arguments)
+        self._current_arg_widget.update_arguments_table(game_arguments=game_arguments)
 
         self._timer.setInterval(self.REFRESH_INTERVAL)
 
