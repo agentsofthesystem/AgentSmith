@@ -48,9 +48,9 @@ class NewGameWidget(QWidget):
             self._client, constants.FileModes.DIRECTORY, self
         )
 
-        self._default_install_dir: str = self._client.app.get_setting_by_name(
+        self._default_install_dir: str = self._globals._init_settings_data[
             constants.SETTING_NAME_DEFAULT_PATH
-        )
+        ]
 
         self._defaults: dict = {
             constants.SETTING_NAME_DEFAULT_PATH: self._default_install_dir
@@ -86,6 +86,7 @@ class NewGameWidget(QWidget):
         self._arg_widget = GameArgumentsWidget(
             self._client, args_list, input_frame, disable_cols=disabled_cols
         )
+        self._arg_widget.disable_horizontal_scroll()
 
         input_frame_main_layout.addWidget(self._arg_widget)
 
@@ -124,6 +125,7 @@ class NewGameWidget(QWidget):
         input_frame.setLayout(input_frame_main_layout)
         input_frame.setFrameStyle(QFrame.StyledPanel | QFrame.Plain)
         input_frame.setLineWidth(1)
+        input_frame.adjustSize()
 
         return input_frame
 
@@ -156,6 +158,9 @@ class NewGameWidget(QWidget):
 
         self.setLayout(self._layout)
 
+        self.adjustSize()
+        self.parentWidget().adjustSize()
+
         self.show()
 
         self._initialized = True
@@ -171,6 +176,7 @@ class NewGameWidget(QWidget):
         self._current_inputs = self._build_inputs(game_pretty_name)
         self._layout.replaceWidget(old_inputs, self._current_inputs)
         self.adjustSize()
+        self.parentWidget().adjustSize()
 
     def _install_game(self, game_pretty_name):
         logger.info(f"Installing Game Name: {game_pretty_name}")
@@ -187,6 +193,28 @@ class NewGameWidget(QWidget):
         steam_install_dir = self._client.app.get_setting_by_name(
             constants.SETTING_NAME_STEAM_PATH
         )
+
+        # Check if game already exists
+        game_data = self._client.game.get_game_by_name(game_name)
+        is_game_present = True if len(game_data["items"]) > 0 else False
+
+        # If the game server is already installed, then let the user know.
+        if is_game_present:
+            message = QMessageBox()
+            message.setText(
+                "Error: That game was already installed! "
+                "Multiple Same Server installs not yet supported."
+            )
+            message.exec()
+            return
+
+        message = QMessageBox(self)
+        message.setWindowTitle("Installing ... ")
+        message.setText(
+            f"Installing {game_pretty_name}. You will be notified when the process is finished. "
+            "Please click okay to continue..."
+        )
+        message.exec()
 
         if install_path == "":
             message = QMessageBox()
@@ -207,18 +235,19 @@ class NewGameWidget(QWidget):
 
             input_dict[arg] = line_edit.text()
 
-        self._client.steam.install_steam_app(
+        thread_ident = self._client.steam.install_steam_app(
             steam_install_dir,
             steam_id,
             install_path,
         )
+        thread_alive = self._client.app.is_thread_alive(thread_ident)
 
-        # Quick sleep. The client functions return while things are running in background
-        # non-blocking style.
-        # this is to ensure that the backend added the game record.
-        # TODO - Consider adding REST API for sole purpose of adding game instaed of doubling up
-        # with steam intall API.
-        time.sleep(constants.WAIT_FOR_BACKEND)
+        logger.debug(f"Install Thread Ident: {thread_ident}, Alive: {thread_alive}")
+
+        while thread_alive:
+            logger.debug("Waiting for installation to finish....")
+            thread_alive = self._client.app.is_thread_alive(thread_ident)
+            time.sleep(1)
 
         # Add arguments after install
         for arg_name, arg_val in input_dict.items():
@@ -237,3 +266,8 @@ class NewGameWidget(QWidget):
             )
 
         self._install_games_menu.update_menu_list()
+
+        message = QMessageBox(self)
+        message.setWindowTitle("Complete")
+        message.setText(f"Installation of {game_pretty_name}, complete!")
+        message.exec()

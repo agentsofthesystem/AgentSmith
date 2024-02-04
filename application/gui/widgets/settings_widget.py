@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 
 from application.common import constants, logger
+from application.common.decorators import timeit
 from application.gui.globals import GuiGlobals
 from application.gui.widgets.file_select_widget import FileSelectWidget
 from application.gui.widgets.nginx_widget import NginxWidget
@@ -18,6 +19,7 @@ from operator_client import Operator
 
 
 class SettingsWidget(QWidget):
+    @timeit
     def __init__(self, client: Operator, globals: GuiGlobals, parent: QWidget = None):
         super(QWidget, self).__init__(parent)
         self._layout = QVBoxLayout()
@@ -26,12 +28,19 @@ class SettingsWidget(QWidget):
         self._initialized = False
 
         self._token_widget = TokensWidget(
-            self._client, self._globals._global_clipboard, self
+            self._client,
+            self._globals._global_clipboard,
+            parent=self,
+            init_data=self._globals._init_tokens_data,
         )
         self._nginx_manager: NginxManager = self._globals._nginx_manager
 
         self._nginx_widget = NginxWidget(
-            self._client, self._globals._global_clipboard, self._nginx_manager, self
+            self._client,
+            self._globals._global_clipboard,
+            self._nginx_manager,
+            parent=self,
+            init_data=self._globals._init_settings_data,
         )
 
         self.setWindowTitle("App Settings")
@@ -39,15 +48,15 @@ class SettingsWidget(QWidget):
     def init_ui(self):
         self._layout.setAlignment(Qt.AlignTop)
 
-        steam_install_dir = self._client.app.get_setting_by_name(
+        steam_install_dir = self._globals._init_settings_data[
             constants.SETTING_NAME_STEAM_PATH
-        )
-        default_install_dir = self._client.app.get_setting_by_name(
+        ]
+        default_install_dir = self._globals._init_settings_data[
             constants.SETTING_NAME_DEFAULT_PATH
-        )
-        # application_secret = self._client.app.get_setting_by_name(
-        #    constants.SETTING_NAME_APP_SECRET
-        # )
+        ]
+
+        # Add back in later if needed - Comment out for now.
+        # application_secret = self._globals._init_settings_data[constants.SETTING_NAME_APP_SECRET]
 
         self._globals._steam_install_path = steam_install_dir
 

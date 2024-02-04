@@ -4,10 +4,14 @@ import importlib.util
 import psutil
 import sys
 
+from application import games
 from application.common import logger
+from application.common.constants import GameStates
+from application.common.decorators import timeit
 from application.common.exceptions import InvalidUsage
 from application.common.game_base import BaseGame
-from application import games
+from application.extensions import DATABASE
+from application.models.games import Games
 
 
 @staticmethod
@@ -50,6 +54,7 @@ def get_resources_dir(this_file) -> str:
 
 
 @staticmethod
+@timeit
 def _find_conforming_modules(package) -> {}:
     package_location = package.__path__
 
@@ -82,6 +87,7 @@ def _find_conforming_modules(package) -> {}:
 
 
 @staticmethod
+@timeit
 def _instantiate_object(module_name, module, defaults_dict={}):
     return_obj = None
     for item in inspect.getmembers(module, inspect.isclass):
@@ -137,3 +143,39 @@ def get_size(bytes, suffix="B"):
         if bytes < factor:
             return f"{bytes:.2f}{unit}{suffix}"
         bytes /= factor
+
+
+@staticmethod
+def update_game_state(game_data: {}, new_state: GameStates) -> True:
+    update_success = True
+    game_qry = None
+
+    if "game_id" in game_data:
+        game_id = game_data["game_id"]
+        game_qry = Games.query.filter_by(game_id=game_id)
+    elif "game_steam_id" in game_data and "game_install_dir":
+        game_steam_id = game_data["game_steam_id"]
+        game_install_dir = game_data["game_install_dir"]
+        game_qry = Games.query.filter_by(
+            game_steam_id=game_steam_id, game_install_dir=game_install_dir
+        )
+    else:
+        message = "toolbox: update_game_stage: Invalid Imput game_data dictionary"
+        logger.error(message)
+        raise Exception(message)
+
+    if len(game_qry.all()) > 1:
+        message = (
+            "toolbox: update_game_stage: Inputs identified two or more games. Error!"
+        )
+        logger.critical(message)
+        raise Exception(message)
+
+    try:
+        game_qry.update({"game_state": new_state.value})
+        DATABASE.session.commit()
+    except Exception as error:
+        logger.critical(error)
+        update_success = False
+
+    return update_success

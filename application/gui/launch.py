@@ -4,6 +4,7 @@ import time
 from flask import Flask
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction, QSystemTrayIcon, QMenu, QApplication, QMessageBox
+from PyQt5.QtCore import QTimer
 from threading import Thread
 
 from application.config.config import DefaultConfig
@@ -22,6 +23,8 @@ from operator_client import Operator
 
 
 class GuiApp:
+    REFRESH_INTERVAL = 60 * constants.MILIS_PER_SECOND
+
     def __init__(self, globals_obj: GuiGlobals) -> None:
         # Globals
         self._globals = globals_obj
@@ -41,6 +44,10 @@ class GuiApp:
         self._game_manager_window = None
         self._globals._global_clipboard = self._gui_app.clipboard()
 
+        # Time to update this class widget
+        self._timer: QTimer = QTimer()
+        self._timer.timeout.connect(self._refresh_on_timer)
+
     @timeit
     def _create_backend(self) -> Flask:
         config = DefaultConfig("python")
@@ -57,7 +64,7 @@ class GuiApp:
         self._server_thread = Thread(
             target=lambda: self._globals._FLASK_APP.run(
                 host="127.0.0.1",  # Only accept connections via localhost.
-                port=5000,
+                port=constants.FLASK_SERVER_PORT,
                 debug=False,
                 use_reloader=False,
                 threaded=True,
@@ -69,10 +76,11 @@ class GuiApp:
         self._server_thread.start()
 
     def quit_gui(self):
-        self._globals._nginx_manager.shtudown()
+        self._globals._nginx_manager.shutdown()
         self._gui_app.quit()
 
     def _launch_game_manager_window(self):
+        # This has to be the current games, not init data.
         games = self._globals._client.game.get_games()
 
         if len(games["items"]) == 0:
@@ -98,33 +106,58 @@ class GuiApp:
             self._settings_widget.init_ui()
         self._settings_widget.show()
 
+    def _refresh_on_timer(self):
+        # Refresh the quick actions menu to capture any potential game state changes.
+        logger.debug("System Tray App: Updating Quick Action Menu.")
+        self._installed_games_menu.update_menu_list()
+
     def initialize(self, with_server=False):
         # If running the unified launch script, this will need to start up first.
+
+        initialization_data = None
+
         if with_server:
             # Launch Flask Server
             self._spawn_server_on_thread()
 
-            nginx_enable = self._globals._client.app.get_setting_by_name(
-                constants.SETTING_NGINX_ENABLE
-            )
-
-            # DB Stores as string so quick conversion to boolean.
-            nginx_enable = True if nginx_enable == "1" else False
-
-            # Generate SSL key pair if non-existant.
-            if not self._globals._nginx_manager.key_pair_exists():
-                self._globals._nginx_manager.generate_ssl_certificate()
-
-            # Launch Reverse Proxy Server if enabled.
-            if nginx_enable:
-                self._globals._nginx_manager.startup()
-
             # Give server a chance to start before proceeding...
             time.sleep(1)
 
+        initialization_data = self._globals._client.app.get_gui_initialization_data()
+
+        if initialization_data is None:
+            message = QMessageBox()
+            message.setText(
+                "Error: The backend Agent Software is not responding. Unable to start up."
+            )
+            message.exec()
+            return
+
+        self._globals.set_initialization_data(initialization_data)
+
+        nginx_enable = self._globals._init_settings_data[constants.SETTING_NGINX_ENABLE]
+
+        # DB Stores as string so quick conversion to boolean.
+        nginx_enable = True if nginx_enable == "1" else False
+
+        # Generate SSL key pair if non-existant.
+        if not self._globals._nginx_manager.key_pair_exists():
+            logger.debug(
+                "Warning: No nginx key pair found, creating a new SSL certificate pair."
+            )
+            self._globals._nginx_manager.generate_ssl_certificate(
+                initialize=self._globals._init_settings_data
+            )
+
+        # Launch Reverse Proxy Server if enabled.
+        if nginx_enable:
+            self._globals._nginx_manager.startup(
+                initialize=self._globals._init_settings_data
+            )
+
         # Instantiate this last always!
         self._installed_games_menu = InstalledGameMenu(
-            self._main_menu, self._globals._client
+            self._main_menu, self._globals._client, self._globals._init_games_data
         )
         self._add_arguments_widget = AddArgumentWidget(self._globals._client)
 
@@ -177,5 +210,8 @@ class GuiApp:
         self._main_menu.addAction(quit)
 
         tray.setContextMenu(self._main_menu)
+
+        self._timer.setInterval(self.REFRESH_INTERVAL)
+        self._timer.start()
 
         self._gui_app.exec_()

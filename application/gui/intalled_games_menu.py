@@ -2,8 +2,9 @@ import time
 
 from PyQt5.QtWidgets import QMenu, QWidget, QWidgetAction, QPushButton
 
-from application.common import toolbox, logger
 from application import games
+from application.common import toolbox, logger
+from application.common.decorators import timeit
 from operator_client import Operator
 
 BACKGROUND_STR = "background-color: {color}; padding: 8 8 8 8px;"
@@ -12,27 +13,33 @@ COLOR_STOPPED = "red"
 
 
 class InstalledGameMenu(QMenu):
-    def __init__(self, parent: QWidget, client: Operator) -> None:
+    @timeit
+    def __init__(self, parent: QWidget, client: Operator, init_data: dict) -> None:
         super(InstalledGameMenu, self).__init__("Quick Start/Stop", parent=parent)
 
         self._client = client
         self._parent = parent
+        self._init_data = init_data
         self._buttons: dict = {}
         self._modules_dict = toolbox._find_conforming_modules(games)
 
         # Must call update_menu_list as opposed to update_menu to avoid overloading built in
         # function name!
-        self.update_menu_list()
+        self.update_menu_list(initialize=True)
 
-    def update_menu_list(self, delay_sec=0):
+    @timeit
+    def update_menu_list(self, initialize=False, delay_sec=0):
         if delay_sec > 0:
             time.sleep(delay_sec)
 
         self.clear()
         self._buttons.clear()
 
-        all_games = self._client.game.get_games()
-        all_games = all_games["items"]
+        if initialize:
+            all_games = self._init_data
+        else:
+            all_games = self._client.game.get_games()
+            all_games = all_games["items"]
 
         for game in all_games:
             game_name = game["game_name"]
@@ -44,9 +51,13 @@ class InstalledGameMenu(QMenu):
             action = QWidgetAction(self)
 
             button = QPushButton(game_pretty_name)
-            if self._is_running(game_pid) and self._executable_is_found(game_exe):
+
+            is_game_running = self._is_running(game_pid)
+            is_exe_found = self._executable_is_found(game_exe)
+
+            if is_game_running and is_exe_found:
                 button.setStyleSheet(BACKGROUND_STR.format(color=COLOR_RUNNING))
-            elif not self._is_running(game_pid) and self._executable_is_found(game_exe):
+            elif not is_game_running and is_exe_found:
                 button.setStyleSheet(BACKGROUND_STR.format(color=COLOR_RUNNING))
             else:
                 button.setStyleSheet(BACKGROUND_STR.format(color=COLOR_STOPPED))

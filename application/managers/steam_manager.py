@@ -4,6 +4,7 @@ import subprocess
 from datetime import datetime
 from pysteamcmd.steamcmd import Steamcmd
 from sqlalchemy import exc
+from threading import Thread
 
 from application import games
 from application.models.games import Games
@@ -28,9 +29,27 @@ class SteamManager:
         self._steamcmd_exe = self._steam.steamcmd_exe
         self._steam_install_dir = steam_install_dir
 
+    def _run_install_on_thread(
+        self, steam_id, installation_dir, user, password
+    ) -> Thread:
+        sm_thread = Thread(
+            target=lambda: self._install_gamefiles(
+                gameid=steam_id,
+                game_install_dir=installation_dir,
+                user=user,
+                password=password,
+                validate=True,
+            )
+        )
+        sm_thread.daemon = True
+
+        sm_thread.start()
+
+        return sm_thread
+
     def install_steam_app(
         self, steam_id, installation_dir, user="anonymous", password=None
-    ):
+    ) -> Thread:
         if not os.path.exists(installation_dir):
             os.makedirs(installation_dir, mode=0o777, exist_ok=True)
 
@@ -80,35 +99,28 @@ class SteamManager:
             logger.critical(message)
             raise InvalidUsage(message, status_code=500)
 
-        return self._install_gamefiles(
-            gameid=steam_id,
-            game_install_dir=installation_dir,
-            user=user,
-            password=password,
-            validate=True,
-        )
+        return self._run_install_on_thread(steam_id, installation_dir, user, password)
 
-    def udpate_steam_app(
+    def update_steam_app(
         self, steam_id, installation_dir, user="anonymous", password=None
-    ):
-        return self._update_gamefiles(
-            gameid=steam_id,
-            game_install_dir=installation_dir,
-            user=user,
-            password=password,
-            validate=True,
-        )
+    ) -> Thread:
+        return self._run_install_on_thread(steam_id, installation_dir, user, password)
 
     def _update_gamefiles(
         self, gameid, game_install_dir, user="anonymous", password=None, validate=False
-    ):
+    ) -> bool:
         return self._install_gamefiles(
             gameid, game_install_dir, user=user, password=password, validate=validate
         )
 
     def _install_gamefiles(
-        self, gameid, game_install_dir, user="anonymous", password=None, validate=False
-    ):
+        self,
+        gameid,
+        game_install_dir,
+        user="anonymous",
+        password=None,
+        validate=False,
+    ) -> bool:
         """
         Installs gamefiles for dedicated server. This can also be used to update the gameserver.
         :param gameid: steam game id for the files downloaded
@@ -116,8 +128,10 @@ class SteamManager:
         :param user: steam username (defaults anonymous)
         :param password: steam password (defaults None)
         :param validate: should steamcmd validate the gameserver files (takes a while)
-        :return: subprocess call to steamcmd
+        :return: boolean - true if install was sucessful.
         """
+        install_sucesss = True
+
         if validate:
             validate = "validate"
         else:
@@ -137,7 +151,31 @@ class SteamManager:
             library_path = os.path.join(self._steam_install_dir, "linux64")
             update_environ = os.environ
             update_environ["LD_LIBRARY_PATH"] = library_path
-            return subprocess.Popen(steamcmd_params, env=update_environ)
+            process = subprocess.Popen(
+                steamcmd_params,
+                env=update_environ,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
         else:
             # Otherwise, on windows, it's expected that steam is installed.
-            return subprocess.Popen(steamcmd_params)
+            process = subprocess.Popen(
+                steamcmd_params, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            )
+
+        stdout, stderr = process.communicate()
+
+        stdout = stdout.decode("utf-8")
+        stderr = stderr.decode("utf-8")
+
+        success_msg = f"Success! App '{gameid}' fully installed."
+
+        if success_msg in stdout:
+            logger.info("The game server successfully installed.")
+            logger.debug(stdout)
+            install_sucesss = True
+        else:
+            logger.error("Error: The game server did not install properly.")
+            install_sucesss = False
+
+        return install_sucesss

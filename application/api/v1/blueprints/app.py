@@ -1,15 +1,32 @@
+import threading
 import sqlalchemy.exc as exc
 
 from flask import Blueprint, jsonify, request
 from flask.views import MethodView
 
-from application.models.settings import Settings
+from application.api.controllers import app as app_controller
 from application.common import logger
 from application.common.decorators import authorization_required
 from application.common.exceptions import InvalidUsage
 from application.extensions import DATABASE
+from application.models.settings import Settings
 
 app = Blueprint("app", __name__, url_prefix="/v1")
+
+
+@app.route("/thread/status/<int:ident>", methods=["GET"])
+def is_thread_alive(ident: int):
+    logger.debug("Checking thread!")
+    is_alive = any([th for th in threading.enumerate() if th.ident == ident])
+    message = f"Thread ID - Still alive: {is_alive}"
+    logger.debug(message)
+    return jsonify({"alive": is_alive})
+
+
+@app.route("/gui/startup", methods=["GET"])
+@authorization_required
+def get_startup_data():
+    return app_controller.get_startup_data()
 
 
 class SettingsApi(MethodView):

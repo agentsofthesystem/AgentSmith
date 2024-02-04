@@ -11,15 +11,24 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import QClipboard
 
 from application.common import logger
+from application.common.decorators import timeit
 from operator_client import Operator
 
 
 class TokensWidget(QWidget):
-    def __init__(self, client: Operator, clipboard: QClipboard, parent: QWidget = None):
+    @timeit
+    def __init__(
+        self,
+        client: Operator,
+        clipboard: QClipboard,
+        parent: QWidget = None,
+        init_data=None,
+    ):
         super(QWidget, self).__init__(parent)
         self._layout = QVBoxLayout()
         self._client = client
         self._clipboard = clipboard
+        self._init_data = init_data
         self._initialized = False
 
         self._new_token_name: QLineEdit = None
@@ -34,7 +43,7 @@ class TokensWidget(QWidget):
         self._layout.addLayout(self._create_generate_token())
         self._layout.addLayout(self._create_newly_generated_token())
 
-        self._current_tokens = self._build_token_frame()
+        self._current_tokens = self._build_token_frame(initialize=True)
         self._layout.addWidget(self._current_tokens)
 
         self._newly_generated_token.hide()
@@ -75,10 +84,13 @@ class TokensWidget(QWidget):
 
         return h_layout
 
-    def _create_tokens_vbox(self) -> QVBoxLayout:
+    def _create_tokens_vbox(self, initialize=False) -> QVBoxLayout:
         v_layout = QVBoxLayout()
 
-        all_tokens = self._client.access.get_all_active_tokens()
+        if initialize:
+            all_tokens = self._init_data
+        else:
+            all_tokens = self._client.access.get_all_active_tokens()
 
         if len(all_tokens) == 0:
             v_layout.addWidget(QLabel("No Tokens Yet!"))
@@ -94,9 +106,9 @@ class TokensWidget(QWidget):
 
         return v_layout
 
-    def _build_token_frame(self):
+    def _build_token_frame(self, initialize=False):
         token_frame = QFrame()
-        token_frame.setLayout(self._create_tokens_vbox())
+        token_frame.setLayout(self._create_tokens_vbox(initialize=initialize))
         token_frame.setFrameStyle(QFrame.StyledPanel | QFrame.Plain)
         token_frame.setLineWidth(1)
 

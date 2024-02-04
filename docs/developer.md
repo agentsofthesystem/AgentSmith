@@ -95,7 +95,10 @@ to set this up properly.
 
 This software uses the coverage and pytest python packages for a testing framework.  All tests are in the "tests" folder,
 and are split up by unit tests and functional tests.  Any unit test is a simple test of a singular function or independent
-object.  A functional test is
+object.  A functional or system test would be a test that covers and end-to-end function; eg installing a game server and
+seeing that the game shows up in the quick action menu, for example.
+
+For more information about testing, [please read here](./testing.md)
 
 # Software Development Process
 

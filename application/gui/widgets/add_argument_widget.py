@@ -13,11 +13,13 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 
 from application.common.constants import FileModes
+from application.common.decorators import timeit
 from application.gui.widgets.file_select_widget import FileSelectWidget
 from operator_client import Operator
 
 
 class AddArgumentWidget(QWidget):
+    @timeit
     def __init__(self, client: Operator, parent: QWidget = None) -> None:
         super(QWidget, self).__init__(parent)
 
