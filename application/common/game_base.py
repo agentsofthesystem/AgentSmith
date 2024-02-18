@@ -50,12 +50,16 @@ class BaseGame:
         game_obj = Games.query.filter_by(game_name=self._game_name).first()
         game_arg_objs = GameArguments.query.filter_by(game_id=game_obj.game_id).all()
 
+        actions = game_obj.get_all_actions()
+
         # But first save off the installation path.
         game_install_dir = game_obj.game_install_dir
 
         try:
             for argument in game_arg_objs:
                 DATABASE.session.delete(argument)
+            for action in actions:
+                DATABASE.session.delete(action)
             DATABASE.session.delete(game_obj)
             DATABASE.session.commit()
         except Exception as e:

@@ -1,9 +1,14 @@
+from datetime import datetime
 from flask import Blueprint, request, jsonify
 
-from application.common import logger
+from application.common import logger, toolbox
+from application.common.constants import GameActionTypes
 from application.common.decorators import authorization_required
 from application.common.exceptions import InvalidUsage
+from application.extensions import DATABASE
 from application.managers.steam_manager import SteamManager
+from application.models.actions import Actions
+from application.models.games import Games
 
 steam = Blueprint("steam", __name__, url_prefix="/v1")
 
@@ -50,6 +55,22 @@ def steam_app_install():
         payload["user"],
         payload["password"],
     )
+
+    game_obj = Games.query.filter_by(
+        game_steam_id=steam_id, game_install_dir=payload["install_dir"]
+    ).first()
+
+    try:
+        new_action = Actions()
+        new_action.type = GameActionTypes.INSTALLING.value
+        new_action.game_id = game_obj.game_id
+        new_action.result = install_thread.native_id
+        DATABASE.session.add(new_action)
+        DATABASE.session.commit()
+    except Exception:
+        message = "SteamManager: install_steam_app -> Error: Failed to update database."
+        logger.critical(message)
+        raise InvalidUsage(message, status_code=500)
 
     payload.pop("steam_install_path")
     payload.pop("steam_id")
@@ -104,6 +125,24 @@ def steam_app_update():
         payload["password"],
     )
 
+    game_qry = Games.query.filter_by(
+        game_steam_id=steam_id, game_install_dir=payload["install_dir"]
+    )
+    game_obj = game_qry.first()
+
+    try:
+        new_action = Actions()
+        new_action.type = GameActionTypes.UPDATING.value
+        new_action.game_id = game_obj.game_id
+        new_action.result = update_thread.native_id
+        game_obj.game_last_update = datetime.now()
+        DATABASE.session.add(new_action)
+        DATABASE.session.commit()
+    except Exception:
+        message = "SteamManager: install_steam_app -> Error: Failed to update database."
+        logger.critical(message)
+        raise InvalidUsage(message, status_code=500)
+
     payload.pop("steam_install_path")
     payload.pop("steam_id")
     payload.pop("install_dir")
@@ -121,9 +160,38 @@ def steam_app_update():
     )
 
 
-# TODO - Implement this functionality.
+# TODO - Deprecate this - Was implemented in game_base. No longer needed.
 @steam.route("/steam/app/remove", methods=["POST"])
 @authorization_required
 def steam_app_remove():
     logger.info("Remote uninstalls of game servers Not Yet Implemented")
     return "Success"
+
+
+@steam.route("/steam/app/info", methods=["POST"])
+@authorization_required
+def steap_app_info():
+    logger.info("Getting Steam Application Info")
+
+    payload = request.json
+
+    required_data = [
+        "steam_install_path",
+        "game_name",
+        "user",
+        "password",
+    ]
+
+    if not set(required_data).issubset(set(list(payload.keys()))):
+        message = "Error: Missing Required Data"
+        logger.error(message)
+        logger.info(payload.keys())
+        raise InvalidUsage(message, status_code=400)
+
+    game_name = payload["game_name"]
+    steam_install_path = payload["steam_install_path"]
+
+    steam_mgr = SteamManager(steam_install_path)
+    game_obj = toolbox._get_supported_game_object(game_name)
+    app_info = steam_mgr.get_app_info(game_obj._game_steam_id)
+    return jsonify(app_info)
