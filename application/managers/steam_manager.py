@@ -14,20 +14,21 @@ from application.extensions import DATABASE
 
 
 class SteamManager:
-    def __init__(self, steam_install_dir) -> None:
-        if not os.path.exists(steam_install_dir):
-            os.makedirs(steam_install_dir, mode=0o777, exist_ok=True)
+    def __init__(self, steam_install_dir=None) -> None:
+        if steam_install_dir:
+            if not os.path.exists(steam_install_dir):
+                os.makedirs(steam_install_dir, mode=0o777, exist_ok=True)
 
-        toolbox.recursive_chmod(steam_install_dir)
+            toolbox.recursive_chmod(steam_install_dir)
 
-        self._steam = Steamcmd(steam_install_dir, constants.DEFAULT_INSTALL_PATH)
+            self._steam = Steamcmd(steam_install_dir, constants.DEFAULT_INSTALL_PATH)
 
-        self._steam.install(force=True)
+            self._steam.install(force=True)
 
-        toolbox.recursive_chmod(steam_install_dir)
+            toolbox.recursive_chmod(steam_install_dir)
 
-        self._steamcmd_exe = self._steam.steamcmd_exe
-        self._steam_install_dir = steam_install_dir
+            self._steamcmd_exe = self._steam.steamcmd_exe
+            self._steam_install_dir = steam_install_dir
 
     def _run_install_on_thread(
         self, steam_id, installation_dir, user, password
@@ -106,6 +107,9 @@ class SteamManager:
     ) -> Thread:
         return self._run_install_on_thread(steam_id, installation_dir, user, password)
 
+    def get_app_info(self, steam_id, user="anonymous", password=None) -> Thread:
+        return self._get_app_info(steam_id, user=user, password=password)
+
     def _update_gamefiles(
         self, gameid, game_install_dir, user="anonymous", password=None, validate=False
     ) -> bool:
@@ -179,3 +183,48 @@ class SteamManager:
             install_sucesss = False
 
         return install_sucesss
+
+    def _get_app_info(
+        self,
+        gameid,
+        user="anonymous",
+        password=None,
+    ) -> bool:
+        steamcmd_params = (
+            self._steamcmd_exe,
+            "+login {} {}".format(user, password),
+            "+app_info_print {}".format(gameid),
+            "+quit",
+        )
+
+        # Need to add steamservice.so to the system path
+        if self._steam.platform == "Linux":
+            library_path = os.path.join(self._steam_install_dir, "linux64")
+            update_environ = os.environ
+            update_environ["LD_LIBRARY_PATH"] = library_path
+            process = subprocess.Popen(
+                steamcmd_params,
+                env=update_environ,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+        else:
+            # Otherwise, on windows, it's expected that steam is installed.
+            process = subprocess.Popen(
+                steamcmd_params, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            )
+
+        stdout, stderr = process.communicate()
+
+        stdout = stdout.decode("utf-8")
+        stderr = stderr.decode("utf-8")
+
+        success_msg = f"Success! App '{gameid}' info obtained: {process.returncode}"
+        logger.debug(success_msg)
+
+        # if
+        #    logger.debug(stdout)
+        # else:
+        #    logger.error("Error: Unable to obtain app info.")
+
+        return stdout

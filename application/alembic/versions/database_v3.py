@@ -1,6 +1,6 @@
 """Add updates to the game server table.
 
-Revision ID: database_v1
+Revision ID: database_v3
 Revises:
 Create Date: 2023-10-08 14:10:31.088339
 
@@ -26,7 +26,9 @@ def upgrade():
                 sa.String(length=25),
                 default=GameStates.NOT_STATE.value,
                 nullable=False,
-            )
+            ),
+            insert_after="",
+            insert_before="",
         )
 
     # ### end Alembic commands ###
