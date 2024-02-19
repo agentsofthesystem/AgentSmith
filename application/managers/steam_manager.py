@@ -1,4 +1,5 @@
 import os
+import requests
 import subprocess
 
 from datetime import datetime
@@ -12,6 +13,61 @@ from application.common import logger, toolbox, constants
 from application.common.exceptions import InvalidUsage
 from application.common.steam_manifest_parser import read_acf
 from application.extensions import DATABASE
+
+
+class SteamUpdateManager:
+    def __init__(self) -> None:
+        self._base_format_url = "https://api.steamcmd.net/v1/info/{STEAM_ID}"
+
+    def _get_info_url(self, steam_id: int) -> str:
+        return self._base_format_url.format(STEAM_ID=steam_id)
+
+    def get_build_id(self, steam_id: int, branch: str = "public"):
+        build_id = None
+
+        response = requests.get(self._get_info_url(steam_id))
+
+        if response.status_code != 200:
+            logger.critical(
+                "SteamUpdateManager: Unable to contact steamcmd.net to get build id "
+                f"for branch, {branch}"
+            )
+            return None
+
+        data = response.json()
+        app_data = data[steam_id]
+        branches = app_data["branches"]
+        inquery_branch = branches[branch]
+        build_id = inquery_branch["buildid"]
+
+        return build_id
+
+    def is_update_requeired(
+        self, game_id: int, steam_id: int, branch: str = "public"
+    ) -> bool:
+        update_required = False
+
+        game_obj = Games.query.filter_by(game_id=game_id).first()
+
+        if game_obj is None:
+            logger.critical(f"SteamUpdateManager: Game ID, {game_id}, does not exist!")
+            return None
+
+        current_build_id = game_obj.game_steam_build_id
+        current_build_branch = game_obj.game_steam_build_branch
+
+        published_build_id = self.get_build_id(steam_id, branch=current_build_branch)
+
+        if published_build_id is None:
+            logger.critical(
+                f"SteamUpdateManager: Unable to determine if game requries update."
+            )
+            return None
+
+        if current_build_id != published_build_id:
+            update_required = True
+
+        return update_required
 
 
 class SteamManager:
