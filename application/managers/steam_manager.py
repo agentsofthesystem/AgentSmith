@@ -60,7 +60,7 @@ class SteamUpdateManager:
 
         if published_build_id is None:
             logger.critical(
-                f"SteamUpdateManager: Unable to determine if game requries update."
+                "SteamUpdateManager: Unable to determine if game requries update."
             )
             return None
 
