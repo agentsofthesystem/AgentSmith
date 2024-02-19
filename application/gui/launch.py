@@ -33,6 +33,7 @@ class GuiApp:
             "http://" + self._globals._server_host,
             self._globals._server_port,
             verbose=False,
+            timeout=10,
         )
         self._globals._nginx_manager = NginxManager(self._globals._client)
 
@@ -81,9 +82,16 @@ class GuiApp:
 
     def _launch_game_manager_window(self):
         # This has to be the current games, not init data.
-        games = self._globals._client.game.get_games()
+        all_games = self._globals._client.game.get_games()
 
-        if len(games["items"]) == 0:
+        # Error checking. If backend server goes down, don't want to crash.
+        if all_games is None:
+            logger.critical(
+                "GuiApp::_launch_game_manager_window - Error - Is Server Offline?"
+            )
+            return
+
+        if len(all_games["items"]) == 0:
             message = QMessageBox()
             message.setText("Please install a game before using the Game Manager!")
             message.exec()

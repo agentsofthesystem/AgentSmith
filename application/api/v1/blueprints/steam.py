@@ -1,7 +1,7 @@
 from datetime import datetime
 from flask import Blueprint, request, jsonify
 
-from application.common import logger, toolbox
+from application.common import logger
 from application.common.constants import GameActionTypes
 from application.common.decorators import authorization_required
 from application.common.exceptions import InvalidUsage
@@ -168,16 +168,41 @@ def steam_app_remove():
     return "Success"
 
 
+@steam.route("/steam/app/build/id", methods=["POST"])
+@authorization_required
+def steam_app_get_build_id():
+    logger.info("Getting Steam Application Manifest Build ID")
+
+    payload = request.json
+
+    required_data = ["steam_install_path", "game_install_path", "steam_id"]
+
+    if not set(required_data).issubset(set(list(payload.keys()))):
+        message = "Error: Missing Required Data"
+        logger.error(message)
+        logger.info(payload.keys())
+        raise InvalidUsage(message, status_code=400)
+
+    steam_id = payload["steam_id"]
+    steam_install_path = payload["steam_install_path"]
+    game_install_path = payload["game_install_path"]
+
+    steam_mgr = SteamManager(steam_install_path, force_steam_install=False)
+    app_info = steam_mgr.get_build_id_from_app_manifest(game_install_path, steam_id)
+
+    return jsonify(app_info)
+
+
 @steam.route("/steam/app/info", methods=["POST"])
 @authorization_required
-def steap_app_info():
+def steam_app_info():
     logger.info("Getting Steam Application Info")
 
     payload = request.json
 
     required_data = [
         "steam_install_path",
-        "game_name",
+        "steam_id",
         "user",
         "password",
     ]
@@ -188,10 +213,10 @@ def steap_app_info():
         logger.info(payload.keys())
         raise InvalidUsage(message, status_code=400)
 
-    game_name = payload["game_name"]
+    steam_id = payload["steam_id"]
     steam_install_path = payload["steam_install_path"]
 
     steam_mgr = SteamManager(steam_install_path)
-    game_obj = toolbox._get_supported_game_object(game_name)
-    app_info = steam_mgr.get_app_info(game_obj._game_steam_id)
+    app_info = steam_mgr.get_app_info(steam_id)
+
     return jsonify(app_info)

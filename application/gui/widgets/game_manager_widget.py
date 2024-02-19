@@ -414,6 +414,7 @@ class GameManagerWidget(QWidget):
         )
         game_info = self._client.game.get_game_by_name(game_name)
 
+        game_id = game_info["items"][0]["game_id"]
         steam_id = game_info["items"][0]["game_steam_id"]
         install_path = game_info["items"][0]["game_install_dir"]
 
@@ -428,6 +429,15 @@ class GameManagerWidget(QWidget):
             logger.debug("Waiting for update to finish....")
             thread_alive = self._client.app.is_thread_alive(thread_ident)
             time.sleep(1)
+
+        steam_build_id = self._client.steam.get_steam_app_build_id(
+            steam_install_dir, install_path, steam_id
+        )
+
+        if steam_build_id:
+            self._client.game.update_game_data(
+                game_id, game_steam_build_id=steam_build_id
+            )
 
         message = QMessageBox(self)
         message.setWindowTitle("Complete")
