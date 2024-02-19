@@ -40,6 +40,15 @@ def get_game_schema():
     return jsonify(games_controller.get_games_schema())
 
 
+@game.route("/game/<int:game_id>", methods=["PATCH"])
+@authorization_required
+def update_game_by_id(game_id: int):
+    if not games_controller.update_game(game_id, request):
+        raise InvalidUsage("Error, Unable to update game data", status_code=500)
+
+    return "Success", 200
+
+
 @game.route("/game/status/<string:game_name>", methods=["GET"])
 @authorization_required
 def get_game_server_status(game_name):

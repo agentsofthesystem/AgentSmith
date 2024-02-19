@@ -39,6 +39,14 @@ class InstalledGameMenu(QMenu):
             all_games = self._init_data
         else:
             all_games = self._client.game.get_games()
+
+            # Error checking. If backend server goes down, don't want to crash.
+            if all_games is None:
+                logger.critical(
+                    "InstalledGameMenu::update_menu_list - Error - Is Server Offline?"
+                )
+                return
+
             all_games = all_games["items"]
 
         for game in all_games:

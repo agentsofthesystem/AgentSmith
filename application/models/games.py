@@ -10,6 +10,10 @@ class Games(PaginatedApi, DATABASE.Model):
     __tablename__ = "games"
     game_id = DATABASE.Column(DATABASE.Integer, primary_key=True)
     game_steam_id = DATABASE.Column(DATABASE.Integer, unique=True, nullable=False)
+    game_steam_build_id = DATABASE.Column(DATABASE.Integer, nullable=False, default=-1)
+    game_steam_build_branch = DATABASE.Column(
+        DATABASE.String(256), nullable=False, default="public"
+    )
     game_install_dir = DATABASE.Column(
         DATABASE.String(256), unique=True, nullable=False
     )

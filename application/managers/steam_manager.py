@@ -10,25 +10,26 @@ from application import games
 from application.models.games import Games
 from application.common import logger, toolbox, constants
 from application.common.exceptions import InvalidUsage
+from application.common.steam_manifest_parser import read_acf
 from application.extensions import DATABASE
 
 
 class SteamManager:
-    def __init__(self, steam_install_dir=None) -> None:
-        if steam_install_dir:
-            if not os.path.exists(steam_install_dir):
-                os.makedirs(steam_install_dir, mode=0o777, exist_ok=True)
+    def __init__(self, steam_install_dir, force_steam_install=True) -> None:
+        if not os.path.exists(steam_install_dir):
+            os.makedirs(steam_install_dir, mode=0o777, exist_ok=True)
 
-            toolbox.recursive_chmod(steam_install_dir)
+        toolbox.recursive_chmod(steam_install_dir)
 
-            self._steam = Steamcmd(steam_install_dir, constants.DEFAULT_INSTALL_PATH)
+        self._steam = Steamcmd(steam_install_dir, constants.DEFAULT_INSTALL_PATH)
 
+        if not force_steam_install:
             self._steam.install(force=True)
 
-            toolbox.recursive_chmod(steam_install_dir)
+        toolbox.recursive_chmod(steam_install_dir)
 
-            self._steamcmd_exe = self._steam.steamcmd_exe
-            self._steam_install_dir = steam_install_dir
+        self._steamcmd_exe = self._steam.steamcmd_exe
+        self._steam_install_dir = steam_install_dir
 
     def _run_install_on_thread(
         self, steam_id, installation_dir, user, password
@@ -109,6 +110,23 @@ class SteamManager:
 
     def get_app_info(self, steam_id, user="anonymous", password=None) -> Thread:
         return self._get_app_info(steam_id, user=user, password=password)
+
+    def get_build_id_from_app_manifest(self, installation_dir, steam_id):
+        build_id = None
+        app_manifest = None
+
+        # Now read in the build id from the .acf file.
+        manifest_file = f"appmanifest_{steam_id}.acf"
+        acf_file = os.path.join(installation_dir, "steamapps", manifest_file)
+
+        if not os.path.exists(acf_file):
+            return None
+
+        app_manifest = read_acf(acf_file)
+
+        build_id = app_manifest["buildid"]
+
+        return build_id
 
     def _update_gamefiles(
         self, gameid, game_install_dir, user="anonymous", password=None, validate=False
@@ -221,10 +239,5 @@ class SteamManager:
 
         success_msg = f"Success! App '{gameid}' info obtained: {process.returncode}"
         logger.debug(success_msg)
-
-        # if
-        #    logger.debug(stdout)
-        # else:
-        #    logger.error("Error: Unable to obtain app info.")
 
         return stdout

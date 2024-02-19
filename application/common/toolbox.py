@@ -146,7 +146,7 @@ def get_size(bytes, suffix="B"):
 
 
 @staticmethod
-def update_game_state(game_data: {}, new_state: GameStates) -> True:
+def update_game_state(game_data: dict, new_state: GameStates) -> True:
     update_success = True
     game_qry = None
 

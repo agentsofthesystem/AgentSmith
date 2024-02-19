@@ -267,6 +267,19 @@ class NewGameWidget(QWidget):
 
         self._install_games_menu.update_menu_list()
 
+        # Get the game now, that it's been installed.
+        game_data = self._client.game.get_game_by_name(game_name)
+        game_id = game_data["items"][0]["game_id"]
+
+        steam_build_id = self._client.steam.get_steam_app_build_id(
+            steam_install_dir, install_path, steam_id
+        )
+
+        if steam_build_id:
+            self._client.game.update_game_data(
+                game_id, game_steam_build_id=steam_build_id
+            )
+
         message = QMessageBox(self)
         message.setWindowTitle("Complete")
         message.setText(f"Installation of {game_pretty_name}, complete!")
