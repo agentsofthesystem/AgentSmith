@@ -22,7 +22,7 @@ class SteamUpdateManager:
     def _get_info_url(self, steam_id: int) -> str:
         return self._base_format_url.format(STEAM_ID=steam_id)
 
-    def get_build_id(self, steam_id: int, branch: str = "public"):
+    def _get_build_id(self, steam_id: int, branch: str = "public") -> int:
         build_id = None
 
         response = requests.get(self._get_info_url(steam_id))
@@ -34,29 +34,25 @@ class SteamUpdateManager:
             )
             return None
 
-        data = response.json()
-        app_data = data[steam_id]
-        branches = app_data["branches"]
+        json_data = response.json()
+        data = json_data["data"]
+
+        app_data = data[str(steam_id)]
+        depots = app_data["depots"]
+        branches = depots["branches"]
         inquery_branch = branches[branch]
         build_id = inquery_branch["buildid"]
 
-        return build_id
+        return int(build_id)
 
-    def is_update_requeired(
-        self, game_id: int, steam_id: int, branch: str = "public"
-    ) -> bool:
+    def is_update_required(
+        self, current_build_id: int, current_build_branch: int, current_steam_id: int
+    ) -> dict:
         update_required = False
 
-        game_obj = Games.query.filter_by(game_id=game_id).first()
-
-        if game_obj is None:
-            logger.critical(f"SteamUpdateManager: Game ID, {game_id}, does not exist!")
-            return None
-
-        current_build_id = game_obj.game_steam_build_id
-        current_build_branch = game_obj.game_steam_build_branch
-
-        published_build_id = self.get_build_id(steam_id, branch=current_build_branch)
+        published_build_id = self._get_build_id(
+            current_steam_id, branch=current_build_branch
+        )
 
         if published_build_id is None:
             logger.critical(
@@ -64,10 +60,16 @@ class SteamUpdateManager:
             )
             return None
 
-        if current_build_id != published_build_id:
+        if current_build_id < published_build_id:
             update_required = True
 
-        return update_required
+        output_dict = {
+            "is_required": update_required,
+            "current_version": current_build_id,
+            "target_version": published_build_id,
+        }
+
+        return output_dict
 
 
 class SteamManager:
@@ -164,9 +166,6 @@ class SteamManager:
     ) -> Thread:
         return self._run_install_on_thread(steam_id, installation_dir, user, password)
 
-    def get_app_info(self, steam_id, user="anonymous", password=None) -> Thread:
-        return self._get_app_info(steam_id, user=user, password=password)
-
     def get_build_id_from_app_manifest(self, installation_dir, steam_id):
         build_id = None
         app_manifest = None
@@ -257,43 +256,3 @@ class SteamManager:
             install_sucesss = False
 
         return install_sucesss
-
-    def _get_app_info(
-        self,
-        gameid,
-        user="anonymous",
-        password=None,
-    ) -> bool:
-        steamcmd_params = (
-            self._steamcmd_exe,
-            "+login {} {}".format(user, password),
-            "+app_info_print {}".format(gameid),
-            "+quit",
-        )
-
-        # Need to add steamservice.so to the system path
-        if self._steam.platform == "Linux":
-            library_path = os.path.join(self._steam_install_dir, "linux64")
-            update_environ = os.environ
-            update_environ["LD_LIBRARY_PATH"] = library_path
-            process = subprocess.Popen(
-                steamcmd_params,
-                env=update_environ,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-            )
-        else:
-            # Otherwise, on windows, it's expected that steam is installed.
-            process = subprocess.Popen(
-                steamcmd_params, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-            )
-
-        stdout, stderr = process.communicate()
-
-        stdout = stdout.decode("utf-8")
-        stderr = stderr.decode("utf-8")
-
-        success_msg = f"Success! App '{gameid}' info obtained: {process.returncode}"
-        logger.debug(success_msg)
-
-        return stdout

@@ -10,6 +10,7 @@ from application.common.decorators import authorization_required
 from application.common.exceptions import InvalidUsage
 from application.common.game_base import BaseGame
 from application.extensions import DATABASE
+from application.managers.steam_manager import SteamUpdateManager
 from application.models.games import Games
 from application.models.game_arguments import GameArguments
 
@@ -132,6 +133,35 @@ def game_uninstall(game_name):
         )
         logger.error(message)
         raise InvalidUsage(message, status_code=500)
+
+
+@game.route("/game/update/check/<int:game_id>", methods=["GET"])
+@authorization_required
+def game_check_for_update(game_id: int):
+    logger.info("Checking if Game Requireds an update")
+
+    game_obj = Games.query.filter_by(game_id=game_id).first()
+
+    if game_obj is None:
+        message = f"Game Server Update Check: Game ID {game_id} does not exist!"
+        logger.critical(message)
+        raise InvalidUsage(message, status_code=400)
+
+    steam_mgr = SteamUpdateManager()
+
+    try:
+        app_info = steam_mgr.is_update_required(
+            game_obj.game_steam_build_id,
+            game_obj.game_steam_build_branch,
+            game_obj.game_steam_id,
+        )
+    except Exception as error:
+        logger.critical(error)
+        raise InvalidUsage(
+            "Unable to determine if update is required.", status_code=500
+        )
+
+    return jsonify(app_info)
 
 
 class GameArgumentsApi(MethodView):
