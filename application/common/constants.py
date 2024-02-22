@@ -12,22 +12,23 @@ class DeployTypes(Enum):
     PYTHON = "python"
 
 
-class GameStates(Enum):
-    NOT_STATE = "NO_STATE"
+class GameActionTypes(Enum):
     INSTALLING = "installing"
-    INSTALLED = "installed"
-    INSTALL_FAILED = "install_failed"
     UPDATING = "updating"
-    UPDATED = "updated"
-    UPDATE_FAILED = "update_failed"
     STARTING = "starting"
-    STARTED = "started"
-    STARTUP_FAILED = "startup_failed"
     STOPPING = "stopping"
-    STOPPED = "stopped"
-    SHUTDOWN_FAILED = "shutdown_failed"
     RESTARTING = "restarting"
     UNINSTALLING = "uninstalling"
+
+
+class GameStates(Enum):
+    NOT_STATE = "NO_STATE"
+    INSTALL_FAILED = "install_failed"
+    UPDATE_FAILED = "update_failed"
+    STARTED = "started"
+    STARTUP_FAILED = "startup_failed"
+    STOPPED = "stopped"
+    SHUTDOWN_FAILED = "shutdown_failed"
     UNINSTALL_FAILED = "uninstall_failed"
 
 

@@ -23,7 +23,7 @@ from operator_client import Operator
 
 
 class GameManagerWidget(QWidget):
-    REFRESH_INTERVAL = 10 * constants.MILIS_PER_SECOND
+    REFRESH_INTERVAL = 15 * constants.MILIS_PER_SECOND
     FAST_INTERVAL = 1 * constants.MILIS_PER_SECOND
 
     def __init__(self, client: Operator, globals, parent: QWidget) -> None:
@@ -59,6 +59,8 @@ class GameManagerWidget(QWidget):
         self._add_arg_btn: QPushButton = None
         self._game_pid_label: QLabel = None
         self._game_exe_found_label: QLabel = None
+        self._game_current_build: QLabel = None
+        self._game_update_required: QLabel = None
 
     def _get_game_object(self, game_name):
         for module_name in self._modules_dict.keys():
@@ -159,7 +161,23 @@ class GameManagerWidget(QWidget):
         game_data = response_data["items"][0]
 
         game_pid = game_data["game_pid"]
+        game_id = game_data["game_id"]
+        current_build_id = game_data["game_steam_build_id"]
+        current_build_branch = game_data["game_steam_build_branch"]
+
         is_game_pid = False
+
+        self._game_current_build.setText(str(current_build_id))
+        self._game_build_branch.setText(current_build_branch)
+
+        update_data = self._client.game.check_for_update(game_id)
+
+        if update_data:  # not None
+            is_required = update_data["is_required"]
+            required_text = "Yes" if is_required else "No"
+            self._game_update_required.setText(required_text)
+        else:
+            self._game_update_required.setText("Unknown")
 
         if game_pid is None:
             self._game_pid_label.setText("Game PID Not in Database")
@@ -240,6 +258,9 @@ class GameManagerWidget(QWidget):
         v_layout_info_labels.addWidget(QLabel("Game Pretty Name", game_frame))
         v_layout_info_labels.addWidget(QLabel("Game Exe Name", game_frame))
         v_layout_info_labels.addWidget(QLabel("Game Steam ID", game_frame))
+        v_layout_info_labels.addWidget(QLabel("Game Build ID", game_frame))
+        v_layout_info_labels.addWidget(QLabel("Game Build Branch", game_frame))
+        v_layout_info_labels.addWidget(QLabel("Game Update Required?", game_frame))
         v_layout_info_labels.addWidget(QLabel("Game PID", game_frame))
         v_layout_info_labels.addWidget(QLabel("Game Exe Found?", game_frame))
         v_layout_info_labels.addWidget(QLabel("Game Info URL", game_frame))
@@ -257,9 +278,15 @@ class GameManagerWidget(QWidget):
             QLabel(game_object._game_steam_id, game_frame)
         )
 
+        self._game_current_build = QLabel("", game_frame)
+        self._game_build_branch = QLabel("", game_frame)
+        self._game_update_required = QLabel("", game_frame)
         self._game_pid_label = QLabel("", game_frame)
         self._game_exe_found_label = QLabel("", game_frame)
 
+        v_layout_info_info_text.addWidget(self._game_current_build)
+        v_layout_info_info_text.addWidget(self._game_build_branch)
+        v_layout_info_info_text.addWidget(self._game_update_required)
         v_layout_info_info_text.addWidget(self._game_pid_label)
         v_layout_info_info_text.addWidget(self._game_exe_found_label)
 
@@ -359,6 +386,9 @@ class GameManagerWidget(QWidget):
             old_game_frame.hide()
             self._layout.replaceWidget(old_game_frame, self._current_game_frame)
 
+        self._disable_all_btns()
+        self._refresh_on_timer()
+
     def _executable_is_found(self, exe_name: str) -> bool:
         return True if toolbox._get_proc_by_name(exe_name) else False
 
@@ -414,6 +444,7 @@ class GameManagerWidget(QWidget):
         )
         game_info = self._client.game.get_game_by_name(game_name)
 
+        game_id = game_info["items"][0]["game_id"]
         steam_id = game_info["items"][0]["game_steam_id"]
         install_path = game_info["items"][0]["game_install_dir"]
 
@@ -428,6 +459,15 @@ class GameManagerWidget(QWidget):
             logger.debug("Waiting for update to finish....")
             thread_alive = self._client.app.is_thread_alive(thread_ident)
             time.sleep(1)
+
+        steam_build_id = self._client.steam.get_steam_app_build_id(
+            steam_install_dir, install_path, steam_id
+        )
+
+        if steam_build_id:
+            self._client.game.update_game_data(
+                game_id, game_steam_build_id=steam_build_id
+            )
 
         message = QMessageBox(self)
         message.setWindowTitle("Complete")

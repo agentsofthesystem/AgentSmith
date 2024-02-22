@@ -1,4 +1,5 @@
 import os
+import requests
 import subprocess
 
 from datetime import datetime
@@ -10,11 +11,69 @@ from application import games
 from application.models.games import Games
 from application.common import logger, toolbox, constants
 from application.common.exceptions import InvalidUsage
+from application.common.steam_manifest_parser import read_acf
 from application.extensions import DATABASE
 
 
+class SteamUpdateManager:
+    def __init__(self) -> None:
+        self._base_format_url = "https://api.steamcmd.net/v1/info/{STEAM_ID}"
+
+    def _get_info_url(self, steam_id: int) -> str:
+        return self._base_format_url.format(STEAM_ID=steam_id)
+
+    def _get_build_id(self, steam_id: int, branch: str = "public") -> int:
+        build_id = None
+
+        response = requests.get(self._get_info_url(steam_id))
+
+        if response.status_code != 200:
+            logger.critical(
+                "SteamUpdateManager: Unable to contact steamcmd.net to get build id "
+                f"for branch, {branch}"
+            )
+            return None
+
+        json_data = response.json()
+        data = json_data["data"]
+
+        app_data = data[str(steam_id)]
+        depots = app_data["depots"]
+        branches = depots["branches"]
+        inquery_branch = branches[branch]
+        build_id = inquery_branch["buildid"]
+
+        return int(build_id)
+
+    def is_update_required(
+        self, current_build_id: int, current_build_branch: int, current_steam_id: int
+    ) -> dict:
+        update_required = False
+
+        published_build_id = self._get_build_id(
+            current_steam_id, branch=current_build_branch
+        )
+
+        if published_build_id is None:
+            logger.critical(
+                "SteamUpdateManager: Unable to determine if game requries update."
+            )
+            return None
+
+        if current_build_id < published_build_id:
+            update_required = True
+
+        output_dict = {
+            "is_required": update_required,
+            "current_version": current_build_id,
+            "target_version": published_build_id,
+        }
+
+        return output_dict
+
+
 class SteamManager:
-    def __init__(self, steam_install_dir) -> None:
+    def __init__(self, steam_install_dir, force_steam_install=True) -> None:
         if not os.path.exists(steam_install_dir):
             os.makedirs(steam_install_dir, mode=0o777, exist_ok=True)
 
@@ -22,7 +81,8 @@ class SteamManager:
 
         self._steam = Steamcmd(steam_install_dir, constants.DEFAULT_INSTALL_PATH)
 
-        self._steam.install(force=True)
+        if not force_steam_install:
+            self._steam.install(force=True)
 
         toolbox.recursive_chmod(steam_install_dir)
 
@@ -105,6 +165,23 @@ class SteamManager:
         self, steam_id, installation_dir, user="anonymous", password=None
     ) -> Thread:
         return self._run_install_on_thread(steam_id, installation_dir, user, password)
+
+    def get_build_id_from_app_manifest(self, installation_dir, steam_id):
+        build_id = None
+        app_manifest = None
+
+        # Now read in the build id from the .acf file.
+        manifest_file = f"appmanifest_{steam_id}.acf"
+        acf_file = os.path.join(installation_dir, "steamapps", manifest_file)
+
+        if not os.path.exists(acf_file):
+            return None
+
+        app_manifest = read_acf(acf_file)
+
+        build_id = app_manifest["buildid"]
+
+        return build_id
 
     def _update_gamefiles(
         self, gameid, game_install_dir, user="anonymous", password=None, validate=False

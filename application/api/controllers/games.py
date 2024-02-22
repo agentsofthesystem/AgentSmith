@@ -1,6 +1,9 @@
 from flask import request
+from sqlalchemy import desc
 
-from application.common import toolbox
+from application.common import logger, toolbox
+from application.extensions import DATABASE
+from application.models.actions import Actions
 from application.models.games import Games
 
 
@@ -13,9 +16,25 @@ def get_all_games(add_server_status=False):
         Games.query, page, per_page, "game.get_all_games"
     )
 
+    # For a server with 2-5 games, this for loop is not a problem.  The author knows that
+    # a join is more optimal for database items.
+    game_items = games_dict["items"]
+
+    # Mixin other items, like actions
+    for game in game_items:
+        actions_qry = Actions.query.filter_by(game_id=game["game_id"]).order_by(
+            desc(Actions.timestamp)
+        )
+
+        # This wil get the first per_page items (10 by default)
+        actions_dict = Actions.to_collection_dict(
+            actions_qry, page, per_page, "game.get_all_games"
+        )
+        game["actions"] = actions_dict["items"]
+
     if add_server_status:
-        game_items = games_dict["items"]
         for game in game_items:
+            # From .py file not db.
             game_obj = toolbox._get_supported_game_object(game["game_name"])
             game["game_exe"] = game_obj._game_executable
             has_pid = True if game["game_pid"] != "null" else False
@@ -30,9 +49,25 @@ def get_all_games(add_server_status=False):
 @staticmethod
 def get_game_by_name(game_name):
     game_query = Games.query.filter_by(game_name=game_name)
-    return Games.to_collection_dict(
+    game_dict = Games.to_collection_dict(
         game_query, 1, 1, "game.get_game_by_name", game_name=game_name
     )
+
+    if len(game_dict["items"]) == 0:
+        return game_dict
+
+    game_item = game_dict["items"][0]
+    actions_qry = Actions.query.filter_by(game_id=game_item["game_id"]).order_by(
+        desc(Actions.timestamp)
+    )
+
+    # This wil get the first per_page items (10 by default)
+    actions_dict = Actions.to_collection_dict(
+        actions_qry, 1, 10, "game.get_game_by_name", game_name=game_name
+    )
+    game_dict["actions"] = actions_dict["items"]
+
+    return game_dict
 
 
 @staticmethod
@@ -76,3 +111,23 @@ def get_game_server_status(game_name: str) -> str:
     )
 
     return response
+
+
+def update_game(game_id: int, request) -> bool:
+    payload = request.json
+
+    game_qry = Games.query.filter_by(game_id=game_id)
+    game_obj = game_qry.first()
+
+    if game_obj is None:
+        logger.error(f"Error: Game ID: {game_id} does not exist")
+        return False
+
+    try:
+        game_qry.update(payload)
+        DATABASE.session.commit()
+    except Exception:
+        logger.critical("Error: update_game - Unable to update database.")
+        return False
+
+    return True
