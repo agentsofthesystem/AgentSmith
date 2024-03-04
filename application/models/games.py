@@ -32,7 +32,7 @@ class Games(PaginatedApi, DATABASE.Model):
         nullable=False,
     )
     game_state = DATABASE.Column(
-        DATABASE.String(25), default=GameStates.NOT_STATE.value, nullable=True
+        DATABASE.String(25), default=GameStates.NOT_STATE.value, nullable=False
     )
 
     actions = DATABASE.relationship(
