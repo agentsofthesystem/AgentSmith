@@ -25,10 +25,15 @@ def upgrade():
                 "game_state",
                 sa.String(length=25),
                 default=GameStates.NOT_STATE.value,
-                nullable=False,
+                nullable=True,
             ),
             insert_after="",
             insert_before="",
+        )
+
+        # Set back to nullable and fill with a default value.
+        batch_op.alter_column(
+            "game_state", nullable=False, server_default=GameStates.NOT_STATE.value
         )
 
     # ### end Alembic commands ###

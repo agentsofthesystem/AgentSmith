@@ -44,10 +44,8 @@ def upgrade():
                 "game_steam_build_branch",
                 sa.String(length=256),
                 default="public",
-                nullable=False,
+                nullable=True,
             ),
-            insert_after="public",
-            insert_before="public",
         )
 
         batch_op.add_column(
@@ -55,10 +53,18 @@ def upgrade():
                 "game_steam_build_id",
                 sa.Integer(),
                 default=-1,
-                nullable=False,
+                nullable=True,
             ),
-            insert_after=-1,
-            insert_before=-1,
+        )
+
+        # Set back to nullable and fill with a default value.
+        batch_op.alter_column(
+            "game_steam_build_branch", nullable=False, server_default="public"
+        )
+
+        # Set back to nullable and fill with a default value.
+        batch_op.alter_column(
+            "game_steam_build_id", nullable=False, server_default="-1"
         )
 
     op.create_index("ix_actions_action_id", "actions", ["action_id"], unique=False)
