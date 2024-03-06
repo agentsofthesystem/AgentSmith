@@ -125,6 +125,17 @@ class GuiApp:
         initialization_data = None
 
         if with_server:
+            # Check that one is not already running.
+            is_already_there = None
+            is_already_there = self._globals._client.architect.get_health()
+            if is_already_there == "Alive":
+                message = QMessageBox()
+                message.setText(
+                    "Error: Unable to start. This application is already running!"
+                )
+                message.exec()
+                return
+
             # Launch Flask Server
             self._spawn_server_on_thread()
 
