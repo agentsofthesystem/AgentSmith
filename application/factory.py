@@ -105,8 +105,6 @@ def create_app(config=None):
 
     _handle_migrations(flask_app)
 
-    return flask_app
-
     startup_settings: dict = {
         constants.SETTING_NAME_STEAM_PATH: os.path.join(
             constants.DEFAULT_INSTALL_PATH, "steam"
