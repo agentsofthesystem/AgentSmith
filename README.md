@@ -17,19 +17,18 @@ Some of Agent Smith's core features are:
 
 ### Supported Games
 
-Here's a short list of some games Agent Smith is currently programmed to manage.
-
-1. 7 Days To Die
-2. V-Rising
-3. Palworld
-4. More to come!!!
+# TODO - Add link
 
 # Getting Started
+
+# TODO - Add link
 
 I've written instructions for every day use of this software as well as what a developer might need
 [here](./docs/getting-started.md).
 
 # Security
+
+# TODO - Add link
 
 Opening a port to expose Agent Smith's API to the outside world can be a little scary, so I've
 written a whole [section on it](./docs/security.md).  The author takes security very seriously, and
@@ -37,6 +36,8 @@ wants you to be informed about the risks and what's been done to make this softw
 possible.
 
 # Design
+
+# TODO - Add link
 
 There is a dedicated section regarding the [design](./docs/design.md) of Agent Smith.  For a detailed
 account of system design, explanations for design choices, limitations, and more, please have a look
