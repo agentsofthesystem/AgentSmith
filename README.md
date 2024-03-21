@@ -17,43 +17,16 @@ Some of Agent Smith's core features are:
 
 ### Supported Games
 
-# TODO - Add link
+All supported games can be found [here](https://docs.agentsofthesystem.com/build/html/agent_smith/supported-game-servers.html).
 
 # Getting Started
 
-# TODO - Add link
-
-I've written instructions for every day use of this software as well as what a developer might need
-[here](./docs/getting-started.md).
+To learn how to use Agent Smith please read the [User Guide](https://docs.agentsofthesystem.com/build/html/agent_smith/usage.html)
 
 # Security
 
-# TODO - Add link
-
-Opening a port to expose Agent Smith's API to the outside world can be a little scary, so I've
-written a whole [section on it](./docs/security.md).  The author takes security very seriously, and
-wants you to be informed about the risks and what's been done to make this software as safe as
-possible.
-
-# Design
-
-# TODO - Add link
-
-There is a dedicated section regarding the [design](./docs/design.md) of Agent Smith.  For a detailed
-account of system design, explanations for design choices, limitations, and more, please have a look
-at that section.
-
-# Future Work
-
-I have identified work I intend to do for the future and could use help with.  However, if you have
-an idea yourself, please create an issue for that.
-
-There will always be room for improvements, but here are some high level goals the author has to
-improve behavior and usability overall:
-
-1. Get functional & unit test framework to minimal code coverage; 20%.
-2. Cross-platform support - I'd like to be able to support Linux Distributions as well.
-3. Support steam game versions; eg install latest_experiemental or a specific release.
+Security is a big deal, the author wrote a whole section about it. Have a look at the
+[Security Docs](https://docs.agentsofthesystem.com/build/html/agent_smith/security.html).
 
 # References / Acknowledgements
 
