@@ -1,4 +1,5 @@
 alembic
+concurrent-log-handler
 debugpy
 flask
 Flask-SQLAlchemy

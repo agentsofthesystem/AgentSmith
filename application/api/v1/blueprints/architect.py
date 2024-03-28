@@ -37,12 +37,20 @@ def agent_info():
     # TODO - Tech Debt: Update agent info page to get this info over websocket. Works for now
     # but does not scale.
     for game in games:
-        update_dict = steam_mgr.is_update_required(
-            game["game_steam_build_id"],
-            game["game_steam_build_branch"],
-            game["game_steam_id"],
-        )
-        game["update_required"] = update_dict["is_required"]
+        game_steam_id = game["game_steam_id"]
+        try:
+            update_dict = steam_mgr.is_update_required(
+                game["game_steam_build_id"],
+                game["game_steam_build_branch"],
+                game_steam_id,
+            )
+            game["update_required"] = update_dict["is_required"]
+        except Exception:
+            game["update_required"] = "ERROR"
+            logger.error(
+                f"Unable to retrieve game info for game_steam_id: {game_steam_id}",
+                exc_info=True
+            )
 
     info: dict = platform_dict
     info.update({"games": games})
