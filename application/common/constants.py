@@ -75,8 +75,7 @@ KB_PER_MB = 1024
 DEFAULT_LOG_LEVEL = logging.NOTSET
 DEFAULT_LOG_DATE_FORMAT = "%m/%d/%Y %I:%M:%S %p"
 DEFAULT_LOG_FORMAT = '%(filename)s:%(lineno)s %(levelname)s:%(message)s'
-#DEFAULT_LOG_SIZE_BYTES = 1024 * KB_PER_MB * 64 # MB
-DEFAULT_LOG_SIZE_BYTES = 1024
+DEFAULT_LOG_SIZE_BYTES = 1024 * KB_PER_MB * 64 # MB
 
 # Controls not meant to be hooked up to GUI. Just for dev/debug:
 ENABLE_TIMEIT_PRINTS = False
