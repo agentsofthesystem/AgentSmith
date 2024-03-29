@@ -1,3 +1,4 @@
+import logging
 import os
 import time
 
@@ -54,9 +55,11 @@ class GuiApp:
         config = DefaultConfig("python")
         config.obtain_environment_variables()
 
+        config.DEBUG = False
+        config.LOG_LEVEL = logging.INFO
+        config.ENV = "production"
+
         app = create_app(config=config)
-        app.debug = False
-        app.config["ENV"] = "production"
 
         return app
 

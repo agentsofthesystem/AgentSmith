@@ -69,7 +69,7 @@ def _handle_migrations(flask_app: Flask):
             command.upgrade(alembic_cfg, "head")
 
 
-def _handle_logging():
+def _handle_logging(logger_level=constants.DEFAULT_LOG_LEVEL):
     """Update log configuration."""
     # Remove all handlers associated with the root logger object.
     for handler in logging.root.handlers[:]:
@@ -91,7 +91,6 @@ def _handle_logging():
 
     # Reconfigure logging again, this time with a file in addition to stdout.
     formatter = logging.Formatter(constants.DEFAULT_LOG_FORMAT)
-    logger_level = constants.DEFAULT_LOG_LEVEL
 
     # File handler
     file_handler = ConcurrentRotatingFileHandler(
@@ -99,7 +98,7 @@ def _handle_logging():
         mode="a",
         encoding="utf-8",
         maxBytes=constants.DEFAULT_LOG_SIZE_BYTES,
-        backupCount=5,
+        backupCount=10,
     )
     file_handler.setLevel(logger_level)
     file_handler.setFormatter(formatter)
@@ -116,7 +115,7 @@ def _handle_logging():
 def create_app(config=None):
     if config is None:
         config = DefaultConfig("python")
-        logger.info("WARNING. Missing Configuration. Initializing with default...")
+        logger.warning("WARNING. Missing Configuration. Initializing with default...")
 
     flask_app = Flask(
         constants.APP_NAME,
@@ -179,7 +178,7 @@ def create_app(config=None):
         # Run other startup checks.
         _startup_checks()
 
-    _handle_logging()
+    _handle_logging(logger_level=config.LOG_LEVEL)
 
     logger.info(f"{constants.APP_NAME} has been successfully created.")
 
