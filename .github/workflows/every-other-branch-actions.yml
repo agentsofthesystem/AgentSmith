@@ -49,7 +49,7 @@ jobs:
         exclude: "tests/*,doc/*,scripts/*"
         max-line-length: "100"
 
-    - name: Pytest
+    - name: pytest
       run: |
         coverage run -m pytest
         coverage report --fail-under 50
