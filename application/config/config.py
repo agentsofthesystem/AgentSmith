@@ -1,3 +1,4 @@
+import logging
 import os
 import platform
 import uuid
@@ -19,6 +20,7 @@ class DefaultConfig:
     FLASK_RUN_PORT = "5000"
     FLASK_FORCE_AUTH = False  # Leave as False except in testing.
     FLASK_DISABLE_AUTH = False
+    LOG_LEVEL = logging.NOTSET
 
     # NGINX Settings
     NGINX_DEFAULT_HOSTNAME = "localhost"
