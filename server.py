@@ -1,7 +1,6 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 import argparse as _argparse
+import logging
 import sys as _sys
 
 from application.config.config import DefaultConfig
@@ -45,6 +44,7 @@ class MainArgParse(object):
 
         config.DEBUG = True
         config.ENV = "development"
+        config.LOG_LEVEL = logging.DEBUG
 
         self.app = create_app(config=config)
 

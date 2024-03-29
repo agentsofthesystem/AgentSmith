@@ -1,3 +1,4 @@
+import logging
 import platform
 
 from datetime import datetime
@@ -67,6 +68,14 @@ LOCALHOST_IP_ADDR = "127.0.0.1"
 WAIT_FOR_BACKEND: int = 1
 FLASK_SERVER_PORT: int = 5000
 MILIS_PER_SECOND = 1000
+BYTES_PER_KB = 1024
+KB_PER_MB = 1024
+
+# Logging
+DEFAULT_LOG_LEVEL = logging.NOTSET
+DEFAULT_LOG_DATE_FORMAT = "%m/%d/%Y %I:%M:%S %p"
+DEFAULT_LOG_FORMAT = "%(filename)s:%(lineno)s %(levelname)s:%(message)s"
+DEFAULT_LOG_SIZE_BYTES = 1024 * KB_PER_MB * 64  # MB
 
 # Controls not meant to be hooked up to GUI. Just for dev/debug:
 ENABLE_TIMEIT_PRINTS = False

@@ -1,7 +1,11 @@
+import logging
 import os
+import shutil
+import sys
 
 from alembic import command
 from alembic.config import Config
+from concurrent_log_handler import ConcurrentRotatingFileHandler
 from flask import Flask
 
 from application.common import logger, constants, toolbox
@@ -65,12 +69,53 @@ def _handle_migrations(flask_app: Flask):
             command.upgrade(alembic_cfg, "head")
 
 
-def create_app(config=None):
-    logger.info("Begin initialization.")
+def _handle_logging(logger_level=constants.DEFAULT_LOG_LEVEL):
+    """Update log configuration."""
+    # Remove all handlers associated with the root logger object.
+    for handler in logging.root.handlers[:]:
+        logging.root.removeHandler(handler)
 
+    log_file_folder = os.path.join(
+        constants.DEFAULT_INSTALL_PATH,
+        "logs",
+    )
+
+    # Remove old log directory.
+    if os.path.exists(log_file_folder):
+        shutil.rmtree(log_file_folder)
+
+    # Create the directory
+    os.makedirs(log_file_folder, exist_ok=True)
+
+    log_file_full_path = os.path.join(log_file_folder, "agent-smith-log.txt")
+
+    # Reconfigure logging again, this time with a file in addition to stdout.
+    formatter = logging.Formatter(constants.DEFAULT_LOG_FORMAT)
+
+    # File handler
+    file_handler = ConcurrentRotatingFileHandler(
+        log_file_full_path,
+        mode="a",
+        encoding="utf-8",
+        maxBytes=constants.DEFAULT_LOG_SIZE_BYTES,
+        backupCount=10,
+    )
+    file_handler.setLevel(logger_level)
+    file_handler.setFormatter(formatter)
+
+    # Also route to stdout
+    stdout_handler = logging.StreamHandler(sys.stdout)
+    stdout_handler.setLevel(logger_level)
+    stdout_handler.setFormatter(formatter)
+
+    logger.addHandler(stdout_handler)
+    logger.addHandler(file_handler)
+
+
+def create_app(config=None):
     if config is None:
         config = DefaultConfig("python")
-        logger.critical("WARNING. Missing Configuration. Initializing with default...")
+        logger.warning("WARNING. Missing Configuration. Initializing with default...")
 
     flask_app = Flask(
         constants.APP_NAME,
@@ -132,6 +177,8 @@ def create_app(config=None):
 
         # Run other startup checks.
         _startup_checks()
+
+    _handle_logging(logger_level=config.LOG_LEVEL)
 
     logger.info(f"{constants.APP_NAME} has been successfully created.")
 
