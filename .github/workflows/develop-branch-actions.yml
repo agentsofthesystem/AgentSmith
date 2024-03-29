@@ -45,6 +45,11 @@ jobs:
         exclude: "tests/*,doc/*,scripts/*"
         max-line-length: "100"
 
+    - name: pytest
+      run: |
+        coverage run -m pytest
+        coverage report --fail-under 50
+
   build_develop_windows_exe:
 
     runs-on: windows-latest
