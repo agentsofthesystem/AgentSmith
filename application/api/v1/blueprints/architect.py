@@ -49,7 +49,7 @@ def agent_info():
             game["update_required"] = "ERROR"
             logger.error(
                 f"Unable to retrieve game info for game_steam_id: {game_steam_id}",
-                exc_info=True
+                exc_info=True,
             )
 
     info: dict = platform_dict
