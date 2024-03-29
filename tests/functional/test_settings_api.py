@@ -1,6 +1,6 @@
 import os
 
-from application.source.models.settings import Settings
+from application.models.settings import Settings
 
 
 class TestAppSettingsApi:
