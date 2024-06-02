@@ -6,7 +6,9 @@ def read_dir(dir: str):
 
     for file in os.listdir(dir):
         if file.endswith(".acf"):
-            acf = read_acf(dir + file)
+            # acf = read_dir(dir)
+            acf = read_acf(os.path.join(dir, file))
+            # acf = read_acf(dir + file)
             steamapps[acf["appid"]] = acf
 
     return steamapps

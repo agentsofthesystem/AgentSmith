@@ -1,5 +1,6 @@
 # Hidden folder/file types.
 .coverage
+htmlcov/
 venv/*
 .env
 *__pycache__*
