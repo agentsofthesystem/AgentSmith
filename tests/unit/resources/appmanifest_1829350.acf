@@ -1,0 +1,43 @@
+"AppState"
+{
+	"appid"		"1829350"
+	"Universe"		"1"
+	"LauncherPath"		"C:\\AgentSmith\\steam\\steamcmd.exe"
+	"name"		"V Rising Dedicated Server"
+	"StateFlags"		"4"
+	"installdir"		"VRisingDedicatedServer"
+	"LastUpdated"		"1710615232"
+	"LastPlayed"		"0"
+	"SizeOnDisk"		"1453745726"
+	"StagingSize"		"0"
+	"buildid"		"12520643"
+	"LastOwner"		"76561200388861161"
+	"UpdateResult"		"0"
+	"BytesToDownload"		"213631952"
+	"BytesDownloaded"		"213631952"
+	"BytesToStage"		"1453745726"
+	"BytesStaged"		"1453745726"
+	"TargetBuildID"		"12520643"
+	"AutoUpdateBehavior"		"0"
+	"AllowOtherDownloadsWhileRunning"		"0"
+	"ScheduledAutoUpdate"		"0"
+	"InstalledDepots"
+	{
+		"1004"
+		{
+			"manifest"		"1923798258558304932"
+			"size"		"44194776"
+		}
+		"1829351"
+		{
+			"manifest"		"5850011680124575304"
+			"size"		"1409550950"
+		}
+	}
+	"UserConfig"
+	{
+	}
+	"MountedConfig"
+	{
+	}
+}

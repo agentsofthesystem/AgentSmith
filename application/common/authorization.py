@@ -7,6 +7,18 @@ from application.models.settings import Settings
 from application.models.tokens import Tokens
 
 
+def _get_token(bearer_token: str) -> Tokens:
+    token_lookup = Tokens.query.filter_by(
+        token_active=True, token_value=bearer_token
+    ).first()
+    return token_lookup
+
+
+def _get_setting(setting_name: str) -> Settings:
+    setting_lookup = Settings.query.filter_by(setting_name=setting_name).first()
+    return setting_lookup
+
+
 def _verify_bearer_token(request: Request) -> int:
     """This is the bearer token gauntlet.
     The requests only goal is to get through all of the checks.
@@ -25,17 +37,13 @@ def _verify_bearer_token(request: Request) -> int:
     bearer_token = auth.split("Bearer")[-1].strip()
 
     # Make sure it's there first...
-    token_lookup = Tokens.query.filter_by(
-        token_active=True, token_value=bearer_token
-    ).first()
+    token_lookup = _get_token(bearer_token)
 
     if token_lookup is None:
         return 403
 
     # Next decode this bad thing...
-    secret_obj = Settings.query.filter_by(
-        setting_name=constants.SETTING_NAME_APP_SECRET
-    ).first()
+    secret_obj = _get_setting(constants.SETTING_NAME_APP_SECRET)
 
     try:
         decoded_token = jwt.decode(
