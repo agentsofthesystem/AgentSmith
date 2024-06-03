@@ -11,9 +11,9 @@ from application.extensions import DATABASE
 from application.models.games import Games
 
 
-class VrisingGame(BaseGame):
+class Satisfactory(BaseGame):
     def __init__(self, defaults_dict: dict = {}) -> None:
-        super(VrisingGame, self).__init__(defaults_dict)
+        super(Satisfactory, self).__init__(defaults_dict)
 
         self._game_name = "satisfactory"
         self._game_pretty_name = "Satisfactory"
