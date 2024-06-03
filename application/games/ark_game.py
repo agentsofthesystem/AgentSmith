@@ -11,44 +11,31 @@ from application.extensions import DATABASE
 from application.models.games import Games
 
 
-class Satisfactory(BaseGame):
+class ArkGame(BaseGame):
     def __init__(self, defaults_dict: dict = {}) -> None:
-        super(Satisfactory, self).__init__(defaults_dict)
+        super(ArkGame, self).__init__(defaults_dict)
 
-        self._game_name = "satisfactory"
-        self._game_pretty_name = "Satisfactory"
-        self._game_executable = "FactoryServer.exe"
-        self._game_steam_id = "1690800"
-        self._game_info_url = "https://satisfactory.fandom.com/wiki/Dedicated_servers"
+        self._game_name = "ark"
+        self._game_pretty_name = "Ark: Survival Evolved"
+        self._game_executable = "ShooterGameServer.exe"
+        self._game_steam_id = "376030"
+        self._game_info_url = "https://ark.fandom.com/wiki/Dedicated_server_setup"
+
+        """
+        Reference:
+
+        start ShooterGameServer.exe TheIsland?listen?SessionName=<server_name>
+        ?ServerPassword=<join_password>
+        ?ServerAdminPassword=<admin_password>?Port=<port>
+        ?QueryPort=<query_port>?MaxPlayers=<max_players>
+        exit
+        """
 
         # Add Args here, can update later.
-        # Default is 2456
         self._add_argument(
             GameArgument(
-                "-multihome",
-                value="0.0.0.0",
-                required=True,
-                use_quotes=False,
-                use_equals=True,
-                is_permanent=True,
-            )
-        )
-
-        self._add_argument(
-            GameArgument(
-                "-Port",
-                value=15002,
-                required=True,
-                use_quotes=False,
-                use_equals=True,
-                is_permanent=True,
-            )
-        )
-
-        self._add_argument(
-            GameArgument(
-                "-ServerQueryPort",
-                value=15000,
+                "server_name",
+                value="MyArkServer",
                 required=True,
                 use_quotes=False,
                 is_permanent=True,
@@ -57,42 +44,46 @@ class Satisfactory(BaseGame):
 
         self._add_argument(
             GameArgument(
-                "-BeaconPort",
-                value=15001,
+                "join_password",
+                value="abc123",
                 required=True,
-                use_quotes=False,
-                use_equals=True,
                 is_permanent=True,
             )
         )
 
         self._add_argument(
             GameArgument(
-                "-log",
-                value=" ",
-                required=False,
-                use_quotes=False,
-                is_permanent=False,
+                "admin_password",
+                value="abc123",
+                required=True,
+                is_permanent=True,
             )
         )
 
         self._add_argument(
             GameArgument(
-                "-unattended",
-                value=" ",
-                required=False,
-                use_quotes=False,
-                is_permanent=False,
+                "port",
+                value=7777,
+                required=True,
+                is_permanent=True,
             )
         )
 
         self._add_argument(
             GameArgument(
-                "-DisablePacketRouting",
-                value=" ",
-                required=False,
-                use_quotes=False,
-                is_permanent=False,
+                "query_port",
+                value=27015,
+                required=True,
+                is_permanent=True,
+            )
+        )
+
+        self._add_argument(
+            GameArgument(
+                "max_players",
+                value=4,
+                required=True,
+                is_permanent=True,
             )
         )
 
@@ -100,16 +91,28 @@ class Satisfactory(BaseGame):
         # Run base class checks
         super().startup()
 
-        # Format command string.
-        command = self._get_command_str(args_only=False)
+        # Get individual arguments for this game
+        arguments = self._get_argument_dict()
+
+        server_name = arguments["server_name"]._value
+        join_password = arguments["join_password"]._value
+        admin_password = arguments["admin_password"]._value
+        port = arguments["port"]._value
+        query_port = arguments["query_port"]._value
+        max_players = arguments["max_players"]._value
 
         # Create a formatted batch file.
         env = Environment(loader=FileSystemLoader(get_resources_dir(__file__)))
-        template = env.get_template("start_satisfactory_server_template.bat.j2")
+        template = env.get_template("start_ark_server_template.bat.j2")
         output_from_parsed_template = template.render(
             GAME_STEAM_ID=self._game_steam_id,
             GAME_NAME=self._game_name,
-            GAME_COMMAND=command,
+            server_name=server_name,
+            join_password=join_password,
+            admin_password=admin_password,
+            port=port,
+            query_port=query_port,
+            max_players=max_players,
         )
 
         # Print the formatted jinja
@@ -126,6 +129,10 @@ class Satisfactory(BaseGame):
             game_install_dir, constants.STARTUP_BATCH_FILE_NAME
         )
 
+        game_working_dir = os.path.join(
+            game_install_dir, "ShooterGame", "Binaries", "Win64"
+        )
+
         # If file exists, remove it.
         if os.path.exists(full_path_startup_script):
             os.remove(full_path_startup_script)
@@ -136,7 +143,7 @@ class Satisfactory(BaseGame):
 
         # Call the batch file on another process as to not block this one.
         command = f'START /MIN CMD.EXE /C "{full_path_startup_script}"'
-        result = self._run_game(command, game_install_dir)
+        result = self._run_game(command, game_working_dir)
 
         time.sleep(1)
 
@@ -168,10 +175,3 @@ class Satisfactory(BaseGame):
             update_dict = {"game_pid": None}
             game_qry.update(update_dict)
             DATABASE.session.commit()
-
-        process_2 = _get_proc_by_name("UnrealServer-Win64-Shipping.exe")
-
-        if process:
-            logger.info(process_2)
-            process_2.terminate()
-            process_2.wait()

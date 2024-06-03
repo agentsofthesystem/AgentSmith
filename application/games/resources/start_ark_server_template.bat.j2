@@ -1,0 +1,6 @@
+@echo off
+set SteamAppId=346110
+echo "Starting {{GAME_NAME}} Dedicated Server - PRESS CTRL-C to exit"
+
+start ShooterGameServer.exe TheIsland?listen?SessionName={{server_name}}?ServerPassword={{join_password}}?ServerAdminPassword={{admin_password}}?Port={{port}}?QueryPort={{query_port}}?MaxPlayers={{max_players}} -server -log
+exit
