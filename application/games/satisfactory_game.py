@@ -15,48 +15,58 @@ class VrisingGame(BaseGame):
     def __init__(self, defaults_dict: dict = {}) -> None:
         super(VrisingGame, self).__init__(defaults_dict)
 
-        self._game_name = "valheim"
-        self._game_pretty_name = "Valheim"
-        self._game_executable = "valheim_server.exe"
-        self._game_steam_id = "896660"
-        self._game_info_url = (
-            "https://valheim.com/support/a-guide-to-dedicated-servers/"
-        )
+        self._game_name = "satisfactory"
+        self._game_pretty_name = "Satisfactory"
+        self._game_executable = "FactoryServer.exe"
+        self._game_steam_id = "1690800"
+        self._game_info_url = "https://satisfactory.fandom.com/wiki/Dedicated_servers"
 
-        if self._game_default_install_dir:
-            default_persistent_data_path = os.path.join(
-                self._game_default_install_dir,
-                constants.GAME_INSTALL_FOLDER,
-                self._game_name,
-                "saves",
-            )
-            default_log_path = os.path.join(
-                self._game_default_install_dir,
-                constants.GAME_INSTALL_FOLDER,
-                self._game_name,
-                "logs",
-                "valheim.txt",
-            )
-        else:
-            default_persistent_data_path = None
-            default_log_path = None
+        # if self._game_default_install_dir:
+        #     default_persistent_data_path = os.path.join(
+        #         self._game_default_install_dir,
+        #         constants.GAME_INSTALL_FOLDER,
+        #         self._game_name,
+        #         "saves",
+        #     )
+        #     default_log_path = os.path.join(
+        #         self._game_default_install_dir,
+        #         constants.GAME_INSTALL_FOLDER,
+        #         self._game_name,
+        #         "logs",
+        #         "valheim.txt",
+        #     )
+        # else:
+        #     default_persistent_data_path = None
+        #     default_log_path = None
 
         # Add Args here, can update later.
         # Default is 2456
         self._add_argument(
             GameArgument(
-                "-name",
-                value="Valheim",
+                "-multihome",
+                value="0.0.0.0",
                 required=True,
-                use_quotes=True,
+                use_quotes=False,
+                use_equals=True,
                 is_permanent=True,
             )
         )
 
         self._add_argument(
             GameArgument(
-                "-port",
-                value=2456,
+                "-Port",
+                value=15002,
+                required=True,
+                use_quotes=False,
+                use_equals=True,
+                is_permanent=True,
+            )
+        )
+
+        self._add_argument(
+            GameArgument(
+                "-ServerQueryPort",
+                value=15000,
                 required=True,
                 use_quotes=False,
                 is_permanent=True,
@@ -65,99 +75,18 @@ class VrisingGame(BaseGame):
 
         self._add_argument(
             GameArgument(
-                "-world",
-                value="badlands",
-                required=True,
-                use_quotes=True,
-                is_permanent=True,
-            )
-        )
-
-        self._add_argument(
-            GameArgument(
-                "-password",
-                value="abc123",
-                required=True,
-                use_quotes=True,
-                is_permanent=True,
-            )
-        )
-
-        self._add_argument(
-            GameArgument(
-                "-savedir",
-                value=default_persistent_data_path,
-                required=True,
-                use_quotes=True,
-                is_permanent=True,
-                file_mode=constants.FileModes.DIRECTORY.value,
-            )
-        )
-
-        self._add_argument(
-            GameArgument(
-                "-public",
-                value="0",
+                "-BeaconPort",
+                value=15001,
                 required=True,
                 use_quotes=False,
+                use_equals=True,
                 is_permanent=True,
             )
         )
 
         self._add_argument(
             GameArgument(
-                "-logFile",
-                value=default_log_path,
-                required=True,
-                use_quotes=True,
-                is_permanent=True,
-                file_mode=constants.FileModes.FILE.value,
-            )
-        )
-
-        self._add_argument(
-            GameArgument(
-                "-saveinterval",
-                value="1800",
-                required=True,
-                use_quotes=False,
-                is_permanent=True,
-            )
-        )
-
-        self._add_argument(
-            GameArgument(
-                "-backups",
-                value="4",
-                required=True,
-                use_quotes=False,
-                is_permanent=True,
-            )
-        )
-
-        self._add_argument(
-            GameArgument(
-                "-backupshort",
-                value="7200",
-                required=True,
-                use_quotes=False,
-                is_permanent=True,
-            )
-        )
-
-        self._add_argument(
-            GameArgument(
-                "-backuplong",
-                value="43200",
-                required=True,
-                use_quotes=False,
-                is_permanent=True,
-            )
-        )
-
-        self._add_argument(
-            GameArgument(
-                "-crossplay",
+                "-log",
                 value=" ",
                 required=False,
                 use_quotes=False,
@@ -167,11 +96,21 @@ class VrisingGame(BaseGame):
 
         self._add_argument(
             GameArgument(
-                "-preset",
-                value="normal",
-                required=True,
+                "-unattended",
+                value=" ",
+                required=False,
                 use_quotes=False,
-                is_permanent=True,
+                is_permanent=False,
+            )
+        )
+
+        self._add_argument(
+            GameArgument(
+                "-DisablePacketRouting",
+                value=" ",
+                required=False,
+                use_quotes=False,
+                is_permanent=False,
             )
         )
 
@@ -180,15 +119,15 @@ class VrisingGame(BaseGame):
         super().startup()
 
         # Format command string.
-        command_args = self._get_command_str(args_only=True)
+        command = self._get_command_str(args_only=False)
 
         # Create a formatted batch file.
         env = Environment(loader=FileSystemLoader(get_resources_dir(__file__)))
-        template = env.get_template("start_valheim_server_template.bat.j2")
+        template = env.get_template("start_satisfactory_server_template.bat.j2")
         output_from_parsed_template = template.render(
             GAME_STEAM_ID=self._game_steam_id,
             GAME_NAME=self._game_name,
-            GAME_ARGUMENTS=command_args,
+            GAME_COMMAND=command,
         )
 
         # Print the formatted jinja
@@ -247,3 +186,10 @@ class VrisingGame(BaseGame):
             update_dict = {"game_pid": None}
             game_qry.update(update_dict)
             DATABASE.session.commit()
+
+        process_2 = _get_proc_by_name("UnrealServer-Win64-Shipping.exe")
+
+        if process:
+            logger.info(process_2)
+            process_2.terminate()
+            process_2.wait()
