@@ -1,0 +1,6 @@
+[run]
+omit =
+        *__init__*
+        tests/*
+        application/debugger.py
+        application/alembic/*

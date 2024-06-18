@@ -40,10 +40,14 @@ class NginxWidget(QWidget):
         self._nginx_enable_checkbox: QCheckBox = None
         self._nginx_hostname: QLineEdit = None
         self._nginx_port: QLineEdit = None
+        self._nginx_port_save_btn: QPushButton = None
         self._regenerate_certificate: QPushButton = None
         self._view_public_cert: QPushButton = None
 
         self._viewer_window = NginxCertViewer(self._clipboard, self._nginx_manager)
+
+        self.MIN_PORT_NUMBER = 10000
+        self.MAX_PORT_NUMBER = 65535
 
         self.init_ui()
 
@@ -97,10 +101,13 @@ class NginxWidget(QWidget):
         h3_layout = QHBoxLayout()
         label = QLabel("Nginx Port: ")
         self._nginx_port = QLineEdit(nginx_proxy_port)
+        self._nginx_port_save_btn = QPushButton("Save")
 
-        self._nginx_port.textChanged.connect(self._handle_nginx_port_edit)
+        self._nginx_port_save_btn.clicked.connect(self._handle_nginx_port_save_btn)
+
         h3_layout.addWidget(label)
         h3_layout.addWidget(self._nginx_port)
+        h3_layout.addWidget(self._nginx_port_save_btn)
 
         self._regenerate_certificate = QPushButton("Reset SSL Certificate")
         self._regenerate_certificate.clicked.connect(self._handle_regen_button)
@@ -159,16 +166,30 @@ class NginxWidget(QWidget):
             constants.SETTING_NGINX_PROXY_HOSTNAME, text
         )
 
-    def _handle_nginx_port_edit(self, text):
+    def _handle_nginx_port_save_btn(self):
+        text = self._nginx_port.text()
         num_chars = len(text)
 
-        if text == "5000":
+        if int(text) <= self.MIN_PORT_NUMBER:
             message = QMessageBox()
-            message.setText("The port 5000 is a reserved port. Please use another one.")
+            message.setText("Please use a port number greater than 10000.")
             message.exec()
             return
 
-        if num_chars >= 4:
+        if int(text) > self.MAX_PORT_NUMBER:
+            message = QMessageBox()
+            message.setText("Please use a port number less than 65535.")
+            message.exec()
+            return
+
+        # Make sure every character is a unicode digit.
+        if len(text) > len(set(text)):
+            message = QMessageBox()
+            message.setText("Please make sure all digits in the port are unique.")
+            message.exec()
+            return
+
+        if num_chars >= 5:
             self._client.app.update_setting_by_name(
                 constants.SETTING_NGINX_PROXY_PORT, text
             )

@@ -146,12 +146,15 @@ class BaseGame:
     def _get_argument_dict(self) -> []:
         return self._game_args
 
-    def _get_command_str(self) -> str:
+    def _get_command_str(self, args_only=False) -> str:
         arg_string = ""
         for _, arg in self._game_args.items():
             arg_string += str(arg) + " "
 
-        return f"{self._game_executable} {arg_string}"
+        if args_only:
+            return arg_string
+        else:
+            return f"{self._game_executable} {arg_string}"
 
     def _rebuild_arguments_dict(self) -> None:
         game_qry = Games.query.filter_by(game_name=self._game_name)

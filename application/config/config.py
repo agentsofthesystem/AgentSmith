@@ -24,7 +24,7 @@ class DefaultConfig:
 
     # NGINX Settings
     NGINX_DEFAULT_HOSTNAME = "localhost"
-    NGINX_DEFAULT_PORT = "5312"
+    NGINX_DEFAULT_PORT = "53128"
     NGINX_DEFAULT_ENABLED = True
 
     # Designate where the database file is stored based on platform.

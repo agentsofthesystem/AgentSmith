@@ -186,7 +186,7 @@ class GameArgumentsApi(MethodView):
     @authorization_required
     def get(self, game_name=None, game_arg_id=None, argument_name=None):
         page = request.args.get("page", 1, type=int)
-        per_page = min(request.args.get("per_page", 10, type=int), 10000)
+        per_page = min(request.args.get("per_page", 1000, type=int), 10000)
 
         if game_arg_id:
             qry = self._get_argument(game_arg_id)
