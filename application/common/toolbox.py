@@ -1,6 +1,7 @@
 import os
 import inspect
 import importlib.util
+import platform
 import psutil
 import sys
 
@@ -179,3 +180,11 @@ def update_game_state(game_data: dict, new_state: GameStates) -> True:
         update_success = False
 
     return update_success
+
+
+@staticmethod
+def _correct_path(path_value):
+    fixed_path = ""
+    if platform.system() == "Windows":
+        fixed_path = path_value.replace("/", "\\")
+    return fixed_path

@@ -1,8 +1,7 @@
 alembic
 concurrent-log-handler
-debugpy
-flask
-Flask-SQLAlchemy
+flask==3.0.0
+Flask-SQLAlchemy==3.1.1
 gunicorn
 oauthlib
 psutil

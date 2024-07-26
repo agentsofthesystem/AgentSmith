@@ -27,14 +27,23 @@ class GameArgumentsWidget(QWidget):
     ARG_ACTION_COL = 3
 
     def __init__(
-        self, client: Operator, arg_data: dict, parent: QWidget, disable_cols: list = []
+        self,
+        client: Operator,
+        arg_data: dict,
+        parent: QWidget,
+        disable_cols: list = [],
+        built_in_args=None,
     ) -> None:
         super(QWidget, self).__init__(parent)
 
         self._parent = parent
         self._client = client
         self._layout = QVBoxLayout()
+        # Args that the game has built in + args the user added.
         self._arg_data = arg_data
+        # Args that the game has built in
+        self._built_in_args = built_in_args
+        # Args on this widget
         self._args_dict: dict = {}
         self._disable_cols = disable_cols
 
@@ -131,9 +140,21 @@ class GameArgumentsWidget(QWidget):
                 elif c == self.ARG_REQUIRED_COL:
                     if "Required" in self._disable_cols:
                         continue
-                    required_cb = QCheckBox()
-                    required_cb.setChecked(True if arg_required == 1 else False)
-                    self._table.setCellWidget(r, c, required_cb)
+                    # If provided built in args list... check if arg is in that list.
+                    if self._built_in_args:
+                        required_cb = QCheckBox()
+                        required_cb.setChecked(True if arg_required == 1 else False)
+                        self._table.setCellWidget(r, c, required_cb)
+
+                        # disable the checkbox if the arg isn't in that place.
+                        if arg_name not in self._built_in_args:
+                            required_cb.setDisabled(True)
+
+                    else:
+                        # otherwise... Just add a checkbox
+                        required_cb = QCheckBox()
+                        required_cb.setChecked(True if arg_required == 1 else False)
+                        self._table.setCellWidget(r, c, required_cb)
                 elif c == self.ARG_ACTION_COL:
                     if "Actions" in self._disable_cols:
                         continue

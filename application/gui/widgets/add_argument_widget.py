@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import (
 
 from PyQt5.QtCore import Qt
 
+from application.common import toolbox
 from application.common.constants import FileModes
 from application.common.decorators import timeit
 from application.gui.widgets.file_select_widget import FileSelectWidget
@@ -33,13 +34,16 @@ class AddArgumentWidget(QWidget):
 
         self._arg_name_edit: QLineEdit = None
         self._arg_value_edit: QWidget = None
-        self._arg_required: QCheckBox = None
         self._arg_file_mode_edit: QComboBox = None
         self._arg_equals_edit: QCheckBox = None
         self._arg_quotes_edit: QCheckBox = None
 
         self._submit_btn: QPushButton = QPushButton("Submit")
         self._reset_btn: QPushButton = QPushButton("Reset")
+
+    def closeEvent(self, event):
+        if self._parent:
+            self._parent.start_timer()
 
     def init_ui(self, game_name: str):
         self._layout.setAlignment(Qt.AlignTop)
@@ -48,7 +52,6 @@ class AddArgumentWidget(QWidget):
 
         self._arg_name_edit = QLineEdit()
         self._arg_value_edit = QLineEdit()
-        self._arg_required = QCheckBox()
         self._arg_file_mode_edit = QComboBox()
         self._arg_equals_edit = QCheckBox()
         self._arg_quotes_edit = QCheckBox()
@@ -63,9 +66,6 @@ class AddArgumentWidget(QWidget):
 
         self._layout.addWidget(QLabel("Argument Value: "), 2, 0)
         self._layout.addWidget(self._arg_value_edit, 2, 1)
-
-        self._layout.addWidget(QLabel("Required? "), 3, 0)
-        self._layout.addWidget(self._arg_required, 3, 1)
 
         self._layout.addWidget(QLabel("File Mode Select: "), 4, 0)
         self._layout.addWidget(self._arg_file_mode_edit, 4, 1)
@@ -89,6 +89,19 @@ class AddArgumentWidget(QWidget):
 
         self._initialized = True
 
+        self.clear()
+
+    def clear(self):
+        self._arg_name_edit.setText("")
+
+        if isinstance(self._arg_value_edit, FileSelectWidget):
+            self._arg_value_edit.get_line_edit().setText("")
+        else:
+            self._arg_value_edit.setText("")
+        self._arg_file_mode_edit.setCurrentIndex(0)
+        self._arg_equals_edit.setChecked(False)
+        self._arg_quotes_edit.setChecked(False)
+
     def update(self, game_name: str):
         self._game_name = game_name
 
@@ -110,13 +123,16 @@ class AddArgumentWidget(QWidget):
         self.adjustSize()
 
     def _submit_argument(self, game_name: str) -> None:
+        # For error messages
+        message = QMessageBox()
+
         # Line edit
         arg_name = self._arg_name_edit.text()
 
         # combo
         file_mode = self._arg_file_mode_edit.currentIndex()
 
-        arg_required = self._arg_required.isChecked()
+        arg_required = False  # User may never add a new required argument.
         arg_equals = self._arg_equals_edit.isChecked()
         arg_quotes = self._arg_quotes_edit.isChecked()
 
@@ -126,6 +142,15 @@ class AddArgumentWidget(QWidget):
             file_mode == FileModes.FILE.value or file_mode == FileModes.DIRECTORY.value
         ):
             arg_value = self._arg_value_edit.get_line_edit().text()
+            arg_value = toolbox._correct_path(arg_value)
+
+        # Check if all args are empty.
+        if arg_value == "" or arg_name == "":
+            message.setText("Error: Cannot create an empty argument!")
+            message.exec()
+            self.clear()
+            self._parent.start_timer()
+            return
 
         argument_id = self._client.game.create_argument(
             game_name,
@@ -138,11 +163,13 @@ class AddArgumentWidget(QWidget):
             use_quotes=arg_quotes,
         )
 
-        message = QMessageBox()
         if argument_id == -1:
             message.setText("New Arg: There was an error creating the argument.")
         else:
-            message.setText("Success!")
+            message.setText("Success! Please wait for user interface to update.")
             self.hide()
+            self._parent._refresh_on_timer()
+            self._parent.start_timer()
+            self.clear()
 
         message.exec()

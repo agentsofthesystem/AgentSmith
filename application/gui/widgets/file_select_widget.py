@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QFont, QFontMetrics
 
+from application.common import toolbox
 from application.common.constants import FileModes
 from operator_client import Operator
 
@@ -74,7 +75,7 @@ class FileSelectWidget(QWidget):
             )
 
         if path:
-            self._path_line_edit.setText(path)
+            self._path_line_edit.setText(toolbox._correct_path(path))
 
     def _resize_to_content(self):
         text = self._path_line_edit.text()
