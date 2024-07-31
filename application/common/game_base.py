@@ -26,6 +26,10 @@ class BaseGame:
         self._defaults = defaults_dict
         self._game_default_install_dir = None
 
+        # Whether or not users are alloed to add additional args.
+        # Allowed by default. Game implementations will have to disable it.
+        self._allow_user_args = True
+
         if constants.SETTING_NAME_DEFAULT_PATH in self._defaults:
             self._game_default_install_dir = defaults_dict[
                 constants.SETTING_NAME_DEFAULT_PATH
