@@ -1,6 +1,7 @@
 # TODO - Split requirements.txt file up.
 black
 coverage
+debugpy
 flake8
 pytest
 pytest-mock

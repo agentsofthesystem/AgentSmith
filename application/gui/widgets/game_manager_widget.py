@@ -23,7 +23,9 @@ from operator_client import Operator
 
 
 class GameManagerWidget(QWidget):
-    REFRESH_INTERVAL = 15 * constants.MILIS_PER_SECOND
+    # The lower this number ,the faster it updates.
+    REFRESH_INTERVAL = 6 * constants.MILIS_PER_SECOND
+    # Update at this faster interval in certain situations.
     FAST_INTERVAL = 1 * constants.MILIS_PER_SECOND
 
     def __init__(self, client: Operator, globals, parent: QWidget) -> None:
@@ -39,6 +41,8 @@ class GameManagerWidget(QWidget):
         self._current_game_frame: QFrame = None
         self._add_arguments_widget: AddArgumentWidget = globals._add_arguments_widget
         self._current_arg_widget: GameArgumentsWidget = None
+
+        self._add_arguments_widget._parent = self
 
         # Primitives
         self._installed_supported_games: dict = {}
@@ -136,7 +140,7 @@ class GameManagerWidget(QWidget):
 
         installed_supported_games = list(self._installed_supported_games.keys())
 
-        # Init routine uses this fucntion. Don't want to replace the widget the "first" time.
+        # Init routine uses this function. Don't want to replace the widget the "first" time.
         if len(installed_supported_games) > 0:
             new_game_frame = self._build_game_frame(installed_supported_games[0])
 
@@ -302,12 +306,12 @@ class GameManagerWidget(QWidget):
         game_frame_main_layout.addLayout(h_layout_all_game_info)
 
         # Game Arguments
-
         game_args_label = QLabel("Game Arguments:", game_frame)
         game_args_label.setStyleSheet("text-decoration: underline;")
+        built_in_args = game_object._get_argument_list()
         game_args = self._client.game.get_argument_by_game_name(game_object._game_name)
         self._current_arg_widget = GameArgumentsWidget(
-            self._client, game_args, game_frame
+            self._client, game_args, game_frame, built_in_args=built_in_args
         )
 
         game_frame_main_layout.addWidget(game_args_label)
@@ -315,6 +319,11 @@ class GameManagerWidget(QWidget):
 
         # Add argument button
         self._add_arg_btn = QPushButton("Add Argument")
+
+        # Disable this button if the game server doesn't allow user to add arguments.
+        if not game_object._allow_user_args:
+            self._add_arg_btn.setDisabled(True)
+
         game_frame_main_layout.addWidget(self._add_arg_btn)
         self._add_arg_btn.clicked.connect(
             lambda: self._show_add_argument_widget(self._current_game_name)
@@ -398,6 +407,7 @@ class GameManagerWidget(QWidget):
             self._add_arguments_widget.init_ui(game_name)
         else:
             self._add_arguments_widget.update(game_name)
+        self.stop_timer()
         self._add_arguments_widget.show()
 
     def _startup_game(self, game_name):

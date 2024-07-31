@@ -53,6 +53,9 @@ class SevenDaysToDieGame(BaseGame):
             )
         )
 
+        # The user may not add additional arguments for this game server.
+        self._allow_user_args = False
+
     def startup(self) -> None:
         # Run base class checks
         # Run base class checks
