@@ -16,6 +16,9 @@ from application.extensions import DATABASE
 
 
 class SteamUpdateManager:
+    STATUS_SUCCESS = "success"
+    STATUS_FAILED = "failed"
+
     def __init__(self) -> None:
         self._base_format_url = "https://api.steamcmd.net/v1/info/{STEAM_ID}"
 
@@ -36,12 +39,16 @@ class SteamUpdateManager:
 
         json_data = response.json()
         data = json_data["data"]
+        status = json_data["status"]
 
-        app_data = data[str(steam_id)]
-        depots = app_data["depots"]
-        branches = depots["branches"]
-        inquery_branch = branches[branch]
-        build_id = inquery_branch["buildid"]
+        if status == self.STATUS_SUCCESS:
+            app_data = data[str(steam_id)]
+            depots = app_data["depots"]
+            branches = depots["branches"]
+            inquery_branch = branches[branch]
+            build_id = inquery_branch["buildid"]
+        else:
+            build_id = -1
 
         return int(build_id)
 
@@ -49,22 +56,25 @@ class SteamUpdateManager:
         self, current_build_id: int, current_build_branch: int, current_steam_id: int
     ) -> dict:
         update_required = False
+        detected_error = False
 
         published_build_id = self._get_build_id(
             current_steam_id, branch=current_build_branch
         )
 
-        if published_build_id is None:
+        if published_build_id is None or published_build_id == -1:
             logger.critical(
                 "SteamUpdateManager: Unable to determine if game requries update."
             )
-            return None
+            detected_error = True
+            update_required = False
 
         if current_build_id < published_build_id:
             update_required = True
 
         output_dict = {
             "is_required": update_required,
+            "error": detected_error,
             "current_version": current_build_id,
             "target_version": published_build_id,
         }
@@ -245,11 +255,17 @@ class SteamManager:
         stdout = stdout.decode("utf-8")
         stderr = stderr.decode("utf-8")
 
+        logger.debug(
+            "_install_gamefiles: Update process.communicate has run... output:"
+        )
+        logger.debug(stdout)
+        logger.debug(stderr)
+        logger.debug("------------------------")
+
         success_msg = f"Success! App '{gameid}' fully installed."
 
         if success_msg in stdout:
             logger.info("The game server successfully installed.")
-            logger.debug(stdout)
             install_sucesss = True
         else:
             logger.error("Error: The game server did not install properly.")

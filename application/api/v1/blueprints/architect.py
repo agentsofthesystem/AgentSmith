@@ -45,6 +45,7 @@ def agent_info():
                 game_steam_id,
             )
             game["update_required"] = update_dict["is_required"]
+            game["update_required_error"] = update_dict["error"]
         except Exception:
             game["update_required"] = "ERROR"
             logger.error(
