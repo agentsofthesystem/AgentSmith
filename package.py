@@ -16,6 +16,7 @@ def main(debug=False):
         "--onefile",
         "--noconsole",
         "--icon=./application/gui/resources/agent-black.ico",
+        f"--add-data=./application/static/*{sep}./application/static",  # noqa: E501
         f"--add-data=./application/config/nginx/*{sep}./application/config/nginx",  # noqa: E501
         f"--add-data=./application/gui/resources/agent-white.png{sep}u./application/gui/resources",  # noqa: E501
         f"--add-data=./application/gui/resources/agent-green.png{sep}./application/gui/resources",  # noqa: E501
