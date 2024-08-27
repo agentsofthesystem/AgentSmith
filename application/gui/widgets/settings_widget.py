@@ -11,6 +11,7 @@ from PyQt5.QtCore import Qt
 from application.common import constants, logger
 from application.common.decorators import timeit
 from application.gui.globals import GuiGlobals
+from application.gui.widgets.about_widget import AboutWidget
 from application.gui.widgets.file_select_widget import FileSelectWidget
 from application.gui.widgets.nginx_widget import NginxWidget
 from application.gui.widgets.tokens_widget import TokensWidget
@@ -26,6 +27,8 @@ class SettingsWidget(QWidget):
         self._client = client
         self._globals = globals
         self._initialized = False
+
+        self._about_widget = AboutWidget(self._client, self)
 
         self._token_widget = TokensWidget(
             self._client,
@@ -65,6 +68,7 @@ class SettingsWidget(QWidget):
         self.tab1 = QWidget()
         self.tab2 = QWidget()
         self.tab3 = QWidget()
+        self.tab4 = QWidget()
 
         tab1_layout = QVBoxLayout()
         tab1_layout.addLayout(self._create_steam_path_setting(steam_install_dir))
@@ -85,9 +89,14 @@ class SettingsWidget(QWidget):
         tab3_layout.addWidget(self._nginx_widget)
         self.tab3.setLayout(tab3_layout)
 
+        tab4_layout = QVBoxLayout()
+        tab4_layout.addWidget(self._about_widget)
+        self.tab4.setLayout(tab4_layout)
+
         self.tabs.addTab(self.tab1, "Paths")
         self.tabs.addTab(self.tab2, "Tokens")
         self.tabs.addTab(self.tab3, "Nginx")
+        self.tabs.addTab(self.tab4, "About")
 
         self._layout.addWidget(self.tabs)
 
