@@ -11,6 +11,7 @@ pyjwt
 pyopenssl
 pyqt5
 python-dotenv
+pyyaml
 requests
 validators==0.20.0
 vdf==3.4

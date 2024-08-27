@@ -1,7 +1,9 @@
+import os
 import threading
 import sqlalchemy.exc as exc
+import yaml
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, current_app
 from flask.views import MethodView
 
 from application.api.controllers import app as app_controller
@@ -12,6 +14,16 @@ from application.extensions import DATABASE
 from application.models.settings import Settings
 
 app = Blueprint("app", __name__, url_prefix="/v1")
+
+
+@app.route("/version", methods=["GET"])
+def get_version():
+    version_file = os.path.join(current_app.static_folder, "version.yml")
+
+    with open(version_file, "r") as file:
+        version_data = yaml.safe_load(file)
+
+    return jsonify(version_data)
 
 
 @app.route("/thread/status/<int:ident>", methods=["GET"])
