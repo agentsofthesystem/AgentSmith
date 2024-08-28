@@ -1,4 +1,7 @@
-from flask import Blueprint, jsonify
+import os
+import yaml
+
+from flask import Blueprint, jsonify, current_app
 
 from application.common import logger
 from application.common.decorators import authorization_required
@@ -34,6 +37,11 @@ def agent_info():
     games = games_controller.get_all_games(add_server_status=True)
     games = games["items"]
 
+    version_file = os.path.join(current_app.static_folder, "version.yml")
+
+    with open(version_file, "r") as file:
+        version_data = yaml.safe_load(file)
+
     # TODO - Tech Debt: Update agent info page to get this info over websocket. Works for now
     # but does not scale.
     for game in games:
@@ -55,5 +63,6 @@ def agent_info():
 
     info: dict = platform_dict
     info.update({"games": games})
+    info["version"] = version_data["version"]
 
     return jsonify(info)
